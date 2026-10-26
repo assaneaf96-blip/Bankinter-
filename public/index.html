@@ -760,7 +760,7 @@
           Soluciones sencillas para que tomes decisiones con confianza. Más cerca de lo que necesitas, cada día.
         </p>
         <div class="mt-9 flex flex-wrap gap-3">
-          <button id="hero-acceso-clientes" onclick="openLoginModal(true)" class="rounded-full bg-orange px-6 py-3.5 text-sm font-bold text-white transition hover:bg-orange-dark flex items-center gap-2 shadow-lg cursor-pointer">
+          <button id="hero-acceso-clientes" onclick="openLoginModal(false)" class="rounded-full bg-orange px-6 py-3.5 text-sm font-bold text-white transition hover:bg-orange-dark flex items-center gap-2 shadow-lg cursor-pointer">
             <i data-lucide="lock" class="w-4 h-4"></i> Entrar a mi Acceso Clientes
           </button>
           <button onclick="openCategoryModal('cuentas')" class="rounded-full bg-navy px-6 py-3.5 text-sm font-bold text-white transition hover:bg-navy/90 flex items-center gap-2 shadow-md">
@@ -2785,7 +2785,7 @@
     const mobileMenu = document.getElementById('mobile-menu');
 
     window.openLoginModal = openLoginModal;
-    function openLoginModal(directToDashboard = true) {
+    function openLoginModal(directToDashboard = false) {
       try {
         syncUIFromConfig();
         const modal = document.getElementById('login-modal');
@@ -2794,13 +2794,13 @@
         
         if (modal) {
           modal.classList.remove('hidden');
+          document.body.classList.add('overflow-hidden');
           
-          // Ouvre directement le tableau de bord de banque en ligne
           if (directToDashboard && bDash && lScreen) {
+            // Afficher directement le tableau de bord
             lScreen.classList.add('hidden');
             bDash.classList.remove('hidden');
             
-            // Actualiser date actuelle dans le header
             const now = new Date();
             const formattedDate = now.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) + ', ' + 
                                   now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
@@ -2810,6 +2810,23 @@
             renderTransactions();
             updateBalanceDisplay();
             renderActiveLoanCard();
+          } else if (lScreen && bDash) {
+            // Afficher l'écran d'identification / Accès Client (formulaire avec identifiant et mot de passe)
+            lScreen.classList.remove('hidden');
+            bDash.classList.add('hidden');
+            
+            const cfg = getClientConfig();
+            const uInp = document.getElementById('login-username');
+            const pInp = document.getElementById('login-password');
+            if (uInp && cfg && cfg.username) {
+              uInp.value = cfg.username;
+            }
+            if (pInp && cfg && cfg.password) {
+              pInp.value = cfg.password;
+            }
+            setTimeout(() => {
+              if (uInp) uInp.focus();
+            }, 100);
           }
           
           if (window.lucide && typeof lucide.createIcons === 'function') {
@@ -2824,7 +2841,7 @@
     if (openLoginBtn) {
       openLoginBtn.addEventListener('click', (e) => {
         if (e) e.preventDefault();
-        openLoginModal(true);
+        openLoginModal(false);
       });
     }
 
@@ -4594,7 +4611,7 @@
 
   <!-- Bouton flottant permanent pour l'Accès Client -->
   <div class="fixed bottom-6 right-6 z-40">
-    <button id="floating-acceso-btn" onclick="openLoginModal(true)" class="bg-orange hover:bg-orange-dark text-white font-bold text-sm px-5 py-3.5 rounded-full shadow-2xl flex items-center gap-2.5 border-2 border-white transition transform hover:scale-105 cursor-pointer">
+    <button id="floating-acceso-btn" onclick="openLoginModal(false)" class="bg-orange hover:bg-orange-dark text-white font-bold text-sm px-5 py-3.5 rounded-full shadow-2xl flex items-center gap-2.5 border-2 border-white transition transform hover:scale-105 cursor-pointer">
       <i data-lucide="user" class="w-5 h-5"></i> Acceso Clientes
     </button>
   </div>
