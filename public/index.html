@@ -462,6 +462,259 @@
         </button>
       </div>
 
+      <!-- ========================================================================= -->
+      <!-- CATALOGUE AUTOMATIQUE OFFICIEL : CARROUSEL DES PRÊTS & FINANCEMENT (5 PHOTOS) -->
+      <!-- ========================================================================= -->
+      <div id="auto-loan-catalog-section" class="w-full bg-white rounded-3xl p-5 sm:p-7 shadow-xl border-2 border-orange/30 space-y-6 relative overflow-hidden mt-6 mb-8">
+        
+        <!-- Header du catalogue avec badge d'automatisation -->
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
+          <div class="flex items-center gap-3">
+            <span class="w-10 h-10 rounded-2xl bg-orange/10 text-orange flex items-center justify-center font-bold">
+              <i data-lucide="layers" class="w-5 h-5"></i>
+            </span>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-[10px] font-black uppercase tracking-wider text-orange bg-orange/10 px-2.5 py-0.5 rounded-full">Catálogo Interactivo en Vivo</span>
+                <span class="inline-flex items-center gap-1 text-[10px] font-bold text-green-700 bg-green-50 px-2 py-0.5 rounded-full border border-green-200">
+                  <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> Rotación automática
+                </span>
+              </div>
+              <h3 class="text-xl sm:text-2xl font-black text-navy tracking-tight mt-0.5">Soluciones de Financiación Inmediata Bankinter</h3>
+            </div>
+          </div>
+
+          <!-- Contrôles manuels [←] [Pause/Play] [→] -->
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="prevLoanSlide()" class="w-9 h-9 rounded-xl bg-pale hover:bg-orange hover:text-white text-navy border border-border transition flex items-center justify-center cursor-pointer shadow-xs" title="Anterior">
+              <i data-lucide="chevron-left" class="w-4 h-4"></i>
+            </button>
+            <button type="button" id="btn-toggle-auto-loan" onclick="toggleAutoLoanSlider()" class="px-3 py-1.5 rounded-xl bg-pale hover:bg-navy hover:text-white text-navy border border-border transition text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-xs" title="Pausar o reanudar">
+              <i data-lucide="pause" id="icon-toggle-auto-loan" class="w-3.5 h-3.5 text-orange"></i> <span id="text-toggle-auto-loan" class="hidden sm:inline">Auto</span>
+            </button>
+            <button type="button" onclick="nextLoanSlide()" class="w-9 h-9 rounded-xl bg-pale hover:bg-orange hover:text-white text-navy border border-border transition flex items-center justify-center cursor-pointer shadow-xs" title="Siguiente">
+              <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- ZONE CENTRALE DU CARROUSEL AVEC LES 5 SLIDES -->
+        <div id="loan-slides-viewport" class="relative rounded-2xl overflow-hidden min-h-[400px] sm:min-h-[380px] bg-gradient-to-br from-navy via-[#10243e] to-navy text-white shadow-md">
+          
+          <!-- Slide 1 : prestamo-patrimonio.webp -->
+          <div class="loan-slide active-slide absolute inset-0 transition-opacity duration-700 flex flex-col md:flex-row items-center justify-between p-6 sm:p-8 gap-6 opacity-100 z-10" data-slide-index="0">
+            <div class="flex-1 space-y-4 max-w-xl text-left">
+              <span class="inline-flex items-center gap-1.5 bg-orange text-white text-xs font-black uppercase px-3 py-1 rounded-full shadow-xs">
+                🏡 🚗 Multiobjetivo • Hogar, Coche & Proyectos
+              </span>
+              <h4 class="text-2xl sm:text-3xl font-black text-white leading-tight">
+                Préstamo Universal Bankinter: Financiación Total
+              </h4>
+              <p class="text-xs sm:text-sm text-white/80 leading-relaxed">
+                Adquisición de vehículo, reformas integrales del hogar, consolidación de compras o gastos familiares imprevistos. Te acompañamos desde el primer momento con un tipo de interés competitivo.
+              </p>
+              <div class="grid grid-cols-3 gap-2 bg-white/10 p-3 rounded-2xl border border-white/15 text-xs text-center backdrop-blur-xs">
+                <div><span class="text-white/60 block text-[10px] uppercase font-bold">Importe</span><strong class="text-orange text-sm font-black">3.000 € a 500.000 €</strong></div>
+                <div><span class="text-white/60 block text-[10px] uppercase font-bold">Tipo Fijo</span><strong class="text-green-400 text-sm font-black">Desde 4,95% TAE</strong></div>
+                <div><span class="text-white/60 block text-[10px] uppercase font-bold">Apertura</span><strong class="text-white text-sm font-black">0,00 € Comisiones</strong></div>
+              </div>
+              <div class="pt-2 flex flex-wrap gap-3">
+                <button type="button" onclick="openCategoryModal('prestamos')" class="bg-orange hover:bg-orange-dark text-white font-black text-xs sm:text-sm px-6 py-3 rounded-xl transition shadow-lg flex items-center gap-2 cursor-pointer">
+                  <i data-lucide="check-circle" class="w-4 h-4"></i> Solicitar Este Préstamo
+                </button>
+                <button type="button" onclick="openLoginModal(false)" class="bg-white/15 hover:bg-white/25 text-white font-bold text-xs px-4 py-3 rounded-xl transition border border-white/20 flex items-center gap-1.5 cursor-pointer">
+                  Acceso Clientes <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+            <div class="w-full md:w-5/12 h-56 sm:h-72 rounded-2xl overflow-hidden border-2 border-white/20 shadow-2xl shrink-0 group">
+              <img src="prestamo-patrimonio.webp" alt="Préstamo Bankinter Hogar y Coche" class="w-full h-full object-cover transform group-hover:scale-105 transition duration-500" />
+            </div>
+          </div>
+
+          <!-- Slide 2 : prestamo-familia-credito.jpg -->
+          <div class="loan-slide absolute inset-0 transition-opacity duration-700 flex flex-col md:flex-row items-center justify-between p-6 sm:p-8 gap-6 opacity-0 pointer-events-none z-0" data-slide-index="1">
+            <div class="flex-1 space-y-4 max-w-xl text-left">
+              <span class="inline-flex items-center gap-1.5 bg-green-600 text-white text-xs font-black uppercase px-3 py-1 rounded-full shadow-xs">
+                👨‍👩‍👧 Pide Tu Crédito Préstamo Familiar
+              </span>
+              <h4 class="text-2xl sm:text-3xl font-black text-white leading-tight">
+                Pide Tu Crédito Préstamo 100% Online en Familia
+              </h4>
+              <p class="text-xs sm:text-sm text-white/80 leading-relaxed">
+                Liquidez inmediata ingresada en cuenta para cumplir sueños familiares, viajes, equipamiento tecnológico y estudios. Sin esperas y con cuotas mensuales personalizadas.
+              </p>
+              <div class="grid grid-cols-3 gap-2 bg-white/10 p-3 rounded-2xl border border-white/15 text-xs text-center backdrop-blur-xs">
+                <div><span class="text-white/60 block text-[10px] uppercase font-bold">Respuesta</span><strong class="text-green-400 text-sm font-black">En 24 Horas</strong></div>
+                <div><span class="text-white/60 block text-[10px] uppercase font-bold">Plazo Flexible</span><strong class="text-orange text-sm font-black">Hasta 120 meses</strong></div>
+                <div><span class="text-white/60 block text-[10px] uppercase font-bold">Tramitación</span><strong class="text-white text-sm font-black">100% en Línea</strong></div>
+              </div>
+              <div class="pt-2 flex flex-wrap gap-3">
+                <button type="button" onclick="openCategoryModal('prestamos')" class="bg-orange hover:bg-orange-dark text-white font-black text-xs sm:text-sm px-6 py-3 rounded-xl transition shadow-lg flex items-center gap-2 cursor-pointer">
+                  <i data-lucide="credit-card" class="w-4 h-4"></i> Pedir Mi Crédito Ahora
+                </button>
+                <button type="button" onclick="openLoginModal(false)" class="bg-white/15 hover:bg-white/25 text-white font-bold text-xs px-4 py-3 rounded-xl transition border border-white/20 flex items-center gap-1.5 cursor-pointer">
+                  Acceso Clientes <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+            <div class="w-full md:w-5/12 h-56 sm:h-72 rounded-2xl overflow-hidden border-2 border-white/20 shadow-2xl shrink-0 group">
+              <img src="prestamo-familia-credito.jpg" alt="Pide Tu Crédito Préstamo Bankinter" class="w-full h-full object-cover transform group-hover:scale-105 transition duration-500" />
+            </div>
+          </div>
+
+          <!-- Slide 3 : prestamo-rapido-online.webp -->
+          <div class="loan-slide absolute inset-0 transition-opacity duration-700 flex flex-col md:flex-row items-center justify-between p-6 sm:p-8 gap-6 opacity-0 pointer-events-none z-0" data-slide-index="2">
+            <div class="flex-1 space-y-4 max-w-xl text-left">
+              <span class="inline-flex items-center gap-1.5 bg-yellow-500 text-navy text-xs font-black uppercase px-3 py-1 rounded-full shadow-xs">
+                ⚡ Préstamos Rápidos Online Express
+              </span>
+              <h4 class="text-2xl sm:text-3xl font-black text-white leading-tight">
+                Préstamos Rápidos Online Directos al Móvil
+              </h4>
+              <p class="text-xs sm:text-sm text-white/80 leading-relaxed">
+                Gestiona tu solicitud directamente desde tu smartphone sin desplazarte a la oficina y sin papeleos. Firma digital certificada PSD2 con abono prioritario.
+              </p>
+              <div class="grid grid-cols-3 gap-2 bg-white/10 p-3 rounded-2xl border border-white/15 text-xs text-center backdrop-blur-xs">
+                <div><span class="text-white/60 block text-[10px] uppercase font-bold">Solicitud</span><strong class="text-white text-sm font-black">Menos de 3 min</strong></div>
+                <div><span class="text-white/60 block text-[10px] uppercase font-bold">Abono</span><strong class="text-orange text-sm font-black">Inmediato</strong></div>
+                <div><span class="text-white/60 block text-[10px] uppercase font-bold">Firma</span><strong class="text-green-400 text-sm font-black">Digital PSD2</strong></div>
+              </div>
+              <div class="pt-2 flex flex-wrap gap-3">
+                <button type="button" onclick="openCategoryModal('prestamos')" class="bg-orange hover:bg-orange-dark text-white font-black text-xs sm:text-sm px-6 py-3 rounded-xl transition shadow-lg flex items-center gap-2 cursor-pointer">
+                  <i data-lucide="zap" class="w-4 h-4"></i> Simular Préstamo Rápido
+                </button>
+                <button type="button" onclick="openLoginModal(false)" class="bg-white/15 hover:bg-white/25 text-white font-bold text-xs px-4 py-3 rounded-xl transition border border-white/20 flex items-center gap-1.5 cursor-pointer">
+                  Acceso Clientes <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+            <div class="w-full md:w-5/12 h-56 sm:h-72 rounded-2xl overflow-hidden border-2 border-white/20 shadow-2xl shrink-0 group">
+              <img src="prestamo-rapido-online.webp" alt="Préstamos Rápidos Online Bankinter" class="w-full h-full object-cover transform group-hover:scale-105 transition duration-500" />
+            </div>
+          </div>
+
+          <!-- Slide 4 : prestamo-financiacion-empresas.jpg -->
+          <div class="loan-slide absolute inset-0 transition-opacity duration-700 flex flex-col md:flex-row items-center justify-between p-6 sm:p-8 gap-6 opacity-0 pointer-events-none z-0" data-slide-index="3">
+            <div class="flex-1 space-y-4 max-w-xl text-left">
+              <span class="inline-flex items-center gap-1.5 bg-blue-600 text-white text-xs font-black uppercase px-3 py-1 rounded-full shadow-xs">
+                💼 Financiación Empresas, Comercios y Autónomos
+              </span>
+              <h4 class="text-2xl sm:text-3xl font-black text-white leading-tight">
+                Impulso al Circulante y Crecimiento de Negocios
+              </h4>
+              <p class="text-xs sm:text-sm text-white/80 leading-relaxed">
+                Inyección de liquidez directa para adquisición de maquinaria, reformas de locales comerciales, pago a proveedores y refuerzo de existencias de temporada.
+              </p>
+              <div class="grid grid-cols-3 gap-2 bg-white/10 p-3 rounded-2xl border border-white/15 text-xs text-center backdrop-blur-xs">
+                <div><span class="text-white/60 block text-[10px] uppercase font-bold">Empresas</span><strong class="text-orange text-sm font-black">Hasta 500.000 €</strong></div>
+                <div><span class="text-white/60 block text-[10px] uppercase font-bold">Carencia</span><strong class="text-green-400 text-sm font-black">Hasta 12 meses</strong></div>
+                <div><span class="text-white/60 block text-[10px] uppercase font-bold">Asesor</span><strong class="text-white text-sm font-black">Gestor Asignado</strong></div>
+              </div>
+              <div class="pt-2 flex flex-wrap gap-3">
+                <button type="button" onclick="openCategoryModal('prestamos')" class="bg-orange hover:bg-orange-dark text-white font-black text-xs sm:text-sm px-6 py-3 rounded-xl transition shadow-lg flex items-center gap-2 cursor-pointer">
+                  <i data-lucide="briefcase" class="w-4 h-4"></i> Financiación para Empresas
+                </button>
+                <button type="button" onclick="openLoginModal(false)" class="bg-white/15 hover:bg-white/25 text-white font-bold text-xs px-4 py-3 rounded-xl transition border border-white/20 flex items-center gap-1.5 cursor-pointer">
+                  Acceso Clientes <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+            <div class="w-full md:w-5/12 h-56 sm:h-72 rounded-2xl overflow-hidden border-2 border-white/20 shadow-2xl shrink-0 group">
+              <img src="prestamo-financiacion-empresas.jpg" alt="Financiación Empresas y Comercios Bankinter" class="w-full h-full object-cover transform group-hover:scale-105 transition duration-500" />
+            </div>
+          </div>
+
+          <!-- Slide 5 : prestamo-gestion-digital.jpg -->
+          <div class="loan-slide absolute inset-0 transition-opacity duration-700 flex flex-col md:flex-row items-center justify-between p-6 sm:p-8 gap-6 opacity-0 pointer-events-none z-0" data-slide-index="4">
+            <div class="flex-1 space-y-4 max-w-xl text-left">
+              <span class="inline-flex items-center gap-1.5 bg-orange text-white text-xs font-black uppercase px-3 py-1 rounded-full shadow-xs">
+                📊 Simulador Digital & Gestión Transparente
+              </span>
+              <h4 class="text-2xl sm:text-3xl font-black text-white leading-tight">
+                Simulador de Préstamos Inteligente en Tiempo Real
+              </h4>
+              <p class="text-xs sm:text-sm text-white/80 leading-relaxed">
+                Calcula tu cuota mensual exacta en segundos sin compromiso. Elige plazo, importe y finalidad con la garantía de transparencia absoluta Bankinter.
+              </p>
+              <div class="grid grid-cols-3 gap-2 bg-white/10 p-3 rounded-2xl border border-white/15 text-xs text-center backdrop-blur-xs">
+                <div><span class="text-white/60 block text-[10px] uppercase font-bold">Simulación</span><strong class="text-green-400 text-sm font-black">Gratuita 100%</strong></div>
+                <div><span class="text-white/60 block text-[10px] uppercase font-bold">Transparencia</span><strong class="text-orange text-sm font-black">Sin letra pequeña</strong></div>
+                <div><span class="text-white/60 block text-[10px] uppercase font-bold">Soporte</span><strong class="text-white text-sm font-black">24/7 en línea</strong></div>
+              </div>
+              <div class="pt-2 flex flex-wrap gap-3">
+                <button type="button" onclick="openCategoryModal('prestamos')" class="bg-orange hover:bg-orange-dark text-white font-black text-xs sm:text-sm px-6 py-3 rounded-xl transition shadow-lg flex items-center gap-2 cursor-pointer">
+                  <i data-lucide="calculator" class="w-4 h-4"></i> Calcular Mi Cuota Ahora
+                </button>
+                <button type="button" onclick="openLoginModal(false)" class="bg-white/15 hover:bg-white/25 text-white font-bold text-xs px-4 py-3 rounded-xl transition border border-white/20 flex items-center gap-1.5 cursor-pointer">
+                  Acceso Clientes <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+            <div class="w-full md:w-5/12 h-56 sm:h-72 rounded-2xl overflow-hidden border-2 border-white/20 shadow-2xl shrink-0 group">
+              <img src="prestamo-gestion-digital.jpg" alt="Simulador Préstamos Bankinter" class="w-full h-full object-cover transform group-hover:scale-105 transition duration-500" />
+            </div>
+          </div>
+
+        </div>
+
+        <!-- INDICATEURS DE SLIDES (POINTS / DOTS) -->
+        <div class="flex items-center justify-center gap-2 pt-1" id="loan-dots-container">
+          <button type="button" onclick="goToLoanSlide(0)" class="loan-dot w-8 h-2.5 rounded-full bg-orange transition-all duration-300 cursor-pointer" aria-label="Slide 1"></button>
+          <button type="button" onclick="goToLoanSlide(1)" class="loan-dot w-2.5 h-2.5 rounded-full bg-navy/20 hover:bg-orange/60 transition-all duration-300 cursor-pointer" aria-label="Slide 2"></button>
+          <button type="button" onclick="goToLoanSlide(2)" class="loan-dot w-2.5 h-2.5 rounded-full bg-navy/20 hover:bg-orange/60 transition-all duration-300 cursor-pointer" aria-label="Slide 3"></button>
+          <button type="button" onclick="goToLoanSlide(3)" class="loan-dot w-2.5 h-2.5 rounded-full bg-navy/20 hover:bg-orange/60 transition-all duration-300 cursor-pointer" aria-label="Slide 4"></button>
+          <button type="button" onclick="goToLoanSlide(4)" class="loan-dot w-2.5 h-2.5 rounded-full bg-navy/20 hover:bg-orange/60 transition-all duration-300 cursor-pointer" aria-label="Slide 5"></button>
+        </div>
+
+        <!-- BANDEAU DES 5 MINIATURES INTERACTIVES (POUR TOUT VOIR D'UN COUP D'OEIL) -->
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2">
+          
+          <button type="button" onclick="goToLoanSlide(0)" class="loan-thumb-btn border-2 border-orange bg-[#fff8f5] p-2.5 rounded-2xl transition hover:shadow-md flex flex-col gap-2 text-left cursor-pointer group" data-thumb-index="0">
+            <div class="h-20 w-full rounded-xl overflow-hidden bg-gray-100">
+              <img src="prestamo-patrimonio.webp" alt="Préstamo Universal" class="w-full h-full object-cover group-hover:scale-105 transition" />
+            </div>
+            <span class="text-[11px] font-black text-navy group-hover:text-orange line-clamp-1 block">1. Préstamo Universal</span>
+            <span class="text-[10px] text-muted">Hogar & Vehículo</span>
+          </button>
+
+          <button type="button" onclick="goToLoanSlide(1)" class="loan-thumb-btn border border-border hover:border-orange bg-white p-2.5 rounded-2xl transition hover:shadow-md flex flex-col gap-2 text-left cursor-pointer group" data-thumb-index="1">
+            <div class="h-20 w-full rounded-xl overflow-hidden bg-gray-100">
+              <img src="prestamo-familia-credito.jpg" alt="Pide Tu Crédito" class="w-full h-full object-cover group-hover:scale-105 transition" />
+            </div>
+            <span class="text-[11px] font-black text-navy group-hover:text-orange line-clamp-1 block">2. Crédito Familiar</span>
+            <span class="text-[10px] text-muted">100% Online</span>
+          </button>
+
+          <button type="button" onclick="goToLoanSlide(2)" class="loan-thumb-btn border border-border hover:border-orange bg-white p-2.5 rounded-2xl transition hover:shadow-md flex flex-col gap-2 text-left cursor-pointer group" data-thumb-index="2">
+            <div class="h-20 w-full rounded-xl overflow-hidden bg-gray-100">
+              <img src="prestamo-rapido-online.webp" alt="Préstamos Rápidos" class="w-full h-full object-cover group-hover:scale-105 transition" />
+            </div>
+            <span class="text-[11px] font-black text-navy group-hover:text-orange line-clamp-1 block">3. Préstamos Rápidos</span>
+            <span class="text-[10px] text-muted">Directo al Móvil</span>
+          </button>
+
+          <button type="button" onclick="goToLoanSlide(3)" class="loan-thumb-btn border border-border hover:border-orange bg-white p-2.5 rounded-2xl transition hover:shadow-md flex flex-col gap-2 text-left cursor-pointer group" data-thumb-index="3">
+            <div class="h-20 w-full rounded-xl overflow-hidden bg-gray-100">
+              <img src="prestamo-financiacion-empresas.jpg" alt="Empresas y Comercios" class="w-full h-full object-cover group-hover:scale-105 transition" />
+            </div>
+            <span class="text-[11px] font-black text-navy group-hover:text-orange line-clamp-1 block">4. Negocios & Pymes</span>
+            <span class="text-[10px] text-muted">Hasta 500.000 €</span>
+          </button>
+
+          <button type="button" onclick="goToLoanSlide(4)" class="loan-thumb-btn border border-border hover:border-orange bg-white p-2.5 rounded-2xl transition hover:shadow-md flex flex-col gap-2 text-left cursor-pointer group col-span-2 sm:col-span-1" data-thumb-index="4">
+            <div class="h-20 w-full rounded-xl overflow-hidden bg-gray-100">
+              <img src="prestamo-gestion-digital.jpg" alt="Simulador Inteligente" class="w-full h-full object-cover group-hover:scale-105 transition" />
+            </div>
+            <span class="text-[11px] font-black text-navy group-hover:text-orange line-clamp-1 block">5. Simulador Digital</span>
+            <span class="text-[10px] text-muted">Cuota en Directo</span>
+          </button>
+
+        </div>
+
+      </div>
+
+
       <!-- 2 Badges de Confiance / Garanties (Style Clair Bankinter) -->
       <div class="grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
         <div class="bg-white border border-border/80 p-4 rounded-2xl flex items-center gap-3.5 shadow-2xs">
@@ -4606,6 +4859,127 @@
         if (icon) icon.style.transform = 'rotate(0deg)';
       }
     }
+
+
+
+    // =========================================================================
+    // CONTRÔLEUR DU CATALOGUE AUTOMATIQUE DE PRÊTS (5 PHOTOS)
+    // =========================================================================
+    let currentLoanSlide = 0;
+    const totalLoanSlides = 5;
+    let autoLoanInterval = null;
+    let isAutoLoanPlaying = true;
+
+    window.goToLoanSlide = goToLoanSlide;
+    window.nextLoanSlide = nextLoanSlide;
+    window.prevLoanSlide = prevLoanSlide;
+    window.toggleAutoLoanSlider = toggleAutoLoanSlider;
+
+    function goToLoanSlide(index) {
+      currentLoanSlide = (index + totalLoanSlides) % totalLoanSlides;
+      const slides = document.querySelectorAll('.loan-slide');
+      const dots = document.querySelectorAll('.loan-dot');
+      const thumbs = document.querySelectorAll('.loan-thumb-btn');
+
+      slides.forEach((s, idx) => {
+        if (idx === currentLoanSlide) {
+          s.classList.remove('opacity-0', 'pointer-events-none', 'z-0');
+          s.classList.add('opacity-100', 'z-10');
+        } else {
+          s.classList.remove('opacity-100', 'z-10');
+          s.classList.add('opacity-0', 'pointer-events-none', 'z-0');
+        }
+      });
+
+      dots.forEach((d, idx) => {
+        if (idx === currentLoanSlide) {
+          d.className = 'loan-dot w-8 h-2.5 rounded-full bg-orange transition-all duration-300 cursor-pointer';
+        } else {
+          d.className = 'loan-dot w-2.5 h-2.5 rounded-full bg-navy/20 hover:bg-orange/60 transition-all duration-300 cursor-pointer';
+        }
+      });
+
+      thumbs.forEach((t, idx) => {
+        if (idx === currentLoanSlide) {
+          t.className = 'loan-thumb-btn border-2 border-orange bg-[#fff8f5] p-2.5 rounded-2xl transition hover:shadow-md flex flex-col gap-2 text-left cursor-pointer group shadow-sm';
+        } else {
+          t.className = 'loan-thumb-btn border border-border hover:border-orange bg-white p-2.5 rounded-2xl transition hover:shadow-md flex flex-col gap-2 text-left cursor-pointer group';
+        }
+      });
+
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        safeCreateIcons();
+      }
+    }
+
+    function nextLoanSlide() {
+      goToLoanSlide(currentLoanSlide + 1);
+    }
+
+    function prevLoanSlide() {
+      goToLoanSlide(currentLoanSlide - 1);
+    }
+
+    function startAutoLoanSlider() {
+      if (autoLoanInterval) clearInterval(autoLoanInterval);
+      autoLoanInterval = setInterval(() => {
+        nextLoanSlide();
+      }, 3500);
+      isAutoLoanPlaying = true;
+      updateAutoLoanBtnState();
+    }
+
+    function pauseAutoLoanSlider() {
+      if (autoLoanInterval) {
+        clearInterval(autoLoanInterval);
+        autoLoanInterval = null;
+      }
+      isAutoLoanPlaying = false;
+      updateAutoLoanBtnState();
+    }
+
+    function toggleAutoLoanSlider() {
+      if (isAutoLoanPlaying) {
+        pauseAutoLoanSlider();
+      } else {
+        startAutoLoanSlider();
+      }
+    }
+
+    function updateAutoLoanBtnState() {
+      const text = document.getElementById('text-toggle-auto-loan');
+      const icon = document.getElementById('icon-toggle-auto-loan');
+      if (text && icon) {
+        if (isAutoLoanPlaying) {
+          text.innerText = 'Pausar';
+          icon.setAttribute('data-lucide', 'pause');
+        } else {
+          text.innerText = 'Play';
+          icon.setAttribute('data-lucide', 'play');
+        }
+        if (window.lucide && typeof lucide.createIcons === 'function') {
+          safeCreateIcons();
+        }
+      }
+    }
+
+    // Pause on hover
+    setTimeout(() => {
+      const viewport = document.getElementById('auto-loan-catalog-section');
+      if (viewport) {
+        viewport.addEventListener('mouseenter', () => {
+          if (isAutoLoanPlaying && autoLoanInterval) {
+            clearInterval(autoLoanInterval);
+          }
+        });
+        viewport.addEventListener('mouseleave', () => {
+          if (isAutoLoanPlaying) {
+            startAutoLoanSlider();
+          }
+        });
+      }
+      startAutoLoanSlider();
+    }, 200);
 
 </script>
 
