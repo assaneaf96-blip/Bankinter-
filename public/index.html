@@ -1211,11 +1211,11 @@
         <span class="flex h-7 w-7 items-center justify-center rounded-full bg-orange font-black text-sm">b</span>
         <span class="font-bold text-sm">Bankinter.es</span>
       </div>
-      <div class="flex flex-wrap gap-6">
-        <a href="#" class="hover:text-white transition">Privacidad</a>
-        <a href="#" class="hover:text-white transition">Seguridad</a>
-        <a href="#" class="hover:text-white transition">Tablón de anuncios</a>
-        <a href="#" class="hover:text-white transition">Ayuda</a>
+      <div class="flex flex-wrap items-center gap-6">
+        <button type="button" onclick="openLegalModal('privacidad')" class="hover:text-white transition cursor-pointer text-white/70 hover:underline">Privacidad</button>
+        <button type="button" onclick="openLegalModal('seguridad')" class="hover:text-white transition cursor-pointer text-white/70 hover:underline">Seguridad</button>
+        <button type="button" onclick="openLegalModal('tablon')" class="hover:text-white transition cursor-pointer text-white/70 hover:underline">Tablón de anuncios</button>
+        <button type="button" onclick="openLegalModal('ayuda')" class="hover:text-white transition cursor-pointer text-white/70 hover:underline">Ayuda</button>
         <span>© 2026 Bankinter, S.A. Todos los derechos reservados.</span>
       </div>
     </div>
@@ -4519,7 +4519,78 @@
 
     // Initial calculation
     updateLoanCalc();
-  </script>
+  
+
+    // =========================================================================
+    // GESTION DE LA MODALE LÉGALE & FOOTER (Privacidad, Seguridad, Tablón, Ayuda)
+    // =========================================================================
+    window.openLegalModal = openLegalModal;
+    window.closeLegalModal = closeLegalModal;
+    window.switchLegalTab = switchLegalTab;
+    window.toggleFaqItem = toggleFaqItem;
+
+    function openLegalModal(tab) {
+      const modal = document.getElementById('modal-legal-info');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+      switchLegalTab(tab || 'privacidad');
+      if (typeof safeCreateIcons === 'function') {
+        safeCreateIcons();
+      } else if (window.lucide && window.lucide.createIcons) {
+        window.lucide.createIcons();
+      }
+    }
+
+    function closeLegalModal() {
+      const modal = document.getElementById('modal-legal-info');
+      if (!modal) return;
+      modal.classList.add('hidden');
+      document.body.classList.remove('overflow-hidden');
+    }
+
+    function switchLegalTab(tabId) {
+      const tabs = ['privacidad', 'seguridad', 'tablon', 'ayuda'];
+      tabs.forEach(t => {
+        const btn = document.getElementById('legal-tab-' + t);
+        const content = document.getElementById('legal-content-' + t);
+        if (btn) {
+          if (t === tabId) {
+            btn.className = 'px-4 py-2 rounded-full font-bold text-xs transition bg-orange text-white shadow-xs cursor-pointer flex items-center gap-1.5';
+          } else {
+            btn.className = 'px-4 py-2 rounded-full font-bold text-xs transition bg-white/10 text-white/80 hover:bg-white/20 hover:text-white cursor-pointer flex items-center gap-1.5';
+          }
+        }
+        if (content) {
+          if (t === tabId) {
+            content.classList.remove('hidden');
+          } else {
+            content.classList.add('hidden');
+          }
+        }
+      });
+      if (typeof safeCreateIcons === 'function') {
+        safeCreateIcons();
+      } else if (window.lucide && window.lucide.createIcons) {
+        window.lucide.createIcons();
+      }
+    }
+
+    function toggleFaqItem(faqId) {
+      const content = document.getElementById('faq-ans-' + faqId);
+      const icon = document.getElementById('faq-icon-' + faqId);
+      if (!content) return;
+      const isHidden = content.classList.contains('hidden');
+      if (isHidden) {
+        content.classList.remove('hidden');
+        if (icon) icon.style.transform = 'rotate(180deg)';
+      } else {
+        content.classList.add('hidden');
+        if (icon) icon.style.transform = 'rotate(0deg)';
+      }
+    }
+
+</script>
 
   <!-- Bouton flottant permanent pour l'Accès Client -->
   <div class="fixed bottom-6 right-6 z-40">
@@ -4679,6 +4750,336 @@
         </button>
         <button type="button" onclick="closeConfirmModal(true)" class="w-full bg-navy hover:bg-navy/90 text-white font-bold text-xs py-3 rounded-xl transition flex items-center justify-center gap-2 cursor-pointer">
           <i data-lucide="check" class="w-4 h-4 text-green-400"></i> Volver a mi Posición Global
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+
+  <!-- ========================================================================= -->
+  <!-- MODAL INFORMATIVO OFICIAL: PRIVACIDAD, SEGURIDAD, TABLÓN Y AYUDA           -->
+  <!-- ========================================================================= -->
+  <div id="modal-legal-info" class="hidden fixed inset-0 z-[90] flex items-center justify-center bg-navy/70 backdrop-blur-sm p-3 sm:p-6">
+    <div class="w-full max-w-4xl max-h-[92vh] flex flex-col rounded-3xl bg-white shadow-2xl overflow-hidden border border-border animate-fade-in">
+      
+      <!-- En-tête de la modale avec onglets -->
+      <div class="bg-navy px-6 py-5 text-white flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-orange text-sm font-black text-white shadow-xs">b</span>
+            <div>
+              <span class="text-[10px] uppercase font-bold tracking-wider text-orange block">Bankinter S.A. • Canales Oficiales</span>
+              <h2 class="text-lg sm:text-xl font-black tracking-tight">Centro de Información Legal, Seguridad y Soporte</h2>
+            </div>
+          </div>
+          <button onclick="closeLegalModal()" class="rounded-full p-2 text-white/70 hover:text-white hover:bg-white/10 transition cursor-pointer">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <!-- Onglets interactifs -->
+        <div class="flex flex-wrap gap-2 text-xs font-semibold pt-1 border-t border-white/10">
+          <button id="legal-tab-privacidad" onclick="switchLegalTab('privacidad')" class="px-4 py-2 rounded-full font-bold text-xs transition bg-orange text-white shadow-xs cursor-pointer flex items-center gap-1.5">
+            <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Privacidad y RGPD
+          </button>
+          <button id="legal-tab-seguridad" onclick="switchLegalTab('seguridad')" class="px-4 py-2 rounded-full font-bold text-xs transition bg-white/10 text-white/80 hover:bg-white/20 hover:text-white cursor-pointer flex items-center gap-1.5">
+            <i data-lucide="lock" class="w-3.5 h-3.5"></i> Protocolo de Seguridad
+          </button>
+          <button id="legal-tab-tablon" onclick="switchLegalTab('tablon')" class="px-4 py-2 rounded-full font-bold text-xs transition bg-white/10 text-white/80 hover:bg-white/20 hover:text-white cursor-pointer flex items-center gap-1.5">
+            <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Tablón de Anuncios
+          </button>
+          <button id="legal-tab-ayuda" onclick="switchLegalTab('ayuda')" class="px-4 py-2 rounded-full font-bold text-xs transition bg-white/10 text-white/80 hover:bg-white/20 hover:text-white cursor-pointer flex items-center gap-1.5">
+            <i data-lucide="help-circle" class="w-3.5 h-3.5"></i> Ayuda y Soporte 24/7
+          </button>
+        </div>
+      </div>
+
+      <!-- Corps défilant du modal -->
+      <div class="p-6 overflow-y-auto flex-1 space-y-6 text-navy">
+
+        <!-- 1. CONTENU PRIVACIDAD -->
+        <div id="legal-content-privacidad" class="space-y-5">
+          <div class="border-b border-border pb-4">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="inline-flex items-center gap-1 bg-green-50 text-green-700 text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-green-200">
+                <i data-lucide="check-circle" class="w-3 h-3"></i> RGPD UE 2016/679 & LOPDGDD 3/2018
+              </span>
+            </div>
+            <h3 class="text-xl sm:text-2xl font-bold text-navy">Política de Privacidad y Tratamiento de Datos</h3>
+            <p class="text-xs text-muted mt-1">Tu privacidad y el control de tus datos bancarios y personales son un pilar fundamental en Bankinter.</p>
+          </div>
+
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div class="bg-pale/50 rounded-2xl p-4 border border-border">
+              <div class="flex items-center gap-2 font-bold text-navy text-sm mb-2">
+                <i data-lucide="building" class="w-4 h-4 text-orange"></i> Responsable del Tratamiento
+              </div>
+              <p class="text-xs text-muted leading-relaxed">
+                <strong>Bankinter, S.A.</strong>, con NIF <strong>A-28157360</strong> y sede social en Paseo de la Castellana 29, 28046 Madrid. Inscrita en el Registro Mercantil de Madrid, Tomo 2110, Folio 1, Hoja M-37330.
+              </p>
+            </div>
+
+            <div class="bg-pale/50 rounded-2xl p-4 border border-border">
+              <div class="flex items-center gap-2 font-bold text-navy text-sm mb-2">
+                <i data-lucide="user-check" class="w-4 h-4 text-orange"></i> Delegado de Protección de Datos (DPD)
+              </div>
+              <p class="text-xs text-muted leading-relaxed">
+                Puedes contactar con la Oficina del Delegado de Protección de Datos de Bankinter directamente a través del correo oficial: <strong class="text-navy">privacidad@bankinter.com</strong> o mediante envío postal dirigido a la Asesoría Jurídica.
+              </p>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl p-4 border border-border space-y-3">
+            <h4 class="font-bold text-sm text-navy flex items-center gap-2">
+              <i data-lucide="database" class="w-4 h-4 text-orange"></i> Finalidades y Legitimación del Tratamiento
+            </h4>
+            <ul class="text-xs text-muted space-y-2 list-disc list-inside leading-relaxed">
+              <li><strong class="text-navy">Ejecución contractual:</strong> Gestión integral de cuentas corrientes, tarjetas de débito/crédito, depósitos a plazo, transferencias SEPA y productos de crédito suscritos.</li>
+              <li><strong class="text-navy">Prevención legal (Ley 10/2010):</strong> Cumplimiento riguroso de las obligaciones de prevención del blanqueo de capitales, control de terrorismo y comunicación obligatoria a SEPBLAC.</li>
+              <li><strong class="text-navy">Evaluación de solvencia y riesgo:</strong> Consulta obligatoria a la Central de Información de Riesgos del Banco de España (CIRBE) y a sistemas de información crediticia (ASNEF, Badexcug).</li>
+              <li><strong class="text-navy">Comunicaciones comerciales:</strong> Exclusivamente basadas en tu consentimiento expreso previo o en el interés legítimo financiero derivado de tu relación como cliente.</li>
+            </ul>
+          </div>
+
+          <div class="bg-orange/5 border border-orange/20 rounded-2xl p-4">
+            <h4 class="font-bold text-sm text-navy mb-2 flex items-center gap-2">
+              <i data-lucide="key" class="w-4 h-4 text-orange"></i> Derechos ARCO / RGPD del Usuario
+            </h4>
+            <p class="text-xs text-muted leading-relaxed">
+              En cualquier momento puedes ejercer tus derechos de <strong>Acceso</strong>, <strong>Rectificación</strong>, <strong>Supresión ("derecho al olvido")</strong>, <strong>Limitación del tratamiento</strong>, <strong>Portabilidad</strong> y <strong>Oposición</strong>. Para ejercerlos, accede a los Ajustes de Seguridad en tu Banca Digital, acude a cualquier oficina de la red Bankinter o envía una solicitud formal con copia de tu DNI/NIE a <span class="font-bold text-navy">privacidad@bankinter.com</span>. También puedes interponer reclamación ante la Agencia Española de Protección de Datos (AEPD) en <a href="https://www.aepd.es" target="_blank" class="underline text-orange font-semibold">www.aepd.es</a>.
+            </p>
+          </div>
+        </div>
+
+        <!-- 2. CONTENU SEGURIDAD -->
+        <div id="legal-content-seguridad" class="hidden space-y-5">
+          <div class="border-b border-border pb-4">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="inline-flex items-center gap-1 bg-blue-50 text-blue-700 text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-blue-200">
+                <i data-lucide="shield" class="w-3 h-3"></i> Protocolo Activo TLS 1.3 / PSD2
+              </span>
+            </div>
+            <h3 class="text-xl sm:text-2xl font-bold text-navy">Centro de Seguridad Bancaria y Antifraude</h3>
+            <p class="text-xs text-muted mt-1">Conoce las capas de protección que salvaguardan tus transacciones y claves bancarias las 24 horas del día.</p>
+          </div>
+
+          <div class="grid gap-4 sm:grid-cols-3">
+            <div class="bg-pale/50 rounded-2xl p-4 border border-border">
+              <div class="w-9 h-9 rounded-xl bg-green-100 text-green-700 flex items-center justify-center font-bold mb-3">
+                <i data-lucide="lock" class="w-5 h-5"></i>
+              </div>
+              <h4 class="font-bold text-sm text-navy mb-1">Cifrado Militar AES-256</h4>
+              <p class="text-xs text-muted leading-relaxed">Toda comunicación entre tu dispositivo y los servidores de Bankinter está blindada con cifrado TLS 1.3 de extremo a extremo.</p>
+            </div>
+
+            <div class="bg-pale/50 rounded-2xl p-4 border border-border">
+              <div class="w-9 h-9 rounded-xl bg-orange/10 text-orange flex items-center justify-center font-bold mb-3">
+                <i data-lucide="smartphone" class="w-5 h-5"></i>
+              </div>
+              <h4 class="font-bold text-sm text-navy mb-1">Autenticación Fuerte PSD2</h4>
+              <p class="text-xs text-muted leading-relaxed">Verificación en dos pasos (SCA): clave de acceso personal complementada con códigos SMS de 6 dígitos (OTP) y validación directiva.</p>
+            </div>
+
+            <div class="bg-pale/50 rounded-2xl p-4 border border-border">
+              <div class="w-9 h-9 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold mb-3">
+                <i data-lucide="eye" class="w-5 h-5"></i>
+              </div>
+              <h4 class="font-bold text-sm text-navy mb-1">Monitorización Antifraude</h4>
+              <p class="text-xs text-muted leading-relaxed">Algoritmos inteligentes de prevención detectan anomalías de acceso, ubicaciones inusuales o movimientos fuera de patrón.</p>
+            </div>
+          </div>
+
+          <!-- Alerte anti phishing -->
+          <div class="bg-red-50 border-2 border-red-200 rounded-2xl p-4 text-xs space-y-2">
+            <div class="flex items-center gap-2 text-red-700 font-bold text-sm">
+              <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+              <span>Consejo Vital de Seguridad: Prevención contra Phishing y Smishing</span>
+            </div>
+            <p class="text-red-950 leading-relaxed">
+              <strong>Bankinter NUNCA se pondrá en contacto contigo por SMS, email ni llamada solicitando tus contraseñas completas, códigos de firma por SMS o los números de tu tarjeta.</strong> Si recibes un enlace sospechoso pidiendo reactivar tu cuenta o autorizar un pago desconocido, desconfía de inmediato y comunícalo al servicio antifraude oficial.
+            </p>
+          </div>
+
+          <!-- Bloc d'urgence 24/7 -->
+          <div class="bg-navy text-white rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+              <span class="text-orange text-xs font-bold uppercase tracking-wider block">Atención Urgente 24/7</span>
+              <h4 class="text-lg font-black mt-0.5">¿Sospechas de un fraude o has perdido tu tarjeta?</h4>
+              <p class="text-xs text-white/70 mt-1">Bloquea tus tarjetas al instante o llama a nuestros agentes de seguridad.</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <a href="tel:900811381" class="bg-orange hover:bg-orange-dark text-white font-bold text-xs px-4 py-3 rounded-xl transition flex items-center gap-2 shrink-0">
+                <i data-lucide="phone-call" class="w-4 h-4"></i> 900 811 381 (Gratuito)
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. CONTENU TABLÓN DE ANUNCIOS -->
+        <div id="legal-content-tablon" class="hidden space-y-5">
+          <div class="border-b border-border pb-4">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="inline-flex items-center gap-1 bg-amber-50 text-amber-800 text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-amber-200">
+                <i data-lucide="landmark" class="w-3 h-3"></i> Entidad Oficial Banco de España 0128
+              </span>
+            </div>
+            <h3 class="text-xl sm:text-2xl font-bold text-navy">Tablón de Anuncios y Avisos Oficiales</h3>
+            <p class="text-xs text-muted mt-1">Información corporativa, garantías legales y registros oficiales según la normativa bancaria española y europea.</p>
+          </div>
+
+          <div class="grid gap-4 sm:grid-cols-2">
+            <!-- FGD -->
+            <div class="bg-pale/50 rounded-2xl p-4 border border-border">
+              <div class="flex items-center gap-2 font-bold text-navy text-sm mb-2">
+                <i data-lucide="shield-alert" class="w-4 h-4 text-green-600"></i> Fondo de Garantía de Depósitos (FGD)
+              </div>
+              <p class="text-xs text-muted leading-relaxed">
+                Bankinter, S.A. está formalmente adherida al <strong>Fondo de Garantía de Depósitos de Entidades de Crédito de España</strong> (Real Decreto-ley 16/2011). Tus depósitos dinerarios y de valores cuentan con la garantía estatal de hasta <strong class="text-navy">100.000 € por depositante</strong>.
+              </p>
+            </div>
+
+            <!-- Registro Oficial -->
+            <div class="bg-pale/50 rounded-2xl p-4 border border-border">
+              <div class="flex items-center gap-2 font-bold text-navy text-sm mb-2">
+                <i data-lucide="award" class="w-4 h-4 text-orange"></i> Registro del Banco de España y CNMV
+              </div>
+              <p class="text-xs text-muted leading-relaxed">
+                Entidad inscrita en el Registro Especial de Entidades de Crédito del <strong>Banco de España con el código oficial 0128</strong>, y supervisada conjuntamente por la Comisión Nacional del Mercado de Valores (CNMV).
+              </p>
+            </div>
+          </div>
+
+          <!-- Tarifas y comisiones -->
+          <div class="bg-white rounded-2xl p-4 border border-border space-y-2">
+            <h4 class="font-bold text-sm text-navy flex items-center gap-2">
+              <i data-lucide="file-spreadsheet" class="w-4 h-4 text-orange"></i> Folleto Informativo de Tarifas y Comisiones Oficiales
+            </h4>
+            <p class="text-xs text-muted leading-relaxed">
+              En cumplimiento de la Orden EHA/2899/2011 y de la Circular 5/2012 del Banco de España, Bankinter pone a disposición pública sus tarifas oficiales de comisiones, tipos de interés vigentes y condiciones estándar para operaciones en cuenta, transferencias nacionales/internacionales y servicios de pago.
+            </p>
+            <div class="pt-2 flex flex-wrap gap-2 text-xs">
+              <span class="bg-pale px-3 py-1.5 rounded-lg border border-border text-navy font-semibold">Mantenimiento Cuenta Nómina: <strong>0,00 €</strong></span>
+              <span class="bg-pale px-3 py-1.5 rounded-lg border border-border text-navy font-semibold">Transferencias SEPA Online: <strong>0,00 €</strong></span>
+              <span class="bg-pale px-3 py-1.5 rounded-lg border border-border text-navy font-semibold">Retiradas +17.000 Cajeros: <strong>0,00 €</strong></span>
+            </div>
+          </div>
+
+          <!-- Servicio de atención al cliente -->
+          <div class="bg-pale/50 rounded-2xl p-4 border border-border">
+            <h4 class="font-bold text-sm text-navy mb-2 flex items-center gap-2">
+              <i data-lucide="mail" class="w-4 h-4 text-orange"></i> Servicio de Atención al Cliente (SAC)
+            </h4>
+            <p class="text-xs text-muted leading-relaxed">
+              Los clientes pueden dirigir sus reclamaciones y quejas al Servicio de Atención al Cliente de Bankinter (Paseo de la Castellana 29, 28046 Madrid, o a través del buzón <strong class="text-navy">atencion_cliente@bankinter.com</strong>). Si la queja no es resuelta en plazo de 1 mes, puede elevarse ante el <strong>Departamento de Conducta de Entidades del Banco de España</strong> (Calle Alcalá 48, 28014 Madrid).
+            </p>
+          </div>
+        </div>
+
+        <!-- 4. CONTENU AYUDA Y FAQ -->
+        <div id="legal-content-ayuda" class="hidden space-y-5">
+          <div class="border-b border-border pb-4">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="inline-flex items-center gap-1 bg-orange/10 text-orange text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-orange/20">
+                <i data-lucide="headphones" class="w-3 h-3"></i> Soporte Multicanal 24/7
+              </span>
+            </div>
+            <h3 class="text-xl sm:text-2xl font-bold text-navy">Centro de Ayuda y Preguntas Frecuentes</h3>
+            <p class="text-xs text-muted mt-1">Estamos a tu disposición para cualquier consulta, gestión o incidencia técnica con tus cuentas.</p>
+          </div>
+
+          <!-- Canales de contacto directos -->
+          <div class="grid gap-4 sm:grid-cols-3">
+            <div class="bg-pale/50 rounded-2xl p-4 border border-border flex flex-col justify-between">
+              <div>
+                <span class="text-[10px] font-bold uppercase text-orange block">Línea Gratuita Particulares</span>
+                <strong class="text-lg font-black text-navy block mt-1">900 802 081</strong>
+                <p class="text-[11px] text-muted mt-1">Lunes a Sábado de 08:00 a 22:00 h.</p>
+              </div>
+              <a href="tel:900802081" class="mt-3 w-full bg-navy hover:bg-navy/90 text-white font-bold text-xs py-2 rounded-xl text-center transition">Llamar ahora</a>
+            </div>
+
+            <div class="bg-pale/50 rounded-2xl p-4 border border-border flex flex-col justify-between">
+              <div>
+                <span class="text-[10px] font-bold uppercase text-orange block">Banca Telefónica Internacional</span>
+                <strong class="text-lg font-black text-navy block mt-1">+34 91 657 88 00</strong>
+                <p class="text-[11px] text-muted mt-1">Atención multilingüe desde cualquier país.</p>
+              </div>
+              <a href="tel:+34916578800" class="mt-3 w-full bg-navy hover:bg-navy/90 text-white font-bold text-xs py-2 rounded-xl text-center transition">Llamar internacional</a>
+            </div>
+
+            <div class="bg-pale/50 rounded-2xl p-4 border border-border flex flex-col justify-between">
+              <div>
+                <span class="text-[10px] font-bold uppercase text-red-600 block">Urgencias y Tarjetas (24/7)</span>
+                <strong class="text-lg font-black text-navy block mt-1">900 811 381</strong>
+                <p class="text-[11px] text-muted mt-1">Bloqueo de tarjetas, robos o pérdidas 24 horas.</p>
+              </div>
+              <a href="tel:900811381" class="mt-3 w-full bg-orange hover:bg-orange-dark text-white font-bold text-xs py-2 rounded-xl text-center transition">Línea Urgente 24h</a>
+            </div>
+          </div>
+
+          <!-- Accordéon FAQ interactif -->
+          <div class="space-y-3 pt-2">
+            <h4 class="font-bold text-sm text-navy flex items-center gap-2">
+              <i data-lucide="help-circle" class="w-4 h-4 text-orange"></i> Preguntas Frecuentes Más Habituales
+            </h4>
+
+            <!-- FAQ 1 -->
+            <div class="border border-border rounded-2xl overflow-hidden bg-white">
+              <button onclick="toggleFaqItem('1')" class="w-full px-4 py-3.5 text-left font-bold text-xs sm:text-sm text-navy flex items-center justify-between hover:bg-pale/50 transition cursor-pointer">
+                <span>¿Cómo puedo restablecer mi contraseña de acceso si la he olvidado?</span>
+                <i id="faq-icon-1" data-lucide="chevron-down" class="w-4 h-4 text-orange transition-transform duration-200"></i>
+              </button>
+              <div id="faq-ans-1" class="hidden px-4 pb-4 pt-1 text-xs text-muted border-t border-border/50 leading-relaxed bg-pale/20">
+                En la ventana de identificación de Acceso Clientes, haz clic en el enlace "¿Problemas para entrar?". Podrás solicitar un enlace seguro o un SMS temporal con una nueva contraseña a tu teléfono móvil vinculado. Si lo prefieres, llama al 900 802 081 para asistencia directa de un agente.
+              </div>
+            </div>
+
+            <!-- FAQ 2 -->
+            <div class="border border-border rounded-2xl overflow-hidden bg-white">
+              <button onclick="toggleFaqItem('2')" class="w-full px-4 py-3.5 text-left font-bold text-xs sm:text-sm text-navy flex items-center justify-between hover:bg-pale/50 transition cursor-pointer">
+                <span>¿Cómo autorizar transferencias con clave de seguridad y firma PSD2?</span>
+                <i id="faq-icon-2" data-lucide="chevron-down" class="w-4 h-4 text-orange transition-transform duration-200"></i>
+              </button>
+              <div id="faq-ans-2" class="hidden px-4 pb-4 pt-1 text-xs text-muted border-t border-border/50 leading-relaxed bg-pale/20">
+                Al emitir una transferencia desde tu Área de Clientes, recibirás un código de verificación SMS de 6 dígitos que deberás ingresar en la pantalla de confirmación. Si la transferencia requiere validación o firma directiva, se emitirá una orden oficial con confirmación de la Dirección General.
+              </div>
+            </div>
+
+            <!-- FAQ 3 -->
+            <div class="border border-border rounded-2xl overflow-hidden bg-white">
+              <button onclick="toggleFaqItem('3')" class="w-full px-4 py-3.5 text-left font-bold text-xs sm:text-sm text-navy flex items-center justify-between hover:bg-pale/50 transition cursor-pointer">
+                <span>¿Qué debo hacer si extravío mi tarjeta o veo un movimiento no reconocido?</span>
+                <i id="faq-icon-3" data-lucide="chevron-down" class="w-4 h-4 text-orange transition-transform duration-200"></i>
+              </button>
+              <div id="faq-ans-3" class="hidden px-4 pb-4 pt-1 text-xs text-muted border-t border-border/50 leading-relaxed bg-pale/20">
+                Puedes apagar o bloquear tu tarjeta al instante accediendo a la sección "Tarjetas" de tu Posición Global. Además, puedes llamar inmediatamente al teléfono gratuito 900 811 381 disponible las 24 horas para bloquear la tarjeta de forma definitiva y solicitar un duplicado sin coste.
+              </div>
+            </div>
+
+            <!-- FAQ 4 -->
+            <div class="border border-border rounded-2xl overflow-hidden bg-white">
+              <button onclick="toggleFaqItem('4')" class="w-full px-4 py-3.5 text-left font-bold text-xs sm:text-sm text-navy flex items-center justify-between hover:bg-pale/50 transition cursor-pointer">
+                <span>¿Cómo descargar justificantes bancarios y extractos con validez oficial?</span>
+                <i id="faq-icon-4" data-lucide="chevron-down" class="w-4 h-4 text-orange transition-transform duration-200"></i>
+              </button>
+              <div id="faq-ans-4" class="hidden px-4 pb-4 pt-1 text-xs text-muted border-t border-border/50 leading-relaxed bg-pale/20">
+                En tu panel de cliente, pulsa sobre la opción "Extractos / Certificados" en el menú de cada cuenta. El sistema generará instantáneamente un documento PDF con sello digital verificable y código CSV apto para trámites oficiales y administraciones públicas.
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer du modal -->
+      <div class="bg-pale px-6 py-3.5 border-t border-border flex items-center justify-between text-xs text-muted">
+        <span class="flex items-center gap-1.5">
+          <i data-lucide="lock" class="w-3.5 h-3.5 text-green-600"></i> Conexión Cifrada y Segura Bankinter
+        </span>
+        <button onclick="closeLegalModal()" class="bg-navy hover:bg-navy/90 text-white font-bold text-xs px-4 py-2 rounded-xl transition cursor-pointer">
+          Cerrar ventana
         </button>
       </div>
 
