@@ -1,0 +1,2907 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bankinter - Panel de Administración & Backoffice</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: '#102844',
+            orange: {
+              DEFAULT: '#f26a3d',
+              dark: '#d9562d',
+              light: '#ffb49d'
+            },
+            pale: '#edf5f8',
+            border: '#dce6eb',
+            muted: '#627486'
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-[#f1f5f9] text-navy antialiased flex flex-col">
+
+  <!-- Modal de Verrouillage & Connexion Admin Sécurisée -->
+  <div id="admin-auth-modal" class="fixed inset-0 z-[100] bg-navy/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="w-full max-w-md bg-white rounded-3xl p-8 shadow-2xl border border-border">
+      <div class="text-center">
+        <span class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-orange text-white text-2xl font-black shadow-md">
+          b
+        </span>
+        <h2 class="mt-4 text-2xl font-black text-navy">Acceso Panel Admin</h2>
+        <p class="text-xs text-muted mt-1">Introduce las credenciales de administrador para desbloquear el Backoffice.</p>
+      </div>
+
+      <form onsubmit="handleAdminLogin(event)" class="mt-6 space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase text-navy">Usuario Administrador</label>
+          <input type="text" id="auth-admin-user" required class="mt-1.5 w-full rounded-xl border border-border p-3 text-sm font-semibold text-navy outline-none focus:border-orange bg-pale/40" placeholder="admin" value="admin" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-navy">Contraseña Maestra</label>
+          <input type="password" id="auth-admin-pass" required class="mt-1.5 w-full rounded-xl border border-border p-3 text-sm font-semibold text-navy outline-none focus:border-orange bg-pale/40" placeholder="••••••••" value="admin2026" />
+        </div>
+
+        <div id="auth-error-msg" class="hidden text-xs text-red-600 bg-red-50 p-2.5 rounded-xl border border-red-200 font-medium">
+          ⚠️ Usuario o contraseña incorrectos.
+        </div>
+
+        <button type="submit" class="w-full bg-orange hover:bg-orange-dark text-white font-bold text-sm py-3.5 rounded-xl transition shadow-md flex items-center justify-center gap-2">
+          <i data-lucide="lock" class="w-4 h-4"></i> Desbloquear Administración
+        </button>
+
+        <button type="button" onclick="sessionStorage.setItem('bankinter_admin_auth', 'true'); document.getElementById('admin-auth-modal').classList.add('hidden');" class="w-full bg-pale hover:bg-gray-200 text-navy font-bold text-xs py-2.5 rounded-xl transition border border-border flex items-center justify-center gap-1.5">
+          ⚡ Acceso Directo Inmediato (1 clic)
+        </button>
+      </form>
+
+      <div class="mt-5 pt-4 border-t border-border text-center text-xs text-muted">
+        <a href="index.html" class="text-navy font-bold hover:text-orange transition">← Volver al sitio público</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header Admin avec Barre des Espaces Clients Intégrée -->
+  <header class="bg-navy text-white border-b border-white/10 sticky top-0 z-50 shadow-lg">
+    <!-- Ligne Supérieure : Marque & Raccourcis Globaux -->
+    <div class="max-w-7xl mx-auto px-6 py-3.5 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-orange text-lg font-black text-white shadow-sm">b</span>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-xl font-black tracking-tight">Bankinter <span class="text-orange">Admin</span></h1>
+            <span class="bg-orange/20 border border-orange/40 text-[#ffb49d] text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Backoffice v2.0</span>
+          </div>
+          <p class="text-xs text-white/60">Gestor central de accesos clientes, movimientos bancarios y contenidos</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2.5">
+        <a href="cliente.html" target="_blank" onclick="saveClientSettings();" class="bg-green-600 hover:bg-green-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 shadow-sm">
+          <i data-lucide="user" class="w-4 h-4"></i> 🚀 Espacio Cliente (/cliente)
+        </a>
+        <a href="index.html" target="_blank" class="bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 border border-white/20 shadow-xs">
+          <i data-lucide="external-link" class="w-4 h-4"></i> Web Pública
+        </a>
+        <button onclick="saveAllSettings()" class="bg-orange hover:bg-orange-dark text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 shadow-md">
+          <i data-lucide="save" class="w-4 h-4"></i> Guardar Cambios
+        </button>
+        <button onclick="adminLogout()" class="bg-white/10 hover:bg-red-500/20 text-white text-xs font-semibold px-3 py-2 rounded-xl transition flex items-center gap-1.5" title="Cerrar sesión admin">
+          <i data-lucide="log-out" class="w-4 h-4"></i> Salir
+        </button>
+      </div>
+    </div>
+
+    <!-- Ligne Inférieure : ONGLETS DÉDIÉS POUR CHAQUE CLIENT & OUTILS -->
+    <div class="bg-[#0b1727] border-t border-white/15 px-6 py-2.5 shadow-inner">
+      <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+        <!-- Onglets clients -->
+        <div class="flex items-center gap-2 overflow-x-auto py-0.5">
+          <span class="text-xs font-black uppercase tracking-wider text-orange flex items-center gap-1.5 shrink-0 bg-orange/15 px-3 py-1.5 rounded-xl border border-orange/30">
+            <i data-lucide="users" class="w-3.5 h-3.5 text-orange"></i> Clientes:
+          </span>
+          <div class="flex items-center gap-2" id="clients-spaces-tabs-bar">
+            <!-- Rempli dynamiquement avec chaque client :
+                 [👤 Espacio Maria Rosane] [👤 Espacio Ricardo Pereira] [👤 Espacio Carlos Mendoza] [+ Nuevo Cliente]
+            -->
+          </div>
+        </div>
+
+        <!-- Boutons outils globaux -->
+        <div class="flex items-center gap-2 shrink-0">
+          <button type="button" onclick="switchGlobalTab('loans')" id="btn-tab-loans" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition bg-orange hover:bg-orange-dark text-white flex items-center gap-1.5 cursor-pointer shadow-sm border border-orange/40">
+            <i data-lucide="file-check" class="w-3.5 h-3.5 text-white"></i> Solicitudes Préstamos <span id="admin-loans-badge" class="bg-white text-orange font-black px-1.5 py-0.2 rounded-full text-[10px]">0</span>
+          </button>
+          <button type="button" onclick="switchGlobalTab('windows')" id="btn-tab-windows" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition bg-white/10 hover:bg-white/20 text-white flex items-center gap-1.5 cursor-pointer border border-white/15">
+            <i data-lucide="layout" class="w-3.5 h-3.5 text-orange"></i> Config. Web
+          </button>
+          <button type="button" onclick="switchGlobalTab('backup')" id="btn-tab-backup" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition bg-white/10 hover:bg-white/20 text-white flex items-center gap-1.5 cursor-pointer border border-white/15">
+            <i data-lucide="database" class="w-3.5 h-3.5 text-orange"></i> Copia / Reset
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="hidden fixed bottom-5 right-5 z-50 bg-navy text-white px-5 py-3 rounded-2xl shadow-2xl border border-orange/40 flex items-center gap-3 text-sm font-semibold transition-all">
+    <i data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>
+    <span id="toast-message">Cambios guardados con éxito</span>
+  </div>
+
+  <!-- Modal Modifier Mouvement & Saldo / Équilibre -->
+  <div id="modal-edit-tx" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-border">
+      <div class="flex items-center justify-between border-b border-border pb-3 mb-4">
+        <div>
+          <span class="text-xs font-bold text-orange uppercase tracking-wider">Modificar Operación</span>
+          <h3 class="text-lg font-black text-navy">Editar Movimiento y Saldo (Équilibre)</h3>
+        </div>
+        <button onclick="closeEditTxModal()" class="text-muted hover:text-navy p-1 rounded-full">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form onsubmit="saveEditedTx(event)" class="space-y-4 text-xs">
+        <input type="hidden" id="edit-tx-idx" />
+        
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-navy uppercase">Fecha (DD/MM/AAAA)</label>
+            <input type="text" id="edit-tx-date" required class="mt-1 w-full rounded-xl border border-border p-2.5 font-semibold text-navy outline-none focus:border-orange bg-pale/30" />
+          </div>
+          <div>
+            <label class="block font-bold text-navy uppercase">Categoría</label>
+            <select id="edit-tx-category" class="mt-1 w-full rounded-xl border border-border p-2.5 font-medium text-navy outline-none focus:border-orange bg-pale/30">
+              <option value="Nómina">Nómina</option>
+              <option value="Alimentación">Alimentación</option>
+              <option value="Bizum">Bizum</option>
+              <option value="Hipoteca">Hipoteca</option>
+              <option value="Transferencia">Transferencia</option>
+              <option value="Ocio">Ocio</option>
+              <option value="Transporte">Transporte</option>
+              <option value="Intereses">Intereses</option>
+              <option value="Recibo">Recibo</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-navy uppercase">Concepto / Comercio</label>
+          <input type="text" id="edit-tx-title" required class="mt-1 w-full rounded-xl border border-border p-2.5 font-bold text-navy outline-none focus:border-orange bg-pale/30" />
+        </div>
+
+        <div>
+          <label class="block font-bold text-navy uppercase">Subtítulo / Detalle</label>
+          <input type="text" id="edit-tx-subtitle" class="mt-1 w-full rounded-xl border border-border p-2.5 text-muted outline-none focus:border-orange bg-pale/30" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 bg-orange/5 p-4 rounded-2xl border border-orange/20">
+          <div>
+            <label class="block font-bold text-navy uppercase">Importe (€)</label>
+            <input type="number" step="0.01" id="edit-tx-amount" required class="mt-1 w-full rounded-xl border border-border p-2.5 font-black text-navy outline-none focus:border-orange bg-white" />
+            <span class="text-[10px] text-muted">Positivo (+) o Negativo (-)</span>
+          </div>
+          <div>
+            <label class="block font-bold text-orange uppercase flex items-center justify-between">
+              <span>Saldo / Équilibre (€)</span>
+              <span class="text-[9px] bg-orange text-white px-1.5 py-0.5 rounded font-black">Équilibre</span>
+            </label>
+            <input type="number" step="0.01" id="edit-tx-balance" required class="mt-1 w-full rounded-xl border border-orange/40 p-2.5 font-black text-orange outline-none focus:border-orange bg-white shadow-xs" />
+            <span class="text-[10px] text-muted">Saldo exacto resultante</span>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-border">
+          <button type="button" onclick="closeEditTxModal()" class="px-4 py-2.5 rounded-xl border border-border text-navy font-bold hover:bg-pale transition">
+            Cancelar
+          </button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-orange hover:bg-orange-dark text-white font-bold transition shadow-md flex items-center gap-1.5">
+            <i data-lucide="check" class="w-4 h-4"></i> Guardar Cambios
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Créer un nouvel Accès Client -->
+  <div id="modal-create-client" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-border max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-border pb-3 mb-4">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-orange/10 text-orange flex items-center justify-center">
+            <i data-lucide="user-plus" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <span class="text-xs font-bold text-orange uppercase tracking-wider">Nuevo Acceso</span>
+            <h3 class="text-lg font-black text-navy">Crear Nuevo Acceso Cliente</h3>
+          </div>
+        </div>
+        <button type="button" onclick="closeCreateClientModal()" class="text-muted hover:text-navy p-1 rounded-full cursor-pointer">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form onsubmit="handleCreateClientSubmit(event)" class="space-y-4 text-xs">
+        <!-- Identifiants de connexion -->
+        <div class="bg-pale/40 p-4 rounded-2xl border border-border space-y-3">
+          <span class="font-bold text-navy text-[11px] uppercase tracking-wide block text-orange">1. Credenciales de Inicio de Sesión</span>
+          <div class="grid sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-bold text-navy uppercase">Usuario / NIF / DNI (*)</label>
+              <input type="text" id="new-client-user" required placeholder="Ej: 45891234K" class="mt-1 w-full rounded-xl border border-border p-2.5 font-bold text-navy outline-none focus:border-orange bg-white" />
+              <span class="text-[10px] text-muted">DNI o NIF único para identificarse</span>
+            </div>
+            <div>
+              <label class="block font-bold text-navy uppercase">Contraseña de acceso (*)</label>
+              <input type="text" id="new-client-pass" required placeholder="Ej: clave2026" class="mt-1 w-full rounded-xl border border-border p-2.5 font-bold text-navy outline-none focus:border-orange bg-white" />
+              <span class="text-[10px] text-muted">Clave confidencial del cliente</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profil du titulaire -->
+        <div class="bg-pale/40 p-4 rounded-2xl border border-border space-y-3">
+          <span class="font-bold text-navy text-[11px] uppercase tracking-wide block text-orange">2. Datos del Titular</span>
+          <div class="grid sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-bold text-navy uppercase">Nombre y Apellidos (*)</label>
+              <input type="text" id="new-client-fullname" required placeholder="Ej: Ana Belén García Romero" class="mt-1 w-full rounded-xl border border-border p-2.5 font-bold text-navy outline-none focus:border-orange bg-white" />
+            </div>
+            <div>
+              <label class="block font-bold text-navy uppercase">Segmento / Categoría</label>
+              <select id="new-client-status" class="mt-1 w-full rounded-xl border border-border p-2.5 font-bold text-navy outline-none focus:border-orange bg-white">
+                <option value="Banca Personal">Banca Personal</option>
+                <option value="Banca Privada">Banca Privada</option>
+                <option value="Particulares">Particulares</option>
+                <option value="Empresas y Autónomos">Empresas y Autónomos</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-bold text-navy uppercase">Documento Visible (Opcional)</label>
+              <input type="text" id="new-client-doc" placeholder="Ej: 45***234K (Auto si vacío)" class="mt-1 w-full rounded-xl border border-border p-2.5 font-medium text-navy outline-none focus:border-orange bg-white" />
+            </div>
+            <div>
+              <label class="block font-bold text-navy uppercase">Tarjeta VISA (4 últimos dígitos)</label>
+              <input type="text" maxlength="4" id="new-client-card" placeholder="Ej: 9341 (Auto si vacío)" class="mt-1 w-full rounded-xl border border-border p-2.5 font-medium text-navy outline-none focus:border-orange bg-white" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Compte bancaire et Solde -->
+        <div class="bg-orange/5 p-4 rounded-2xl border border-orange/20 space-y-3">
+          <span class="font-bold text-orange text-[11px] uppercase tracking-wide block">3. Cuenta Bancaria y Saldo Inicial (Équilibre)</span>
+          <div class="grid sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-bold text-navy uppercase">Tipo de Cuenta</label>
+              <input type="text" id="new-client-account-title" value="Cuenta Bankinter" class="mt-1 w-full rounded-xl border border-border p-2.5 font-bold text-navy outline-none focus:border-orange bg-white" />
+            </div>
+            <div>
+              <label class="block font-bold text-navy uppercase">IBAN de la Cuenta</label>
+              <div class="flex gap-1.5">
+                <input type="text" id="new-client-iban" placeholder="ES.. .... .... .... ...." class="mt-1 w-full rounded-xl border border-border p-2.5 font-mono font-bold text-navy outline-none focus:border-orange bg-white" />
+                <button type="button" onclick="generateRandomIban()" class="mt-1 px-3 bg-pale hover:bg-gray-200 text-navy font-bold rounded-xl border border-border shrink-0 cursor-pointer" title="Generar IBAN aleatorio">🎲</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-bold text-orange uppercase flex items-center justify-between">
+                <span>Saldo Disponible / Équilibre (€) (*)</span>
+                <span class="text-[9px] bg-orange text-white px-1.5 py-0.2 rounded font-black">Disponible</span>
+              </label>
+              <input type="number" step="0.01" id="new-client-balance" required value="300000.00" class="mt-1 w-full rounded-xl border border-orange/40 p-2.5 font-black text-navy outline-none focus:border-orange bg-white shadow-xs" />
+            </div>
+            <div>
+              <label class="block font-bold text-navy uppercase">Saldo Contable (€)</label>
+              <input type="number" step="0.01" id="new-client-book-balance" value="300000.00" class="mt-1 w-full rounded-xl border border-border p-2.5 font-bold text-navy outline-none focus:border-orange bg-white" />
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-border">
+          <button type="button" onclick="closeCreateClientModal()" class="px-4 py-2.5 rounded-xl border border-border text-navy font-bold hover:bg-pale transition cursor-pointer">
+            Cancelar
+          </button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-orange hover:bg-orange-dark text-white font-bold transition shadow-md flex items-center gap-1.5 cursor-pointer">
+            <i data-lucide="user-plus" class="w-4 h-4"></i> Crear y Habilitar Acceso Cliente
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+
+  <!-- Contenu Principal -->
+  <main class="max-w-7xl mx-auto px-6 py-8 flex-1 w-full space-y-6">
+
+    <!-- ========================================================================= -->
+    <!-- BANDEAU ÉQUILIBRE / BALANCE EN VIVO (MODIFIABLE INSTANTANÉMENT)           -->
+    <!-- ========================================================================= -->
+    <div class="bg-gradient-to-r from-navy via-navy to-slate-900 text-white rounded-3xl p-6 shadow-xl border border-white/10 flex flex-wrap items-center justify-between gap-5">
+      <div class="flex items-center gap-4">
+        <div class="w-14 h-14 rounded-2xl bg-orange/20 text-orange flex items-center justify-center font-black text-2xl shadow-inner border border-orange/30">
+          €
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-[11px] font-bold uppercase tracking-widest text-[#ffb49d] flex items-center gap-1.5">
+              <i data-lucide="wallet" class="w-3.5 h-3.5 text-orange"></i> Saldo Actual / Balance (Équilibre du compte)
+            </span>
+            <span class="bg-green-500/20 text-green-300 border border-green-500/40 text-[10px] font-extrabold px-2 py-0.5 rounded-full">
+              Sincronizado en tiempo real
+            </span>
+          </div>
+          <div class="flex items-baseline gap-3 mt-1">
+            <span id="banner-live-balance" class="text-3xl sm:text-4xl font-black text-white tracking-tight">300.000,00 €</span>
+            <span class="text-xs text-white/60">Saldo Disponible Cuenta Principal</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Edit Équilibre / Saldo -->
+      <div class="flex flex-wrap items-center gap-3 bg-white/5 p-2 rounded-2xl border border-white/15">
+        <div class="flex items-center bg-white/15 rounded-xl px-3 py-1.5 border border-white/20">
+          <span class="text-xs text-white/70 mr-2 font-bold">€</span>
+          <input type="number" step="0.01" id="banner-quick-balance" class="bg-transparent text-white font-black text-sm w-32 outline-none placeholder-white/40" placeholder="Nuevo saldo..." />
+        </div>
+        <button type="button" onclick="applyBannerQuickBalance()" class="bg-orange hover:bg-orange-dark text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-md flex items-center gap-1.5 transform active:scale-95">
+          <i data-lucide="check" class="w-3.5 h-3.5"></i> Actualizar Saldo
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- ESPACIO CLIENTE DEDICADO INDIVIDUAL (CREDENCIALES, CUENTAS Y MOVIMIENTOS)  -->
+    <!-- ========================================================================= -->
+    <div id="tab-client" class="space-y-6">
+
+      <!-- SELECTEUR VISUEL RAPIDE DE CLIENT (EN PAGE) -->
+      <div class="bg-white p-4 sm:p-5 rounded-3xl border-2 border-orange/40 shadow-sm flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-orange/15 text-orange flex items-center justify-center font-black">
+            <i data-lucide="users" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <span class="text-[10px] font-black uppercase tracking-wider text-orange">Selector Rápido de Cliente</span>
+            <div class="text-sm font-black text-navy flex items-center gap-2">
+              <span>Espacio actual:</span>
+              <span id="inpage-active-client-name" class="bg-orange text-white text-xs px-2.5 py-1 rounded-xl font-black shadow-xs">MARIA ROSANE REIS SILVA</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Boutons d'accès direct pour chaque client en page -->
+        <div class="flex items-center gap-2 flex-wrap" id="inpage-clients-spaces-bar">
+          <!-- Rempli dynamiquement -->
+        </div>
+      </div>
+
+      <!-- BANDEAU D'EN-TÊTE DE L'ESPACE DU CLIENT ACTIF -->
+      <div class="bg-gradient-to-r from-navy via-navy to-slate-900 text-white rounded-3xl p-6 sm:p-7 shadow-xl border border-orange/40 flex flex-wrap items-center justify-between gap-6">
+        <div class="flex items-center gap-4">
+          <div id="space-client-avatar" class="w-16 h-16 rounded-2xl bg-orange text-white flex items-center justify-center font-black text-2xl shadow-lg border-2 border-white/20 shrink-0">
+            M
+          </div>
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-[11px] font-black uppercase tracking-widest text-[#ffb49d]">Espacio Cliente Individual</span>
+              <span class="bg-green-500/20 text-green-300 border border-green-500/40 text-[10px] font-bold px-2.5 py-0.5 rounded-full">
+                Acceso Activo
+              </span>
+              <span id="space-client-segment-badge" class="bg-white/10 text-white text-[10px] font-semibold px-2.5 py-0.5 rounded-full border border-white/20">
+                Banca Personal
+              </span>
+            </div>
+            <h2 id="space-client-fullname" class="text-2xl sm:text-3xl font-black text-white mt-1 tracking-tight">
+              MARIA ROSANE REIS SILVA
+            </h2>
+            <div class="flex flex-wrap items-center gap-3 mt-1.5 text-xs text-white/70">
+              <span>Usuario: <strong id="space-client-user" class="font-mono text-white font-bold">MARIAROSANE</strong></span>
+              <span>•</span>
+              <span>Clave: <strong id="space-client-pass" class="font-mono text-white font-bold">bankinter2026</strong></span>
+              <span>•</span>
+              <span>Cuenta: <strong id="space-client-account-name" class="text-white font-bold">Cuenta Nómina Bankinter</strong></span>
+              <span>•</span>
+              <span>IBAN: <strong id="space-client-iban" class="font-mono text-white font-bold">ES05 2100 0097 3101 0035 3713</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Boutons d'actions rapides du client -->
+        <div class="flex flex-wrap items-center gap-3">
+          <button type="button" onclick="openCurrentClientSpaceInTab()" class="bg-green-600 hover:bg-green-700 text-white font-bold text-xs px-5 py-3 rounded-2xl transition shadow-lg flex items-center gap-2 cursor-pointer transform active:scale-95">
+            <i data-lucide="external-link" class="w-4 h-4"></i>
+            <span>🚀 Entrar a Banca Online (/cliente)</span>
+          </button>
+          <button type="button" onclick="saveClientSettings()" class="bg-orange hover:bg-orange-dark text-white font-bold text-xs px-5 py-3 rounded-2xl transition shadow-lg flex items-center gap-2 cursor-pointer transform active:scale-95">
+            <i data-lucide="save" class="w-4 h-4"></i>
+            <span>Guardar este Cliente</span>
+          </button>
+          <button type="button" onclick="deleteCurrentActiveClient()" class="bg-white/10 hover:bg-red-600/30 text-white/80 hover:text-red-300 font-bold text-xs p-3 rounded-2xl transition border border-white/20 cursor-pointer" title="Eliminar este acceso cliente">
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- SECTION 1 : IDENTIFIANTS & PROFIL DU CLIENT -->
+      <div class="bg-white p-7 rounded-3xl border border-border shadow-xs">
+        <div class="flex items-center justify-between border-b border-border pb-4 mb-6">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-orange/10 text-orange flex items-center justify-center font-black">
+              <i data-lucide="user-check" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-orange">Identificación & Conexión</span>
+              <h3 class="text-xl font-bold text-navy mt-0.5">Credenciales y Datos del Titular</h3>
+            </div>
+          </div>
+          <span class="bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-green-500"></span> Conexión habilitada
+          </span>
+        </div>
+
+        <div class="grid sm:grid-cols-3 gap-5">
+          <div>
+            <div class="flex items-center justify-between">
+              <label class="block text-xs font-bold text-navy uppercase">Usuario / NIF / DNI</label>
+              <span class="text-[10px] text-orange font-bold uppercase">Seleccionar o editar</span>
+            </div>
+            
+            <!-- Type de document: DNI, NIF, NIE, Usuario -->
+            <div class="mt-1.5 flex items-center gap-1.5">
+              <label class="text-[10px] font-bold text-navy uppercase shrink-0">Tipo:</label>
+              <select id="client-user-doctype" onchange="handleUserDocTypeChange(this.value)" class="flex-1 rounded-xl border border-orange/40 p-2 text-xs font-black text-navy outline-none focus:border-orange bg-white shadow-2xs">
+                <option value="DNI">DNI (Documento Nacional de Identidad)</option>
+                <option value="NIF">NIF (Número de Identificación Fiscal)</option>
+                <option value="NIE">NIE (Identidad Extranjero)</option>
+                <option value="Usuario">Usuario / Alias Bancario</option>
+              </select>
+            </div>
+
+            <!-- Sélecteur rapide de client existant -->
+            <div class="mt-2">
+              <label class="block text-[10px] font-bold text-muted uppercase">Elegir de la lista:</label>
+              <select id="client-user-selector" onchange="handleSelectClientDropdown(this.value)" class="mt-0.5 w-full rounded-xl border border-border p-2 text-xs font-bold text-navy outline-none focus:border-orange bg-pale/30 shadow-2xs">
+                <!-- Rempli dynamiquement avec les clients existants -->
+              </select>
+            </div>
+
+            <!-- Champ texte modifiable direct -->
+            <div class="mt-2">
+              <label id="client-user-label" class="block text-[10px] font-bold text-muted uppercase">Número / Identificador:</label>
+              <input type="text" id="client-user" oninput="handleManualUserChange(this.value)" class="mt-0.5 w-full rounded-xl border border-border p-2.5 text-sm font-bold text-navy outline-none focus:border-orange bg-white" placeholder="Ej: 71458923X o MARIAROSANE" />
+            </div>
+            <span class="text-[11px] text-muted mt-1 block">Elige si es DNI, NIF, NIE o Usuario y modifica el identificador</span>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-navy uppercase">Contraseña de acceso</label>
+            <input type="text" id="client-pass" class="mt-1.5 w-full rounded-xl border border-border p-3 text-sm font-bold text-navy outline-none focus:border-orange bg-pale/30" placeholder="Ej: bankinter2026" />
+            <span class="text-[11px] text-muted mt-1 block">Clave confidencial de entrada</span>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-navy uppercase">Nombre completo del cliente</label>
+            <input type="text" id="client-fullname" class="mt-1.5 w-full rounded-xl border border-border p-3 text-sm font-bold text-navy outline-none focus:border-orange bg-pale/30" placeholder="Ej: MARIA ROSANE REIS SILVA" />
+            <span class="text-[11px] text-muted mt-1 block">Mostrado en el encabezado bancario</span>
+          </div>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-4 mt-5">
+          <div>
+            <label class="block text-xs font-bold text-navy uppercase">Segmento / Categoría</label>
+            <select id="client-status" class="mt-1.5 w-full rounded-xl border border-border p-3 text-sm font-bold text-navy outline-none focus:border-orange bg-pale/30">
+              <option value="Banca Personal">Banca Personal</option>
+              <option value="Banca Privada">Banca Privada</option>
+              <option value="Particulares">Particulares</option>
+              <option value="Empresas & Autónomos">Empresas & Autónomos</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-navy uppercase">Documento visible (Opcional)</label>
+            <input type="text" id="client-doc-visible" class="mt-1.5 w-full rounded-xl border border-border p-3 text-sm font-medium text-navy outline-none focus:border-orange bg-pale/30" placeholder="Oculto si vacío" />
+            <span class="text-[11px] text-muted mt-1 block">Para Ricardo Pereira sin NIE</span>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-navy uppercase">Tarjeta VISA (4 dígitos)</label>
+            <input type="text" id="client-card-digits" class="mt-1.5 w-full rounded-xl border border-border p-3 text-sm font-medium text-navy outline-none focus:border-orange bg-pale/30" placeholder="3512" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-orange uppercase">Código 2FA / OTP</label>
+            <input type="text" id="client-transfer-otp" maxlength="6" class="mt-1.5 w-full rounded-xl border border-orange/40 p-3 text-sm font-mono font-black text-navy outline-none focus:border-orange bg-pale/30" placeholder="849201" />
+            <span class="text-[11px] text-muted mt-1 block">Confirmación SMS</span>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-orange uppercase">Tasa Firma Director (€)</label>
+            <input type="number" step="0.01" id="client-director-fee" class="mt-1.5 w-full rounded-xl border border-orange/40 p-3 text-sm font-bold text-navy outline-none focus:border-orange bg-pale/30" placeholder="110.00" />
+            <span class="text-[11px] text-muted mt-1 block">Tasa directiva (110 € para Margarita)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION : VERIFICACIÓN DE IDENTIDAD & DOCUMENTACIÓN KYC -->
+      <div class="bg-white p-7 rounded-3xl border border-border shadow-xs">
+        <div class="flex flex-wrap items-center justify-between border-b border-border pb-4 mb-6 gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-orange/10 text-orange flex items-center justify-center font-black">
+              <i data-lucide="id-card" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-orange">Cumplimiento Normativo (KYC)</span>
+              <h3 class="text-xl font-bold text-navy mt-0.5">Documento de Identidad & Validación de Dirección</h3>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="quickApproveClientKyc()" class="bg-green-600 hover:bg-green-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-sm cursor-pointer">
+              <i data-lucide="check-circle" class="w-4 h-4"></i> Validar Documento de este Cliente
+            </button>
+          </div>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-6 items-start">
+          <!-- Carte / Image Preview -->
+          <div class="lg:col-span-1 bg-pale/50 p-4 rounded-2xl border border-border space-y-3">
+            <span class="text-xs font-bold text-navy uppercase block">Copia de Tarjeta / DNI del Cliente</span>
+            <div class="w-full h-44 rounded-xl bg-slate-900 border-2 border-dashed border-orange/40 flex items-center justify-center overflow-hidden relative shadow-inner">
+              <img id="admin-doc-preview-img" src="" alt="Copia DNI" class="hidden w-full h-full object-cover" />
+              <div id="admin-doc-preview-placeholder" class="text-center p-4">
+                <i data-lucide="id-card" class="w-10 h-10 text-white/40 mx-auto mb-1"></i>
+                <span class="text-xs text-white/70 font-semibold block">Sin imagen adjuntada</span>
+                <span class="text-[10px] text-white/40 block mt-0.5">Puedes adjuntar una copia abajo</span>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between pt-1">
+              <input type="file" id="admin-doc-upload-input" accept="image/*" onchange="handleAdminDocUpload(event)" class="hidden" />
+              <button type="button" onclick="document.getElementById('admin-doc-upload-input').click()" class="w-full bg-white hover:bg-orange hover:text-white text-navy font-bold text-xs py-2 rounded-xl border border-border transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs">
+                <i data-lucide="camera" class="w-3.5 h-3.5"></i> Adjuntar / Cambiar Imagen DNI
+              </button>
+            </div>
+          </div>
+
+          <!-- Champs de configuration KYC -->
+          <div class="lg:col-span-2 grid sm:grid-cols-2 gap-4 text-xs">
+            <div>
+              <label class="block font-bold text-navy uppercase">Tipo de Documento</label>
+              <select id="client-doc-type" class="mt-1.5 w-full rounded-xl border border-border p-3 text-sm font-bold text-navy outline-none focus:border-orange bg-pale/30">
+                <option value="DNI">DNI (Documento Nacional de Identidad)</option>
+                <option value="NIE">NIE (Número de Identidad de Extranjero)</option>
+                <option value="Pasaporte">Pasaporte Internacional</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block font-bold text-navy uppercase">Número de Documento</label>
+              <input type="text" id="client-doc-number" class="mt-1.5 w-full rounded-xl border border-border p-3 text-sm font-mono font-bold text-navy outline-none focus:border-orange bg-pale/30" placeholder="Ej: 71458923X" />
+            </div>
+
+            <div>
+              <label class="block font-bold text-orange uppercase">Estado de Validación por Dirección</label>
+              <select id="client-kyc-status" class="mt-1.5 w-full rounded-xl border border-orange/40 p-3 text-sm font-black text-navy outline-none focus:border-orange bg-pale/30">
+                <option value="verified">✓ Validado y Aprobado por Dirección</option>
+                <option value="pending">⏳ Pendiente de Revisión</option>
+                <option value="rejected">❌ Rechazado / Solicitar nuevo</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block font-bold text-navy uppercase">Fecha de Validación</label>
+              <input type="text" id="client-kyc-date" class="mt-1.5 w-full rounded-xl border border-border p-3 text-sm font-bold text-navy outline-none focus:border-orange bg-pale/30" placeholder="DD/MM/AAAA" />
+            </div>
+
+            <div class="sm:col-span-2">
+              <label class="block font-bold text-navy uppercase">Autoridad Validadora / Certificación</label>
+              <input type="text" id="client-kyc-validator" class="mt-1.5 w-full rounded-xl border border-border p-3 text-sm font-medium text-navy outline-none focus:border-orange bg-pale/30" placeholder="Dirección de Operaciones & Cumplimiento" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2 : COMPTES BANCAIRES & SOLDES (ÉQUILIBRE) DU CLIENT -->
+      <div class="bg-white p-7 rounded-3xl border border-border shadow-xs">
+        <div class="border-b border-border pb-4 mb-6 flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-orange/10 text-orange flex items-center justify-center font-black">
+              <i data-lucide="wallet" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-orange">Cuentas Bancarias & Saldos</span>
+              <h3 class="text-xl font-bold text-navy mt-0.5">Saldos de Cuenta / Balance (Équilibre) e IBAN</h3>
+            </div>
+          </div>
+          <button type="button" onclick="saveOnlyBalances()" class="bg-orange/10 hover:bg-orange text-orange hover:text-white font-bold text-xs px-4 py-2 rounded-xl border border-orange/30 transition flex items-center gap-1.5 cursor-pointer">
+            <i data-lucide="save" class="w-3.5 h-3.5"></i> Guardar Saldos de este Cliente
+          </button>
+        </div>
+
+        <div class="grid sm:grid-cols-3 gap-5">
+          <div>
+            <label class="block text-xs font-bold text-navy uppercase">Nombre de la Cuenta Principal</label>
+            <input type="text" id="account-title" class="mt-1.5 w-full rounded-xl border border-border p-3 text-sm font-bold text-navy outline-none focus:border-orange bg-pale/30" placeholder="Cuenta Nómina Bankinter" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-navy uppercase">IBAN de la Cuenta Principal</label>
+            <input type="text" id="account-iban-input" class="mt-1.5 w-full rounded-xl border border-border p-3 text-sm font-mono font-bold text-navy outline-none focus:border-orange bg-pale/30" placeholder="ES05 2100 0097 3101 0035 3713" />
+          </div>
+
+          <div class="bg-orange/5 p-4 rounded-2xl border border-orange/20">
+            <label class="block text-xs font-bold text-navy uppercase flex items-center justify-between">
+              <span>Saldo Disponible / Balance (€)</span>
+              <span class="text-orange text-[10px] font-black uppercase bg-orange/20 px-2 py-0.5 rounded-full">Équilibre</span>
+            </label>
+            <input type="number" step="0.01" id="account-balance-input" oninput="syncBannerFromInput(this.value)" class="mt-1.5 w-full rounded-xl border border-orange/30 p-2.5 text-lg font-black text-navy outline-none focus:border-orange bg-white shadow-xs" placeholder="300000.00" />
+            <div class="flex flex-wrap gap-1.5 mt-2.5">
+              <button type="button" onclick="quickSetBalance(300000)" class="text-[10px] bg-white hover:bg-orange hover:text-white font-bold px-2 py-1 rounded-lg border border-border transition cursor-pointer">300.000 €</button>
+              <button type="button" onclick="quickSetBalance(50000)" class="text-[10px] bg-white hover:bg-orange hover:text-white font-bold px-2 py-1 rounded-lg border border-border transition cursor-pointer">50.000 €</button>
+              <button type="button" onclick="quickSetBalance(25000)" class="text-[10px] bg-white hover:bg-orange hover:text-white font-bold px-2 py-1 rounded-lg border border-border transition cursor-pointer">25.000 €</button>
+              <button type="button" onclick="quickSetBalance(10000)" class="text-[10px] bg-white hover:bg-orange hover:text-white font-bold px-2 py-1 rounded-lg border border-border transition cursor-pointer">10.000 €</button>
+              <button type="button" onclick="quickSetBalance(5000)" class="text-[10px] bg-white hover:bg-orange hover:text-white font-bold px-2 py-1 rounded-lg border border-border transition cursor-pointer">5.000 €</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid sm:grid-cols-3 gap-5 mt-5">
+          <div>
+            <label class="block text-xs font-bold text-navy uppercase">Saldo Contable (€)</label>
+            <input type="number" step="0.01" id="account-book-balance" class="mt-1.5 w-full rounded-xl border border-border p-3 text-sm font-semibold text-navy outline-none focus:border-orange bg-pale/30" placeholder="300000.00" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-navy uppercase">Saldo Cuenta Ahorro Remunerada (€)</label>
+            <input type="number" step="0.01" id="savings-balance-input" class="mt-1.5 w-full rounded-xl border border-border p-3 text-base font-black text-orange outline-none focus:border-orange bg-pale/30" placeholder="25000.00" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-navy uppercase">Tipo de Interés TAE Ahorro</label>
+            <input type="text" id="savings-rate-input" class="mt-1.5 w-full rounded-xl border border-border p-3 text-sm font-bold text-navy outline-none focus:border-orange bg-pale/30" placeholder="2,50% TAE" />
+          </div>
+        </div>
+
+        <div class="mt-6 pt-5 border-t border-border flex justify-end">
+          <button onclick="saveClientSettings()" class="bg-navy hover:bg-navy/90 text-white font-bold text-xs px-6 py-3 rounded-xl transition shadow-sm flex items-center gap-2 cursor-pointer">
+            <i data-lucide="check" class="w-4 h-4 text-green-400"></i> Guardar Datos de Cuenta & Cliente
+          </button>
+        </div>
+      </div>
+
+      <!-- SECTION 3 : MOUVEMENTS BANCAIRES DÉDIÉS DE CE CLIENT -->
+      <div class="space-y-6">
+        <!-- Formulaire d'ajout de mouvement pour CE client -->
+        <div class="bg-white p-7 rounded-3xl border border-border shadow-xs">
+          <div class="border-b border-border pb-4 mb-6 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-2xl bg-orange/10 text-orange flex items-center justify-center font-black">
+                <i data-lucide="plus-circle" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <span class="text-xs font-bold uppercase tracking-wider text-orange">Operaciones de este Cliente</span>
+                <h3 class="text-xl font-bold text-navy mt-0.5">Añadir Nuevo Movimiento Bancario</h3>
+                <p class="text-xs text-muted mt-0.5">Crea un ingreso, gasto, Bizum o transferencia en la cuenta de <strong id="tx-form-client-name" class="text-navy font-bold">este cliente</strong>.</p>
+              </div>
+            </div>
+            <span id="tx-form-client-badge" class="bg-pale border border-border text-navy text-[11px] font-mono font-bold px-3 py-1.5 rounded-xl">
+              IBAN: -
+            </span>
+          </div>
+
+          <form onsubmit="adminAddTransaction(event)" class="grid sm:grid-cols-4 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-navy uppercase">Fecha (DD/MM/AAAA)</label>
+              <input type="text" id="tx-add-date" required class="mt-1 w-full rounded-xl border border-border p-2.5 text-xs font-medium text-navy outline-none focus:border-orange" placeholder="04/09/2026" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-navy uppercase">Concepto / Comercio</label>
+              <input type="text" id="tx-add-title" required class="mt-1 w-full rounded-xl border border-border p-2.5 text-xs font-medium text-navy outline-none focus:border-orange" placeholder="Ej: Nómina, Compra Amazon, Bizum..." />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-navy uppercase">Subtítulo / Detalle</label>
+              <input type="text" id="tx-add-subtitle" class="mt-1 w-full rounded-xl border border-border p-2.5 text-xs font-medium text-navy outline-none focus:border-orange" placeholder="Ej: Abono de nómina mensual" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-navy uppercase">Categoría</label>
+              <select id="tx-add-category" class="mt-1 w-full rounded-xl border border-border p-2.5 text-xs font-medium text-navy outline-none focus:border-orange">
+                <option value="Nómina">Nómina</option>
+                <option value="Alimentación">Alimentación</option>
+                <option value="Bizum">Bizum</option>
+                <option value="Hipoteca">Hipoteca</option>
+                <option value="Transferencia">Transferencia</option>
+                <option value="Ocio">Ocio</option>
+                <option value="Transporte">Transporte</option>
+                <option value="Intereses">Intereses</option>
+                <option value="Recibo">Recibo</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-navy uppercase">Tipo de operación</label>
+              <select id="tx-add-type" class="mt-1 w-full rounded-xl border border-border p-2.5 text-xs font-bold text-navy outline-none focus:border-orange">
+                <option value="in">🟢 Ingreso (+) (Añadir al saldo)</option>
+                <option value="out">🔴 Gasto (-) (Restar del saldo)</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-navy uppercase">Importe (€)</label>
+              <input type="number" step="0.01" id="tx-add-amount" required class="mt-1 w-full rounded-xl border border-border p-2.5 text-xs font-bold text-navy outline-none focus:border-orange" placeholder="100.00" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-navy uppercase">¿Es Bizum?</label>
+              <select id="tx-add-isbizum" class="mt-1 w-full rounded-xl border border-border p-2.5 text-xs font-medium text-navy outline-none focus:border-orange">
+                <option value="false">No</option>
+                <option value="true">Sí (Etiqueta Bizum)</option>
+              </select>
+            </div>
+
+            <div class="flex items-end">
+              <button type="submit" class="w-full bg-orange hover:bg-orange-dark text-white font-bold text-xs py-3 rounded-xl transition shadow-sm flex items-center justify-center gap-2 cursor-pointer">
+                <i data-lucide="plus-circle" class="w-4 h-4"></i> Añadir a este Cliente
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Tableau des mouvements de ce client -->
+        <div class="bg-white p-7 rounded-3xl border border-border shadow-xs">
+          <div class="flex flex-wrap items-center justify-between border-b border-border pb-4 mb-4 gap-3">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-orange">Historial Registrado</span>
+              <h3 class="text-xl font-bold text-navy mt-0.5">
+                Movimientos de <span id="tx-table-client-name" class="text-orange">este cliente</span>
+              </h3>
+            </div>
+            <button onclick="adminResetTransactions()" class="text-red-600 hover:bg-red-50 text-xs font-bold px-3 py-1.5 rounded-xl border border-red-200 transition cursor-pointer">
+              Restablecer movimientos por defecto
+            </button>
+          </div>
+
+          <p class="text-xs text-muted mb-3 flex items-center gap-1.5">
+            <i data-lucide="info" class="w-4 h-4 text-orange shrink-0"></i>
+            <span>Haz clic en <strong>✏️ Editar</strong> en cualquier fila para modificar el importe o el <strong>Saldo (Équilibre)</strong> resultante.</span>
+          </p>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-pale/70 text-[11px] font-bold uppercase text-muted tracking-wider border-b border-border">
+                <tr>
+                  <th class="py-3 px-4">Fecha</th>
+                  <th class="py-3 px-4">Concepto</th>
+                  <th class="py-3 px-4">Categoría</th>
+                  <th class="py-3 px-4 text-right">Importe</th>
+                  <th class="py-3 px-4 text-right">Saldo / Équilibre</th>
+                  <th class="py-3 px-4 text-center">Acción</th>
+                </tr>
+              </thead>
+              <tbody id="admin-tx-table-body" class="divide-y divide-border">
+                <!-- Dynamique -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 3 : ÉDITEUR DU CONTENU DES 5 FENÊTRES                                -->
+    <!-- ========================================================================= -->
+    <div id="tab-windows" class="hidden space-y-6">
+      
+      <!-- Cuentas y Tarjetas -->
+      <div class="bg-white p-7 rounded-3xl border border-border shadow-xs">
+        <div class="flex items-center justify-between border-b border-border pb-3 mb-4">
+          <h3 class="font-bold text-navy text-lg flex items-center gap-2">
+            <span>💳</span> Ventana 1: Cuentas y Tarjetas
+          </h3>
+          <span class="text-xs text-muted">Contenido editable</span>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-navy uppercase">Título Oferta 1</label>
+            <input type="text" id="cms-c1-title" class="mt-1 w-full rounded-xl border border-border p-2.5 text-xs text-navy outline-none focus:border-orange" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-navy uppercase">Descripción Oferta 1</label>
+            <input type="text" id="cms-c1-desc" class="mt-1 w-full rounded-xl border border-border p-2.5 text-xs text-navy outline-none focus:border-orange" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-navy uppercase">Título Oferta 2</label>
+            <input type="text" id="cms-c2-title" class="mt-1 w-full rounded-xl border border-border p-2.5 text-xs text-navy outline-none focus:border-orange" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-navy uppercase">Descripción Oferta 2</label>
+            <input type="text" id="cms-c2-desc" class="mt-1 w-full rounded-xl border border-border p-2.5 text-xs text-navy outline-none focus:border-orange" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Ahorro e Inversión -->
+      <div class="bg-white p-7 rounded-3xl border border-border shadow-xs">
+        <div class="flex items-center justify-between border-b border-border pb-3 mb-4">
+          <h3 class="font-bold text-navy text-lg flex items-center gap-2">
+            <span>📈</span> Ventana 2: Ahorro e Inversión
+          </h3>
+        </div>
+        <div class="grid sm:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-navy uppercase">Tasa TAE Cuenta Remunerada</label>
+            <input type="text" id="cms-ahorro-rate" class="mt-1 w-full rounded-xl border border-border p-2.5 text-xs text-orange font-bold outline-none focus:border-orange" placeholder="2,50% TAE" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-navy uppercase">Tasa Depósito a Plazo</label>
+            <input type="text" id="cms-deposito-rate" class="mt-1 w-full rounded-xl border border-border p-2.5 text-xs text-navy font-bold outline-none focus:border-orange" placeholder="2,80% TAE" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-navy uppercase">Inversión Mínima Roboadvisor</label>
+            <input type="text" id="cms-robo-min" class="mt-1 w-full rounded-xl border border-border p-2.5 text-xs text-navy outline-none focus:border-orange" placeholder="Desde 1.000 €" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Préstamos -->
+      <div class="bg-white p-7 rounded-3xl border border-border shadow-xs">
+        <div class="flex items-center justify-between border-b border-border pb-3 mb-4">
+          <h3 class="font-bold text-navy text-lg flex items-center gap-2">
+            <span>💰</span> Ventana 3: Préstamos Personales
+          </h3>
+        </div>
+        <div class="grid sm:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-navy uppercase">Tipo de Interés TIN (%)</label>
+            <input type="number" step="0.05" id="cms-loan-tin" class="mt-1 w-full rounded-xl border border-border p-2.5 text-xs text-navy font-bold outline-none focus:border-orange" placeholder="5.95" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-navy uppercase">Plazo Máximo (Años)</label>
+            <input type="number" id="cms-loan-max-years" class="mt-1 w-full rounded-xl border border-border p-2.5 text-xs text-navy outline-none focus:border-orange" placeholder="8" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-navy uppercase">Importe Máximo (€)</label>
+            <input type="number" id="cms-loan-max-amount" class="mt-1 w-full rounded-xl border border-border p-2.5 text-xs text-navy outline-none focus:border-orange" placeholder="60000" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Hipotecas -->
+      <div class="bg-white p-7 rounded-3xl border border-border shadow-xs">
+        <div class="flex items-center justify-between border-b border-border pb-3 mb-4">
+          <h3 class="font-bold text-navy text-lg flex items-center gap-2">
+            <span>🏠</span> Ventana 4: Hipotecas
+          </h3>
+        </div>
+        <div class="grid sm:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-navy uppercase">Hipoteca Fija TIN</label>
+            <input type="text" id="cms-hipo-fija" class="mt-1 w-full rounded-xl border border-border p-2.5 text-xs text-navy font-bold outline-none focus:border-orange" placeholder="2,75%" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-navy uppercase">Hipoteca Mixta Fijo Inicial</label>
+            <input type="text" id="cms-hipo-mixta" class="mt-1 w-full rounded-xl border border-border p-2.5 text-xs text-orange font-bold outline-none focus:border-orange" placeholder="2,40%" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-navy uppercase">Hipoteca Variable Diferencial</label>
+            <input type="text" id="cms-hipo-var" class="mt-1 w-full rounded-xl border border-border p-2.5 text-xs text-navy font-bold outline-none focus:border-orange" placeholder="Euribor + 0,60%" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Seguros -->
+      <div class="bg-white p-7 rounded-3xl border border-border shadow-xs">
+        <div class="flex items-center justify-between border-b border-border pb-3 mb-4">
+          <h3 class="font-bold text-navy text-lg flex items-center gap-2">
+            <span>🛡️</span> Ventana 5: Seguros
+          </h3>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-navy uppercase">Teléfono de Asistencia Seguros</label>
+            <input type="text" id="cms-seguro-phone" class="mt-1 w-full rounded-xl border border-border p-2.5 text-xs text-navy outline-none focus:border-orange" placeholder="91 657 88 00" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-navy uppercase">Partner Médico Salud</label>
+            <input type="text" id="cms-seguro-health" class="mt-1 w-full rounded-xl border border-border p-2.5 text-xs text-navy outline-none focus:border-orange" placeholder="Sanitas / Bankinter" />
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end">
+        <button onclick="saveCmsSettings()" class="bg-navy hover:bg-navy/90 text-white font-bold text-xs px-6 py-3 rounded-xl transition shadow-sm flex items-center gap-2">
+          <i data-lucide="check" class="w-4 h-4 text-green-400"></i> Guardar Contenidos de las Ventanas
+        </button>
+      </div>
+
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 4 : SAUVEGARDE, EXPORT & RÉINITIALISATION                            -->
+    <!-- ========================================================================= -->
+    <div id="tab-backup" class="hidden space-y-6">
+      <div class="bg-white p-7 rounded-3xl border border-border shadow-xs">
+        <div class="border-b border-border pb-4 mb-6">
+          <span class="text-xs font-bold uppercase tracking-wider text-orange">Mantenimiento</span>
+          <h3 class="text-xl font-bold text-navy mt-1">Exportar, Importar y Restablecer</h3>
+          <p class="text-xs text-muted mt-1">Tus datos están guardados automáticamente en la memoria de tu navegador (localStorage).</p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-6">
+          <div class="border border-border p-5 rounded-2xl bg-pale/40">
+            <h4 class="font-bold text-navy text-sm">Exportar Configuración JSON</h4>
+            <p class="text-xs text-muted mt-1 mb-4">Copia tu configuración para guardarla o moverla a otro navegador.</p>
+            <button onclick="exportJson()" class="bg-navy text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-navy/90 transition flex items-center gap-2">
+              <i data-lucide="download" class="w-4 h-4"></i> Descargar Copia JSON
+            </button>
+          </div>
+
+          <div class="border border-red-200 p-5 rounded-2xl bg-red-50/50">
+            <h4 class="font-bold text-red-900 text-sm">Restablecer Valores de Fábrica</h4>
+            <p class="text-xs text-red-700/80 mt-1 mb-4">Borra todas las modificaciones y restaura los datos oficiales originales.</p>
+            <button onclick="resetAllDefaults()" class="bg-red-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-red-700 transition flex items-center gap-2 shadow-sm">
+              <i data-lucide="trash-2" class="w-4 h-4"></i> Restablecer Todo
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 5 : EXPEDIENTES DE PRÉSTAMO ENVIADOS A DIRECCIÓN GENERAL              -->
+    <!-- ========================================================================= -->
+    <div id="tab-loans" class="hidden space-y-6">
+      <div class="bg-white p-7 rounded-3xl border border-border shadow-xs">
+        
+        <!-- Header du Tab -->
+        <div class="border-b border-border pb-4 mb-6 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-orange">Bandeja de Entrada • Dirección General</span>
+            <h3 class="text-xl font-black text-navy mt-1">Expedientes de Préstamo Recibidos</h3>
+            <p class="text-xs text-muted mt-0.5">Expedientes de crédito remitidos telemáticamente para estudio, firma y abono de fondos.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="renderAdminLoanRequests()" class="bg-pale hover:bg-gray-200 text-navy text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 border border-border cursor-pointer">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-orange"></i> Actualizar
+            </button>
+            <button onclick="createSampleLoanRequest()" class="bg-orange hover:bg-orange-dark text-white text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm cursor-pointer">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i> Simular Expediente de Entrada
+            </button>
+          </div>
+        </div>
+
+        <!-- Compteurs résumés -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+          <div class="bg-pale/50 p-4 rounded-2xl border border-border flex items-center justify-between">
+            <div>
+              <span class="text-[11px] text-muted font-bold uppercase block">Total Solicitudes</span>
+              <strong id="loans-stat-total" class="text-2xl font-black text-navy">0</strong>
+            </div>
+            <div class="w-10 h-10 rounded-2xl bg-orange/15 text-orange flex items-center justify-center font-bold">
+              <i data-lucide="folder" class="w-5 h-5"></i>
+            </div>
+          </div>
+
+          <div class="bg-amber-50/70 p-4 rounded-2xl border border-amber-200 flex items-center justify-between">
+            <div>
+              <span class="text-[11px] text-amber-900 font-bold uppercase block">En trámite / Pendientes</span>
+              <strong id="loans-stat-pending" class="text-2xl font-black text-amber-700">0</strong>
+            </div>
+            <div class="w-10 h-10 rounded-2xl bg-amber-200 text-amber-800 flex items-center justify-center font-bold">
+              <i data-lucide="clock" class="w-5 h-5"></i>
+            </div>
+          </div>
+
+          <div class="bg-green-50/70 p-4 rounded-2xl border border-green-200 flex items-center justify-between">
+            <div>
+              <span class="text-[11px] text-green-900 font-bold uppercase block">Aprobados por Dirección</span>
+              <strong id="loans-stat-approved" class="text-2xl font-black text-green-700">0</strong>
+            </div>
+            <div class="w-10 h-10 rounded-2xl bg-green-200 text-green-800 flex items-center justify-center font-bold">
+              <i data-lucide="check-circle" class="w-5 h-5"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Liste des expedientes -->
+        <div id="admin-loans-list" class="space-y-4">
+          <!-- Rempli dynamiquement -->
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Modal Création d'Accès Client Illimité -->
+  <div id="modal-create-client" class="hidden fixed inset-0 z-[90] bg-navy/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="w-full max-w-2xl bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-border my-8 max-h-[90vh] overflow-y-auto custom-scrollbar">
+      
+      <!-- En-tête du Modal -->
+      <div class="flex items-center justify-between border-b border-border pb-4 mb-5">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-orange text-white flex items-center justify-center font-black shadow-md">
+            <i data-lucide="user-plus" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <span class="text-[10px] font-black uppercase tracking-wider text-orange">Nuevo Registro Bancario</span>
+            <h3 class="text-lg sm:text-xl font-black text-navy">Crear Nuevo Acceso Cliente</h3>
+          </div>
+        </div>
+        <button type="button" onclick="closeCreateClientModal()" class="w-8 h-8 rounded-full bg-pale hover:bg-gray-200 text-muted hover:text-navy flex items-center justify-center transition cursor-pointer">
+          ✕
+        </button>
+      </div>
+
+      <p class="text-xs text-muted mb-5 leading-relaxed">
+        Completa los datos del cliente para habilitar su acceso personal e independiente. Podrá iniciar sesión directamente en la ventana <strong>«Acceso clientes»</strong> con su propio usuario y contraseña.
+      </p>
+
+      <form onsubmit="handleCreateClientSubmit(event)" class="space-y-4">
+        
+        <!-- Credenciales de Login -->
+        <div class="bg-pale/50 p-4 rounded-2xl border border-border space-y-3">
+          <span class="text-xs font-black text-navy uppercase tracking-wide flex items-center gap-1.5">
+            <i data-lucide="key" class="w-3.5 h-3.5 text-orange"></i> 1. Credenciales de Inicio de Sesión
+          </span>
+          
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-navy uppercase">Usuario / NIF / DNI <span class="text-orange">*</span></label>
+              <input type="text" id="new-client-user" required class="mt-1 w-full rounded-xl border border-border p-2.5 text-xs font-bold text-navy outline-none focus:border-orange bg-white" placeholder="Ej: 71458923X o RPFARIA" />
+              <span class="text-[10px] text-muted mt-0.5 block">Identificador con el que entrará</span>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-navy uppercase">Contraseña de acceso <span class="text-orange">*</span></label>
+              <input type="text" id="new-client-pass" required class="mt-1 w-full rounded-xl border border-border p-2.5 text-xs font-bold text-navy outline-none focus:border-orange bg-white" placeholder="Ej: bankinter2026" />
+              <span class="text-[10px] text-muted mt-0.5 block">Clave confidencial</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Identidad & Perfil -->
+        <div class="bg-pale/50 p-4 rounded-2xl border border-border space-y-3">
+          <span class="text-xs font-black text-navy uppercase tracking-wide flex items-center gap-1.5">
+            <i data-lucide="user" class="w-3.5 h-3.5 text-orange"></i> 2. Identidad del Titular
+          </span>
+
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-navy uppercase">Nombre completo <span class="text-orange">*</span></label>
+              <input type="text" id="new-client-fullname" required class="mt-1 w-full rounded-xl border border-border p-2.5 text-xs font-bold text-navy outline-none focus:border-orange bg-white" placeholder="Ej: Elena García Vega" />
+              <span class="text-[10px] text-muted mt-0.5 block">Nombre que figurará en el portal</span>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-navy uppercase">Segmento / Categoría</label>
+              <select id="new-client-status" class="mt-1 w-full rounded-xl border border-border p-2.5 text-xs font-bold text-navy outline-none focus:border-orange bg-white">
+                <option value="Banca Personal">Banca Personal</option>
+                <option value="Banca Privada">Banca Privada</option>
+                <option value="Particulares">Particulares</option>
+                <option value="Empresas & Autónomos">Empresas & Autónomos</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-navy uppercase">Documento visible (NIF/NIE)</label>
+              <input type="text" id="new-client-doc" class="mt-1 w-full rounded-xl border border-border p-2.5 text-xs font-bold text-navy outline-none focus:border-orange bg-white" placeholder="Ej: 71***923X (Dejar vacío para ocultar)" />
+              <span class="text-[10px] text-muted mt-0.5 block">Si se deja vacío o 'oculto', no se mostrará NIE/NIF</span>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-navy uppercase">4 últimos dígitos de tarjeta</label>
+              <input type="text" maxlength="4" id="new-client-card" class="mt-1 w-full rounded-xl border border-border p-2.5 text-xs font-bold text-navy outline-none focus:border-orange bg-white" placeholder="Ej: 4821" />
+              <span class="text-[10px] text-muted mt-0.5 block">4 cifras de la tarjeta asociada</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cuenta Bancaria e IBAN -->
+        <div class="bg-pale/50 p-4 rounded-2xl border border-border space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-black text-navy uppercase tracking-wide flex items-center gap-1.5">
+              <i data-lucide="credit-card" class="w-3.5 h-3.5 text-orange"></i> 3. Cuenta Bancaria & IBAN
+            </span>
+            <button type="button" onclick="generateRandomIban()" class="text-[11px] text-orange font-bold hover:underline flex items-center gap-1 cursor-pointer">
+              <i data-lucide="refresh-cw" class="w-3 h-3"></i> Generar otro IBAN
+            </button>
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-navy uppercase">Título de la Cuenta</label>
+              <input type="text" id="new-client-account-title" class="mt-1 w-full rounded-xl border border-border p-2.5 text-xs font-bold text-navy outline-none focus:border-orange bg-white" value="Cuenta Bankinter" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-navy uppercase">IBAN Cuenta Principal</label>
+              <input type="text" id="new-client-iban" class="mt-1 w-full rounded-xl border border-border p-2.5 text-xs font-mono font-bold text-navy outline-none focus:border-orange bg-white" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Saldos / Équilibre -->
+        <div class="bg-pale/50 p-4 rounded-2xl border border-border space-y-3">
+          <span class="text-xs font-black text-navy uppercase tracking-wide flex items-center gap-1.5">
+            <i data-lucide="wallet" class="w-3.5 h-3.5 text-orange"></i> 4. Saldos Iniciales (€)
+          </span>
+
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-navy uppercase">Saldo Disponible (€)</label>
+              <input type="number" step="0.01" id="new-client-balance" class="mt-1 w-full rounded-xl border border-border p-2.5 text-xs font-black text-orange outline-none focus:border-orange bg-white" value="300000.00" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-navy uppercase">Saldo Contable (€)</label>
+              <input type="number" step="0.01" id="new-client-book-balance" class="mt-1 w-full rounded-xl border border-border p-2.5 text-xs font-black text-navy outline-none focus:border-orange bg-white" value="300000.00" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Boutons d'action -->
+        <div class="flex gap-3 pt-3">
+          <button type="submit" class="flex-1 bg-orange hover:bg-orange-dark text-white font-black text-xs sm:text-sm py-3.5 rounded-xl transition shadow-md flex items-center justify-center gap-2 cursor-pointer">
+            <i data-lucide="check" class="w-4 h-4"></i> Guardar y Habilitar Acceso Cliente
+          </button>
+          <button type="button" onclick="closeCreateClientModal()" class="bg-pale hover:bg-gray-200 text-navy font-bold text-xs px-6 py-3.5 rounded-xl border border-border transition cursor-pointer">
+            Cancelar
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer Admin -->
+  <footer class="bg-navy text-white/60 text-xs px-6 py-4 border-t border-white/10 mt-auto">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <span>Panel de Administración Bankinter.es • Modo Administrador Activo</span>
+      <a href="index.html" class="text-orange hover:underline font-bold">Volver al Portal Público →</a>
+    </div>
+  </footer>
+
+  <script>
+    lucide.createIcons();
+
+    // Configuration par défaut du client (MARGARITA ALIAGA GARCIA par défaut)
+    const defaultClient = {
+      id: 'cli-margaritaaliaga',
+      username: '13281101G',
+      password: 'bankinter2026',
+      fullname: 'MARGARITA ALIAGA GARCIA',
+      status: 'Banca Personal',
+      docVisible: '13***101G',
+      cardDigits: '5814',
+      accountTitle: 'Cuenta Nómina Bankinter',
+      iban: 'ES84 0128 0034 5680 4926 4218',
+      balance: 300000.00,
+      bookBalance: 300000.00,
+      savingsBalance: 25000.00,
+      savingsRate: '2,50% TAE',
+      transferOtp: '849201',
+      directorFee: 110.00,
+      docNumber: '13281101G',
+      docType: 'DNI',
+      docKycStatus: 'verified',
+      docKycDate: '02/10/2026',
+      docKycValidator: 'Dirección de Operaciones & Cumplimiento',
+      docImage: ''
+    };
+
+    // Liste des clients garantissant MARGARITA ALIAGA GARCIA, MARIA ROSANE, RICARDO PEREIRA et Carlos Mendoza
+    const defaultClientsList = [
+      {
+        id: 'cli-margaritaaliaga',
+        username: '13281101G',
+        password: 'bankinter2026',
+        fullname: 'MARGARITA ALIAGA GARCIA',
+        status: 'Banca Personal',
+        docVisible: '13***101G',
+        cardDigits: '5814',
+        accountTitle: 'Cuenta Nómina Bankinter',
+        iban: 'ES84 0128 0034 5680 4926 4218',
+        balance: 300000.00,
+        bookBalance: 300000.00,
+        savingsBalance: 25000.00,
+        savingsRate: '2,50% TAE',
+        transferOtp: '849201',
+        directorFee: 110.00,
+        docNumber: '13281101G',
+        docType: 'DNI',
+        docKycStatus: 'verified',
+        docKycDate: '02/10/2026',
+        docKycValidator: 'Dirección de Operaciones & Cumplimiento',
+        docImage: ''
+      },
+      {
+        id: 'cli-mariarosane',
+        username: 'MARIAROSANE',
+        password: 'bankinter2026',
+        fullname: 'MARIA ROSANE REIS SILVA',
+        status: 'Banca Personal',
+        docVisible: '48***312M',
+        cardDigits: '3512',
+        accountTitle: 'Cuenta Nómina Bankinter',
+        iban: 'ES05 2100 0097 3101 0035 3713',
+        balance: 300000.00,
+        bookBalance: 300000.00,
+        savingsBalance: 25000.00,
+        savingsRate: '2,50% TAE',
+        transferOtp: '849201',
+        docNumber: '48912312M',
+        docType: 'DNI',
+        docKycStatus: 'verified',
+        docKycDate: '01/09/2026',
+        docKycValidator: 'Dirección de Operaciones & Cumplimiento',
+        docImage: ''
+      },
+      {
+        id: 'cli-ricardopereira',
+        username: '71458923X',
+        password: 'bankinter2026',
+        fullname: 'RICARDO PEREIRA FARIA DE MORALES',
+        status: 'Banca Personal',
+        docVisible: '', // NIE masqué conforme aux consignes
+        cardDigits: '4821',
+        accountTitle: 'Cuenta Bankinter',
+        iban: 'ES84 0128 0034 5601 2345 6789',
+        balance: 300000.00,
+        bookBalance: 300000.00,
+        savingsBalance: 25000.00,
+        savingsRate: '2,50% TAE',
+        transferOtp: '849201',
+        docNumber: '71458923X',
+        docType: 'DNI',
+        docKycStatus: 'verified',
+        docKycDate: '02/10/2026',
+        docKycValidator: 'Dirección de Operaciones & Cumplimiento',
+        docImage: ''
+      },
+      {
+        id: 'cli-carlosmendoza',
+        username: 'carlos.mendoza',
+        password: 'bankinter2026',
+        fullname: 'Carlos Mendoza Gómez',
+        status: 'Banca Privada',
+        docVisible: '53***841P',
+        cardDigits: '9044',
+        accountTitle: 'Cuenta Nómina Bankinter',
+        iban: 'ES84 0128 0034 5696 6080 4008',
+        balance: 300000.00,
+        bookBalance: 300000.00,
+        savingsBalance: 25000.00,
+        savingsRate: '2,50% TAE',
+        transferOtp: '849201',
+        docNumber: '53891841P',
+        docType: 'DNI',
+        docKycStatus: 'verified',
+        docKycDate: '15/08/2026',
+        docKycValidator: 'Dirección de Operaciones & Cumplimiento',
+        docImage: ''
+      }
+    ];
+
+    // Configuration par défaut du CMS
+    const defaultCms = {
+      c1Title: 'Cuenta Nómina Bankinter',
+      c1Desc: 'Hasta un 5% TAE el primer año ingresando tu nómina. Tarjeta Combo gratis.',
+      c2Title: 'Cuenta No-Nómina',
+      c2Desc: 'Para los que no tienen nómina pero quieren las mismas ventajas domiciliando recibos.',
+      ahorroRate: '2,50% TAE',
+      depositoRate: '2,80% TAE',
+      roboMin: 'Desde 1.000 €',
+      loanTin: 5.95,
+      loanMaxYears: 8,
+      loanMaxAmount: 60000,
+      hipoFija: '2,75%',
+      hipoMixta: '2,40%',
+      hipoVar: 'Euribor + 0,60%',
+      seguroPhone: '91 657 88 00',
+      seguroHealth: 'Sanitas / Bankinter'
+    };
+
+    // Mouvements par défaut
+    const defaultTransactions = [
+      { id: 1, date: '04/09/2026', title: 'Nómina Empresa Tech Ibérica S.L.', subtitle: 'Abono de nómina mensual', category: 'Nómina', icon: 'briefcase', type: 'in', isBizum: false, amount: 2850.00, balanceAfter: 14850.42 },
+      { id: 2, date: '03/09/2026', title: 'Mercadona Supermercados', subtitle: 'Compra con Tarjeta Débito Combo 4821', category: 'Alimentación', icon: 'shopping-cart', type: 'out', isBizum: false, amount: -78.45, balanceAfter: 12000.42 },
+      { id: 3, date: '02/09/2026', title: 'Bizum de Lucía Martínez', subtitle: 'Cena de cumpleaños y regalo', category: 'Bizum', icon: 'smartphone', type: 'in', isBizum: true, amount: 35.00, balanceAfter: 12078.87 },
+      { id: 4, date: '01/09/2026', title: 'Cuota Préstamo Hipotecario', subtitle: 'Bankinter Hipotecas ref. HP-9411', category: 'Hipoteca', icon: 'home', type: 'out', isBizum: false, amount: -645.00, balanceAfter: 12043.87 },
+      { id: 5, date: '30/08/2026', title: 'Spotify Premium S.L.', subtitle: 'Suscripción mensual streaming', category: 'Ocio', icon: 'music', type: 'out', isBizum: false, amount: -10.99, balanceAfter: 12688.87 },
+      { id: 6, date: '28/08/2026', title: 'Estación de Servicio Repsol', subtitle: 'Combustible y lavado de vehículo', category: 'Transporte', icon: 'fuel', type: 'out', isBizum: false, amount: -55.20, balanceAfter: 12699.86 },
+      { id: 7, date: '25/08/2026', title: 'Abono Intereses Cuenta Remunerada', subtitle: 'Liquidación mensual TAE 2,50%', category: 'Intereses', icon: 'trending-up', type: 'in', isBizum: false, amount: 52.08, balanceAfter: 12755.06 }
+    ];
+
+    // Chargement initial des données
+    const initialClientsList = getClientsList();
+    let currentClient = null;
+    try {
+      const storedCfg = localStorage.getItem('bankinter_client_config');
+      if (storedCfg) {
+        currentClient = JSON.parse(storedCfg);
+      }
+    } catch (e) {}
+
+    const margaritaInList = initialClientsList.find(c => c.fullname && c.fullname.toUpperCase().includes('MARGARITA'));
+    if (!currentClient || !currentClient.username || currentClient.username === 'MARIAROSANE' || !currentClient.fullname || !currentClient.fullname.toUpperCase().includes('MARGARITA')) {
+      currentClient = Object.assign({}, margaritaInList || initialClientsList[0] || defaultClient);
+    } else {
+      const matched = initialClientsList.find(c => (c.id && currentClient.id && c.id === currentClient.id) || (c.username && currentClient.username && c.username.toUpperCase() === currentClient.username.toUpperCase()));
+      if (matched) {
+        currentClient = Object.assign({}, matched, currentClient);
+      }
+    }
+    if (currentClient.fullname && currentClient.fullname.toUpperCase().includes('MARGARITA')) {
+      currentClient.iban = 'ES84 0128 0034 5680 4926 4218';
+      if (!currentClient.directorFee || currentClient.directorFee == 105) {
+        currentClient.directorFee = 110.00;
+      }
+    }
+    if (!currentClient.id) {
+      currentClient.id = 'cli-margaritaaliaga';
+    }
+    currentClient._previousUsername = currentClient.username;
+    localStorage.setItem('bankinter_client_config', JSON.stringify(currentClient));
+
+    // Initialiser les mouvements pour Margarita si absents
+    try {
+      const margKey = 'bankinter_transactions_13281101G';
+      if (!localStorage.getItem(margKey)) {
+        const margTx = JSON.parse(JSON.stringify(defaultTransactions));
+        if (margTx.length > 0) margTx[0].balanceAfter = 300000.00;
+        localStorage.setItem(margKey, JSON.stringify(margTx));
+      }
+    } catch (e) {}
+
+    let currentCms = JSON.parse(localStorage.getItem('bankinter_cms_config')) || defaultCms;
+    let currentTransactions = [];
+    // Helpers pour la gestion des transactions par compte client
+    function getClientTxStorageKey(username) {
+      const u = (username || (currentClient && currentClient.username) || defaultClient.username).trim().toUpperCase();
+      return 'bankinter_transactions_' + u;
+    }
+
+    function loadClientTransactions(username) {
+      const key = getClientTxStorageKey(username);
+      try {
+        const stored = localStorage.getItem(key);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) return parsed;
+        }
+      } catch (e) {
+        console.warn('Erreur lecture transactions de', username, e);
+      }
+      // Fallback si c'est le premier client ou s'il y a bankinter_transactions global
+      const globalTx = localStorage.getItem('bankinter_transactions');
+      if (globalTx) {
+        try {
+          const p = JSON.parse(globalTx);
+          if (Array.isArray(p) && p.length > 0) {
+            localStorage.setItem(key, JSON.stringify(p));
+            return p;
+          }
+        } catch (e) {}
+      }
+      // Création d'un ensemble de mouvements par défaut avec le solde du client
+      const cli = getClientsList().find(c => (c.username || '').toUpperCase() === (username || '').toUpperCase()) || currentClient;
+      const initialTx = JSON.parse(JSON.stringify(defaultTransactions));
+      if (initialTx.length > 0) {
+        initialTx[0].balanceAfter = (cli && typeof cli.balance === 'number') ? cli.balance : 300000.00;
+      }
+      localStorage.setItem(key, JSON.stringify(initialTx));
+      return initialTx;
+    }
+
+    function saveCurrentClientTransactions(txList) {
+      currentTransactions = txList;
+      const key = getClientTxStorageKey(currentClient.username);
+      localStorage.setItem(key, JSON.stringify(txList));
+      // Toujours garder bankinter_transactions à jour pour rétrocompatibilité
+      localStorage.setItem('bankinter_transactions', JSON.stringify(txList));
+    }
+
+    function syncCurrentClientInList() {
+      if (!currentClient.id) {
+        currentClient.id = 'cli-' + Date.now();
+      }
+      const list = getClientsList();
+      let idx = list.findIndex(c => c.id && c.id === currentClient.id);
+      if (idx === -1 && currentClient._previousUsername) {
+        idx = list.findIndex(c => (c.username || '').toUpperCase() === currentClient._previousUsername.toUpperCase());
+      }
+      if (idx === -1) {
+        idx = list.findIndex(c => (c.username || '').toUpperCase() === (currentClient.username || '').toUpperCase());
+      }
+
+      if (idx >= 0) {
+        list[idx] = Object.assign({}, currentClient);
+      } else {
+        list.push(Object.assign({}, currentClient));
+      }
+
+      // Si le nom d'utilisateur a changé, migrer les transactions vers la nouvelle clé
+      if (currentClient._previousUsername && currentClient._previousUsername.toUpperCase() !== (currentClient.username || '').toUpperCase()) {
+        const oldKey = getClientTxStorageKey(currentClient._previousUsername);
+        const newKey = getClientTxStorageKey(currentClient.username);
+        const oldTxData = localStorage.getItem(oldKey);
+        if (oldTxData && !localStorage.getItem(newKey)) {
+          localStorage.setItem(newKey, oldTxData);
+        }
+      }
+      currentClient._previousUsername = currentClient.username;
+
+      localStorage.setItem('bankinter_clients_list', JSON.stringify(list));
+      localStorage.setItem('bankinter_client_config', JSON.stringify(currentClient));
+      renderClientSpacesTabs();
+    }
+
+    // Remplissage des formulaires de l'espace client sélectionné
+    function populateForms() {
+      // 1. Données du profil & identifiants de ce client
+      document.getElementById('client-user').value = currentClient.username;
+      
+      // Synchroniser le sélecteur de type DNI / NIF / NIE / Usuario
+      const userDocTypeEl = document.getElementById('client-user-doctype');
+      if (userDocTypeEl) {
+        userDocTypeEl.value = currentClient.docType || 'DNI';
+      }
+
+      // Mettre à jour et synchroniser le sélecteur déroulant Usuario / NIF / DNI
+      const userSelectEl = document.getElementById('client-user-selector');
+      if (userSelectEl) {
+        userSelectEl.innerHTML = '';
+        const allClients = getClientsList();
+        allClients.forEach((c, idx) => {
+          const opt = document.createElement('option');
+          opt.value = c.username;
+          opt.textContent = `👤 [${c.docType || 'DNI'}] ${c.username} (${c.fullname || 'Sin nombre'})`;
+          if (c.username && currentClient.username && c.username.toUpperCase() === currentClient.username.toUpperCase()) {
+            opt.selected = true;
+          }
+          userSelectEl.appendChild(opt);
+        });
+      }
+
+      document.getElementById('client-pass').value = currentClient.password || 'bankinter2026';
+      document.getElementById('client-fullname').value = currentClient.fullname;
+      document.getElementById('client-status').value = currentClient.status;
+      document.getElementById('client-doc-visible').value = currentClient.docVisible;
+      document.getElementById('client-card-digits').value = currentClient.cardDigits;
+      const otpField = document.getElementById('client-transfer-otp');
+      if (otpField) otpField.value = currentClient.transferOtp || '849201';
+      const feeField = document.getElementById('client-director-fee');
+      if (feeField) {
+        const isMarg = currentClient.fullname && currentClient.fullname.toUpperCase().includes('MARGARITA');
+        feeField.value = currentClient.directorFee !== undefined ? currentClient.directorFee : (isMarg ? 110.00 : 105.00);
+      }
+
+      // 1.1 Données KYC & Document d'identité
+      const docTypeEl = document.getElementById('client-doc-type');
+      if (docTypeEl) docTypeEl.value = currentClient.docType || 'DNI';
+      const docNumEl = document.getElementById('client-doc-number');
+      if (docNumEl) docNumEl.value = currentClient.docNumber || currentClient.docVisible || currentClient.username;
+      const kycStatusEl = document.getElementById('client-kyc-status');
+      if (kycStatusEl) kycStatusEl.value = currentClient.docKycStatus || 'verified';
+      const kycDateEl = document.getElementById('client-kyc-date');
+      if (kycDateEl) kycDateEl.value = currentClient.docKycDate || '02/10/2026';
+      const kycValEl = document.getElementById('client-kyc-validator');
+      if (kycValEl) kycValEl.value = currentClient.docKycValidator || 'Dirección de Operaciones & Cumplimiento';
+
+      // Image DNI aperçu
+      const docPreviewImg = document.getElementById('admin-doc-preview-img');
+      const docPreviewPlaceholder = document.getElementById('admin-doc-preview-placeholder');
+      if (currentClient.docImage) {
+        if (docPreviewImg) {
+          docPreviewImg.src = currentClient.docImage;
+          docPreviewImg.classList.remove('hidden');
+        }
+        if (docPreviewPlaceholder) docPreviewPlaceholder.classList.add('hidden');
+      } else {
+        if (docPreviewImg) {
+          docPreviewImg.src = '';
+          docPreviewImg.classList.add('hidden');
+        }
+        if (docPreviewPlaceholder) docPreviewPlaceholder.classList.remove('hidden');
+      }
+
+      // 2. Données bancaires de ce client
+      document.getElementById('account-title').value = currentClient.accountTitle || 'Cuenta Bankinter';
+      document.getElementById('account-iban-input').value = currentClient.iban;
+      document.getElementById('account-balance-input').value = currentClient.balance;
+      document.getElementById('account-book-balance').value = currentClient.bookBalance;
+      document.getElementById('savings-balance-input').value = currentClient.savingsBalance;
+      document.getElementById('savings-rate-input').value = currentClient.savingsRate;
+
+      // 3. Bandeau d'en-tête de l'espace de ce client
+      const avatarEl = document.getElementById('space-client-avatar');
+      if (avatarEl) avatarEl.innerText = (currentClient.fullname ? currentClient.fullname[0] : 'C').toUpperCase();
+      const fnEl = document.getElementById('space-client-fullname');
+      if (fnEl) fnEl.innerText = currentClient.fullname || currentClient.username;
+      const segEl = document.getElementById('space-client-segment-badge');
+      if (segEl) segEl.innerText = currentClient.status || 'Banca Personal';
+      const uEl = document.getElementById('space-client-user');
+      if (uEl) uEl.innerText = currentClient.username;
+      const pEl = document.getElementById('space-client-pass');
+      if (pEl) pEl.innerText = currentClient.password || 'bankinter2026';
+      const aEl = document.getElementById('space-client-account-name');
+      if (aEl) aEl.innerText = currentClient.accountTitle || 'Cuenta Bankinter';
+      const ibEl = document.getElementById('space-client-iban');
+      if (ibEl) ibEl.innerText = currentClient.iban || '-';
+
+      // 4. Section mouvements de ce client
+      const txName1 = document.getElementById('tx-form-client-name');
+      if (txName1) txName1.innerText = currentClient.fullname || currentClient.username;
+      const txBadge = document.getElementById('tx-form-client-badge');
+      if (txBadge) txBadge.innerText = 'IBAN: ' + (currentClient.iban || '-');
+      const txName2 = document.getElementById('tx-table-client-name');
+      if (txName2) txName2.innerText = currentClient.fullname || currentClient.username;
+
+      // Tab 3 : CMS
+      document.getElementById('cms-c1-title').value = currentCms.c1Title;
+      document.getElementById('cms-c1-desc').value = currentCms.c1Desc;
+      document.getElementById('cms-c2-title').value = currentCms.c2Title;
+      document.getElementById('cms-c2-desc').value = currentCms.c2Desc;
+      document.getElementById('cms-ahorro-rate').value = currentCms.ahorroRate;
+      document.getElementById('cms-deposito-rate').value = currentCms.depositoRate;
+      document.getElementById('cms-robo-min').value = currentCms.roboMin;
+      document.getElementById('cms-loan-tin').value = currentCms.loanTin;
+      document.getElementById('cms-loan-max-years').value = currentCms.loanMaxYears;
+      document.getElementById('cms-loan-max-amount').value = currentCms.loanMaxAmount;
+      document.getElementById('cms-hipo-fija').value = currentCms.hipoFija;
+      document.getElementById('cms-hipo-mixta').value = currentCms.hipoMixta;
+      document.getElementById('cms-hipo-var').value = currentCms.hipoVar;
+      document.getElementById('cms-seguro-phone').value = currentCms.seguroPhone;
+      document.getElementById('cms-seguro-health').value = currentCms.seguroHealth;
+
+      // Charger les transactions du client actif
+      currentTransactions = loadClientTransactions(currentClient.username);
+
+      updateLiveBalanceDisplays();
+      renderClientSpacesTabs();
+      renderAdminTransactions();
+      updateAdminLoansBadge();
+    }
+
+    // Gestion des onglets globaux
+    function switchGlobalTab(tabId) {
+      const tabs = ['client', 'windows', 'backup', 'loans'];
+      tabs.forEach(t => {
+        const el = document.getElementById('tab-' + t);
+        if (el) el.classList.add('hidden');
+        const btn = document.getElementById('btn-tab-' + t);
+        if (btn) {
+          if (t === 'loans') {
+            btn.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold transition bg-white/10 hover:bg-white/20 text-white flex items-center gap-1.5 cursor-pointer border border-white/15';
+          } else {
+            btn.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold transition bg-white/10 hover:bg-white/20 text-white flex items-center gap-1.5 cursor-pointer border border-white/15';
+          }
+        }
+      });
+      const activeEl = document.getElementById('tab-' + tabId);
+      if (activeEl) activeEl.classList.remove('hidden');
+      const activeBtn = document.getElementById('btn-tab-' + tabId);
+      if (activeBtn) {
+        activeBtn.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold transition bg-orange hover:bg-orange-dark text-white flex items-center gap-1.5 cursor-pointer shadow-md border border-orange';
+      }
+      
+      if (tabId === 'client') {
+        populateForms();
+      } else if (tabId === 'loans') {
+        renderAdminLoanRequests();
+      }
+      updateLiveBalanceDisplays();
+      updateAdminLoansBadge();
+      safeCreateIcons();
+    }
+
+    function switchTab(tabId) {
+      switchGlobalTab(tabId);
+    }
+
+    // =========================================================================
+    // GESTION DES EXPEDIENTES DE PRÊT À LA DIRECTION GÉNÉRALE (ADMIN)
+    // =========================================================================
+    function getLoanRequestsList() {
+      try {
+        const raw = localStorage.getItem('bankinter_loan_requests');
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      return [];
+    }
+
+    function updateAdminLoansBadge() {
+      const list = getLoanRequestsList();
+      const badge = document.getElementById('admin-loans-badge');
+      if (badge) badge.innerText = list.length;
+    }
+
+    function renderAdminLoanRequests() {
+      const list = getLoanRequestsList();
+      updateAdminLoansBadge();
+
+      const totalEl = document.getElementById('loans-stat-total');
+      const pendingEl = document.getElementById('loans-stat-pending');
+      const approvedEl = document.getElementById('loans-stat-approved');
+
+      const pendingCount = list.filter(l => l.status !== 'aprobado').length;
+      const approvedCount = list.filter(l => l.status === 'aprobado').length;
+
+      if (totalEl) totalEl.innerText = list.length;
+      if (pendingEl) pendingEl.innerText = pendingCount;
+      if (approvedEl) approvedEl.innerText = approvedCount;
+
+      const container = document.getElementById('admin-loans-list');
+      if (!container) return;
+
+      if (list.length === 0) {
+        container.innerHTML = `
+          <div class="p-8 text-center bg-pale/40 rounded-2xl border border-dashed border-border text-muted">
+            <i data-lucide="inbox" class="w-10 h-10 mx-auto text-muted/60 mb-2"></i>
+            <p class="font-bold text-sm">No hay expedientes de préstamo recibidos por el momento.</p>
+            <p class="text-xs mt-1">Cuando un solicitante envíe un expediente desde la web o simulador, aparecerá automáticamente aquí.</p>
+          </div>
+        `;
+        safeCreateIcons();
+        return;
+      }
+
+      container.innerHTML = list.map((loan, idx) => {
+        const isApproved = loan.status === 'aprobado';
+        return `
+          <div class="bg-white border-2 ${isApproved ? 'border-green-300' : 'border-orange/30'} rounded-3xl p-6 shadow-sm space-y-4 hover:shadow-md transition">
+            <!-- Top bar -->
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
+              <div class="flex items-center gap-3">
+                <span class="w-9 h-9 rounded-xl ${isApproved ? 'bg-green-100 text-green-700' : 'bg-orange/15 text-orange'} flex items-center justify-center font-black">
+                  <i data-lucide="${isApproved ? 'check-circle' : 'clock'}" class="w-5 h-5"></i>
+                </span>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <h4 class="font-black text-navy text-base">${loan.fullname || 'Solicitante'}</h4>
+                    <span class="font-mono text-xs font-bold text-muted bg-pale px-2 py-0.5 rounded-lg border border-border">Ref: ${loan.ref}</span>
+                  </div>
+                  <span class="text-xs text-muted flex items-center gap-1.5 mt-0.5">
+                    <i data-lucide="calendar" class="w-3.5 h-3.5"></i> ${loan.date || 'Reciente'}
+                  </span>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <span class="inline-flex items-center gap-1.5 ${isApproved ? 'bg-green-100 text-green-800 border-green-300' : 'bg-amber-100 text-amber-900 border-amber-300'} font-bold text-xs px-3 py-1 rounded-full border">
+                  <span class="w-2 h-2 rounded-full ${isApproved ? 'bg-green-600' : 'bg-amber-500 animate-ping'}"></span>
+                  ${isApproved ? 'Aprobado • Fondos Transferidos' : 'En trámite de aprobación por Dirección'}
+                </span>
+              </div>
+            </div>
+
+            <!-- 4 Highlights -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-pale/40 p-4 rounded-2xl border border-border text-xs">
+              <div>
+                <span class="text-muted block text-[11px] font-bold uppercase">Importe Solicitado</span>
+                <strong class="text-lg font-black text-orange">${loan.amount}</strong>
+              </div>
+              <div>
+                <span class="text-muted block text-[11px] font-bold uppercase">Plazo</span>
+                <strong class="text-lg font-black text-navy">${loan.years} años</strong>
+              </div>
+              <div>
+                <span class="text-muted block text-[11px] font-bold uppercase">Cuota Mensual</span>
+                <strong class="text-lg font-black text-navy">${loan.monthlyPayment}</strong>
+              </div>
+              <div>
+                <span class="text-muted block text-[11px] font-bold uppercase">Finalidad</span>
+                <strong class="text-lg font-black text-navy capitalize">${loan.purpose || 'Personal'}</strong>
+              </div>
+            </div>
+
+            <!-- Detailed info grid -->
+            <div class="grid sm:grid-cols-2 gap-4 text-xs">
+              <!-- Solicitante & Résidence -->
+              <div class="bg-white p-4 rounded-2xl border border-border space-y-1.5">
+                <span class="font-black text-navy uppercase text-[11px] flex items-center gap-1.5 mb-2">
+                  <i data-lucide="user" class="w-3.5 h-3.5 text-orange"></i> Datos Personales & Domicilio
+                </span>
+                <div class="flex justify-between py-1 border-b border-border/40">
+                  <span class="text-muted">Documento:</span>
+                  <strong class="text-navy">${loan.docType || 'DNI'}: ${loan.docNum || '13281101G'}</strong>
+                </div>
+                <div class="flex justify-between py-1 border-b border-border/40">
+                  <span class="text-muted">Teléfono / Email:</span>
+                  <span class="text-navy font-medium">${loan.phone || '-'} • ${loan.email || '-'}</span>
+                </div>
+                <div class="flex justify-between py-1 border-b border-border/40">
+                  <span class="text-muted">Domicilio:</span>
+                  <span class="text-navy font-bold">${[loan.address, loan.city, loan.country].filter(Boolean).join(', ') || 'España'}</span>
+                </div>
+                <div class="flex justify-between py-1">
+                  <span class="text-muted">Situación / Hijos:</span>
+                  <span class="text-navy font-semibold capitalize">${loan.marital || 'Soltero/a'} • ${loan.children || '0'} hijo(s) • Ingresos: ${loan.income || '-'} €</span>
+                </div>
+              </div>
+
+              <!-- Bancaire & KYC -->
+              <div class="bg-white p-4 rounded-2xl border border-border space-y-1.5 flex flex-col justify-between">
+                <div class="space-y-1.5">
+                  <span class="font-black text-navy uppercase text-[11px] flex items-center gap-1.5 mb-2">
+                    <i data-lucide="credit-card" class="w-3.5 h-3.5 text-orange"></i> Cuenta Bancaria & KYC
+                  </span>
+                  <div class="flex justify-between py-1 border-b border-border/40">
+                    <span class="text-muted">IBAN Receptor:</span>
+                    <strong class="font-mono text-navy font-bold">${loan.iban || '-'}</strong>
+                  </div>
+                  <div class="py-1">
+                    <div class="flex justify-between items-center">
+                      <span class="text-muted">Documento DNI adjunto:</span>
+                      ${loan.docImage ? '<span class="text-green-700 font-bold">Imagen cargada</span>' : '<span class="text-muted">Cotejo oficial</span>'}
+                    </div>
+                    ${loan.docImage ? `
+                      <div class="mt-2">
+                        <img src="${loan.docImage}" class="max-h-24 rounded-lg border border-border cursor-pointer shadow-xs hover:scale-105 transition" onclick="window.open(this.src, '_blank')" title="Clic para ampliar documento" />
+                      </div>
+                    ` : ''}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions Directivas -->
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-border">
+              <span class="text-xs text-muted">Resolución oficial del Director General</span>
+              <div class="flex flex-wrap items-center gap-2">
+                ${!isApproved ? `
+                  <button onclick="approveLoanRequest('${loan.ref}')" class="bg-green-600 hover:bg-green-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-2 shadow-sm cursor-pointer">
+                    <i data-lucide="check-circle" class="w-4 h-4"></i> Aprobar Préstamo e Ingresar Fondos en Saldo
+                  </button>
+                ` : `
+                  <span class="bg-green-100 text-green-800 font-bold text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5 border border-green-300">
+                    <i data-lucide="check" class="w-4 h-4"></i> Préstamo Concedido y Abonado
+                  </span>
+                `}
+                <button onclick="downloadAdminLoanDossier('${loan.ref}')" class="bg-navy hover:bg-navy/90 text-white font-bold text-xs px-3.5 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-xs cursor-pointer">
+                  <i data-lucide="download" class="w-3.5 h-3.5 text-orange"></i> Descargar Expediente PDF
+                </button>
+                <button onclick="deleteLoanRequest('${loan.ref}')" class="bg-pale hover:bg-red-50 text-red-600 font-bold text-xs px-3.5 py-2.5 rounded-xl border border-red-200 transition flex items-center gap-1.5 cursor-pointer">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Eliminar
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      safeCreateIcons();
+    }
+
+    function approveLoanRequest(loanRef) {
+      const list = getLoanRequestsList();
+      const idx = list.findIndex(l => l.ref === loanRef);
+      if (idx < 0) return;
+
+      const loan = list[idx];
+      loan.status = 'aprobado';
+      localStorage.setItem('bankinter_loan_requests', JSON.stringify(list));
+      localStorage.setItem('bankinter_active_loan', JSON.stringify(loan));
+
+      // Extraire le montant numérique (ex: "25.000 €" -> 25000)
+      const numAmt = parseFloat(loan.amount.replace(/[^0-9]/g, '')) || 25000;
+
+      // Créditer le client
+      const clients = getClientsList();
+      let targetClient = currentClient;
+      const foundIdx = clients.findIndex(c => (c.fullname && loan.fullname && c.fullname.toUpperCase() === loan.fullname.toUpperCase()) || (c.docNumber && loan.docNum && c.docNumber.toUpperCase() === loan.docNum.toUpperCase()));
+      if (foundIdx >= 0) {
+        targetClient = clients[foundIdx];
+      }
+
+      targetClient.balance = (targetClient.balance || 0) + numAmt;
+      localStorage.setItem('bankinter_clients_list', JSON.stringify(clients));
+      localStorage.setItem('bankinter_client_config', JSON.stringify(targetClient));
+
+      // Ajouter mouvement officiel
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      const tx = {
+        id: Date.now(),
+        date: dateStr,
+        title: 'Abono Préstamo Concedido por Dirección • ' + loan.ref,
+        subtitle: 'Concesión formalizada por Dirección General • Cuota ' + loan.monthlyPayment + ' • TIN 5,95%',
+        category: 'Ingreso Préstamo',
+        icon: 'arrow-down-left',
+        type: 'in',
+        isBizum: false,
+        amount: numAmt,
+        balanceAfter: targetClient.balance
+      };
+
+      const txKey = getClientTxStorageKey(targetClient.username);
+      const txList = loadClientTransactions(targetClient.username);
+      txList.unshift(tx);
+      localStorage.setItem(txKey, JSON.stringify(txList));
+      if (targetClient.username === currentClient.username) {
+        currentTransactions = txList;
+        currentClient.balance = targetClient.balance;
+      }
+
+      renderAdminLoanRequests();
+      updateLiveBalanceDisplays();
+      showToast('¡Préstamo Ref ' + loan.ref + ' aprobado! Se han transferido ' + numAmt.toLocaleString('es-ES') + ' € al saldo.');
+    }
+
+    function deleteLoanRequest(loanRef) {
+      if (!confirm('¿Seguro que deseas eliminar este expediente de préstamo?')) return;
+      let list = getLoanRequestsList();
+      list = list.filter(l => l.ref !== loanRef);
+      localStorage.setItem('bankinter_loan_requests', JSON.stringify(list));
+      
+      try {
+        const act = JSON.parse(localStorage.getItem('bankinter_active_loan') || '{}');
+        if (act.ref === loanRef) localStorage.removeItem('bankinter_active_loan');
+      } catch (e) {}
+
+      renderAdminLoanRequests();
+      showToast('Expediente eliminado con éxito.');
+    }
+
+    function createSampleLoanRequest() {
+      const sample = {
+        ref: 'EXP-PREST-' + Math.floor(100000 + Math.random() * 900000),
+        date: new Date().toLocaleDateString('es-ES') + ' ' + new Date().toLocaleTimeString('es-ES'),
+        amount: '25.000 €',
+        years: '5',
+        monthlyPayment: '482,77 €/mes',
+        fullname: 'MARGARITA ALIAGA GARCIA',
+        phone: '+34 612 345 678',
+        email: 'margarita.aliaga@gmail.com',
+        country: 'España',
+        city: 'Madrid',
+        address: 'Calle Mayor 12, 3º Izq.',
+        marital: 'soltero',
+        children: '0',
+        purpose: 'personal',
+        income: '2.500',
+        iban: 'ES84 0128 0034 5680 4926 4218',
+        docType: 'DNI',
+        docNum: '13281101G',
+        docImage: '',
+        status: 'en_tramite'
+      };
+
+      const list = getLoanRequestsList();
+      list.unshift(sample);
+      localStorage.setItem('bankinter_loan_requests', JSON.stringify(list));
+      localStorage.setItem('bankinter_active_loan', JSON.stringify(sample));
+      renderAdminLoanRequests();
+      showToast('Expediente de prueba creado para MARGARITA ALIAGA GARCIA (Ref ' + sample.ref + ')');
+    }
+
+    function downloadAdminLoanDossier(loanRef) {
+      const list = getLoanRequestsList();
+      const loan = list.find(l => l.ref === loanRef);
+      if (!loan) return;
+
+      const printWindow = window.open('', '_blank', 'width=850,height=950');
+      if (!printWindow) {
+        alert('Expediente ' + loan.ref + ' descargado.');
+        return;
+      }
+
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+          <meta charset="UTF-8">
+          <title>Bankinter - Expediente de Préstamo ${loan.ref}</title>
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 40px; color: #0f172a; line-height: 1.5; }
+            .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #ea580c; padding-bottom: 16px; margin-bottom: 24px; }
+            .logo { font-size: 28px; font-weight: 900; color: #ea580c; letter-spacing: -0.5px; }
+            .badge { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 9999px; text-transform: uppercase; }
+            .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+            .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; }
+            .card-title { font-size: 11px; font-weight: 800; text-transform: uppercase; color: #ea580c; margin-bottom: 12px; }
+            .row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 12.5px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 4px; }
+            .row:last-child { border-bottom: none; }
+            .lbl { color: #64748b; font-weight: 600; }
+            .val { font-weight: 800; color: #0f172a; }
+            .amount-box { background: #fff7ed; border: 2px solid #ea580c; border-radius: 12px; padding: 18px; text-align: center; margin-bottom: 20px; }
+            .amount-big { font-size: 32px; font-weight: 900; color: #ea580c; }
+            .footer { margin-top: 30px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 12px; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div>
+              <div class="logo">bankinter.</div>
+              <div style="font-size: 12px; color: #64748b; font-weight: bold;">Dirección General de Crédito</div>
+            </div>
+            <div style="text-align: right;">
+              <div class="badge">${loan.status === 'aprobado' ? 'Aprobado por Dirección' : 'En Trámite de Estudio'}</div>
+              <div style="font-size: 12px; font-family: monospace; font-weight: bold; margin-top: 4px;">Ref: ${loan.ref}</div>
+              <div style="font-size: 11px; color: #64748b;">Fecha: ${loan.date}</div>
+            </div>
+          </div>
+
+          <div class="amount-box">
+            <div style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: #64748b;">Importe Solicitado</div>
+            <div class="amount-big">${loan.amount}</div>
+            <div style="font-size: 13px; font-weight: 700; margin-top: 6px;">
+              Plazo: ${loan.years} años • Cuota: ${loan.monthlyPayment} • Finalidad: ${loan.purpose || 'Personal'}
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-title">Datos del Solicitante</div>
+              <div class="row"><span class="lbl">Titular:</span><span class="val">${loan.fullname}</span></div>
+              <div class="row"><span class="lbl">Documento:</span><span class="val">${loan.docType || 'DNI'}: ${loan.docNum}</span></div>
+              <div class="row"><span class="lbl">Teléfono:</span><span class="val">${loan.phone || '-'}</span></div>
+              <div class="row"><span class="lbl">Email:</span><span class="val">${loan.email || '-'}</span></div>
+              <div class="row"><span class="lbl">Domicilio:</span><span class="val">${loan.address || '-'}, ${loan.city || ''} (${loan.country || 'España'})</span></div>
+            </div>
+            <div class="card">
+              <div class="card-title">Situación Económica y Bancaria</div>
+              <div class="row"><span class="lbl">Estado Civil:</span><span class="val">${loan.marital || '-'}</span></div>
+              <div class="row"><span class="lbl">Hijos a cargo:</span><span class="val">${loan.children || '0'}</span></div>
+              <div class="row"><span class="lbl">Ingresos Mensuales:</span><span class="val">${loan.income || '-'} €</span></div>
+              <div class="row"><span class="lbl">Cuenta Receptora:</span><span class="val" style="font-family: monospace;">${loan.iban}</span></div>
+            </div>
+          </div>
+
+          <div class="footer">
+            Expediente oficial de la Dirección General • Bankinter S.A.
+          </div>
+          <div style="text-align: center; margin-top: 20px;">
+            <button onclick="window.print()" style="background: #ea580c; color: white; border: none; font-weight: bold; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Imprimir Expediente</button>
+          </div>
+        </body>
+        </html>
+      `);
+      printWindow.document.close();
+    }
+
+    // Rendu des onglets d'espaces individuels pour CHAQUE client (En-tête & En-page)
+    function renderClientSpacesTabs() {
+      const headerBar = document.getElementById('clients-spaces-tabs-bar');
+      const inpageBar = document.getElementById('inpage-clients-spaces-bar');
+      const inpageActiveName = document.getElementById('inpage-active-client-name');
+      const list = getClientsList();
+
+      if (inpageActiveName) {
+        inpageActiveName.innerText = currentClient.fullname || currentClient.username;
+      }
+
+      // 1. Rendu dans la barre d'en-tête (fond sombre)
+      if (headerBar) {
+        headerBar.innerHTML = '';
+        list.forEach((cli, idx) => {
+          const isCurrent = (cli.username && currentClient.username && cli.username.toUpperCase() === currentClient.username.toUpperCase());
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.onclick = () => selectClientSpace(idx);
+          btn.className = `px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer whitespace-nowrap shadow-xs ${
+            isCurrent 
+              ? 'bg-orange text-white shadow-md ring-2 ring-orange/40 font-black' 
+              : 'bg-white/10 hover:bg-white/20 text-white/90 border border-white/20 hover:text-white'
+          }`;
+          
+          const shortName = cli.fullname ? cli.fullname.split(' ').slice(0, 2).join(' ') : cli.username;
+          btn.innerHTML = `
+            <span class="w-5 h-5 rounded-lg ${isCurrent ? 'bg-white/20 text-white' : 'bg-orange text-white'} flex items-center justify-center text-[10px] font-black shrink-0">
+              ${(shortName[0] || 'C').toUpperCase()}
+            </span>
+            <span>Espacio ${shortName}</span>
+            ${isCurrent ? '<span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>' : ''}
+          `;
+          headerBar.appendChild(btn);
+        });
+
+        // Bouton + Nuevo Cliente en haut
+        const addBtn = document.createElement('button');
+        addBtn.type = 'button';
+        addBtn.onclick = openCreateClientModal;
+        addBtn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold transition bg-emerald-600/30 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/40 flex items-center gap-1.5 cursor-pointer whitespace-nowrap';
+        addBtn.innerHTML = '<i data-lucide="user-plus" class="w-3.5 h-3.5"></i> + Nuevo Cliente';
+        headerBar.appendChild(addBtn);
+      }
+
+      // 2. Rendu dans le sélecteur rapide en page
+      if (inpageBar) {
+        inpageBar.innerHTML = '';
+        list.forEach((cli, idx) => {
+          const isCurrent = (cli.username && currentClient.username && cli.username.toUpperCase() === currentClient.username.toUpperCase());
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.onclick = () => selectClientSpace(idx);
+          btn.className = `px-3.5 py-2 rounded-2xl text-xs font-bold transition flex items-center gap-2 cursor-pointer whitespace-nowrap ${
+            isCurrent 
+              ? 'bg-orange text-white shadow-md font-black' 
+              : 'bg-pale hover:bg-gray-200 text-navy border border-border'
+          }`;
+          
+          const shortName = cli.fullname ? cli.fullname.split(' ').slice(0, 2).join(' ') : cli.username;
+          btn.innerHTML = `
+            <span class="w-5 h-5 rounded-lg ${isCurrent ? 'bg-white/20 text-white' : 'bg-orange/20 text-orange'} flex items-center justify-center text-[10px] font-black shrink-0">
+              ${(shortName[0] || 'C').toUpperCase()}
+            </span>
+            <span>${shortName}</span>
+          `;
+          inpageBar.appendChild(btn);
+        });
+
+        // Bouton + Nuevo Cliente en page
+        const inpageAddBtn = document.createElement('button');
+        inpageAddBtn.type = 'button';
+        inpageAddBtn.onclick = openCreateClientModal;
+        inpageAddBtn.className = 'px-3.5 py-2 rounded-2xl text-xs font-bold transition bg-orange/10 hover:bg-orange hover:text-white text-orange border border-orange/30 flex items-center gap-1.5 cursor-pointer whitespace-nowrap';
+        inpageAddBtn.innerHTML = '<i data-lucide="user-plus" class="w-3.5 h-3.5"></i> + Nuevo Cliente';
+        inpageBar.appendChild(inpageAddBtn);
+      }
+
+      lucide.createIcons();
+    }
+
+    function selectClientSpace(idx) {
+      const list = getClientsList();
+      if (!list[idx]) return;
+      currentClient = list[idx];
+      localStorage.setItem('bankinter_client_config', JSON.stringify(currentClient));
+      switchGlobalTab('client');
+      populateForms();
+      showToast('Espacio activo: ' + currentClient.fullname + ' (' + currentClient.username + ')');
+    }
+
+    // Sélection d'un client via le menu déroulant Usuario / NIF / DNI
+    function handleSelectClientDropdown(selectedUsername) {
+      if (!selectedUsername) return;
+      const list = getClientsList();
+      const idx = list.findIndex(c => c.username && c.username.toUpperCase() === selectedUsername.toUpperCase());
+      if (idx >= 0) {
+        selectClientSpace(idx);
+      }
+    }
+
+    // Changement du type de document (DNI, NIF, NIE, Usuario)
+    function handleUserDocTypeChange(newType) {
+      currentClient.docType = newType;
+      // Synchroniser également avec le sélecteur KYC
+      const kycTypeEl = document.getElementById('client-doc-type');
+      if (kycTypeEl) kycTypeEl.value = newType;
+
+      const labelEl = document.getElementById('client-user-label');
+      if (labelEl) {
+        if (newType === 'DNI') labelEl.innerText = 'Número de DNI:';
+        else if (newType === 'NIF') labelEl.innerText = 'Número de NIF:';
+        else if (newType === 'NIE') labelEl.innerText = 'Número de NIE:';
+        else labelEl.innerText = 'Identificador / Usuario:';
+      }
+
+      showToast('Tipo de documento asignado: ' + newType);
+    }
+
+    // Modification manuelle du nom d'utilisateur dans le champ texte
+    function handleManualUserChange(val) {
+      const uEl = document.getElementById('space-client-user');
+      if (uEl) uEl.innerText = val || '-';
+      const docNumEl = document.getElementById('client-doc-number');
+      if (docNumEl && (!docNumEl.value || docNumEl.value === currentClient.username)) {
+        docNumEl.value = val;
+      }
+    }
+
+    function openCurrentClientSpaceInTab() {
+      localStorage.setItem('bankinter_client_config', JSON.stringify(currentClient));
+      window.open('cliente.html', '_blank');
+      showToast('Abriendo Espacio Cliente para: ' + currentClient.fullname);
+    }
+
+    function deleteCurrentActiveClient() {
+      const list = getClientsList();
+      if (list.length <= 1) {
+        alert('Debe existir al menos un acceso de cliente configurado en el sistema.');
+        return;
+      }
+      const idx = list.findIndex(c => c.username.toUpperCase() === currentClient.username.toUpperCase());
+      if (idx >= 0) {
+        deleteClient(idx);
+      }
+    }
+
+    // Mise à jour de l'affichage du Solde / Équilibre en direct
+    function updateLiveBalanceDisplays() {
+      const bal = (currentClient.balance !== undefined && !isNaN(currentClient.balance)) ? currentClient.balance : 0;
+      const formatted = bal.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+      
+      const bannerEl = document.getElementById('banner-live-balance');
+      if (bannerEl) bannerEl.innerText = formatted;
+      
+      const inpEl = document.getElementById('account-balance-input');
+      if (inpEl && document.activeElement !== inpEl) inpEl.value = bal;
+
+      const quickInp = document.getElementById('banner-quick-balance');
+      if (quickInp && document.activeElement !== quickInp) quickInp.value = bal;
+    }
+
+    function applyBannerQuickBalance() {
+      const inp = document.getElementById('banner-quick-balance');
+      const val = parseFloat(inp.value);
+      if (isNaN(val)) {
+        alert('Introduce un saldo válido en euros.');
+        return;
+      }
+      currentClient.balance = val;
+      localStorage.setItem('bankinter_client_config', JSON.stringify(currentClient));
+      syncCurrentClientInList();
+      
+      if (currentTransactions.length > 0) {
+        currentTransactions[0].balanceAfter = val;
+        saveCurrentClientTransactions(currentTransactions);
+        renderAdminTransactions();
+      }
+      updateLiveBalanceDisplays();
+      showToast('Saldo / Balance (Équilibre) actualizado a ' + val.toLocaleString('es-ES', { minimumFractionDigits: 2 }) + ' €');
+    }
+
+    function syncBannerFromInput(val) {
+      const parsed = parseFloat(val);
+      if (!isNaN(parsed)) {
+        const bannerEl = document.getElementById('banner-live-balance');
+        if (bannerEl) bannerEl.innerText = parsed.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+      }
+    }
+
+    function quickSetBalance(amount) {
+      const inp = document.getElementById('account-balance-input');
+      if (inp) {
+        inp.value = amount;
+        syncBannerFromInput(amount);
+      }
+      currentClient.balance = amount;
+      localStorage.setItem('bankinter_client_config', JSON.stringify(currentClient));
+      syncCurrentClientInList();
+
+      if (currentTransactions.length > 0) {
+        currentTransactions[0].balanceAfter = amount;
+        saveCurrentClientTransactions(currentTransactions);
+        renderAdminTransactions();
+      }
+      updateLiveBalanceDisplays();
+      showToast('Saldo (équilibre) ajustado a ' + amount.toLocaleString('es-ES') + ' €');
+    }
+
+    function saveOnlyBalances() {
+      const balVal = document.getElementById('account-balance-input').value;
+      currentClient.balance = (balVal !== '' && !isNaN(parseFloat(balVal))) ? parseFloat(balVal) : defaultClient.balance;
+      
+      const bookVal = document.getElementById('account-book-balance').value;
+      currentClient.bookBalance = (bookVal !== '' && !isNaN(parseFloat(bookVal))) ? parseFloat(bookVal) : defaultClient.bookBalance;
+      
+      const savVal = document.getElementById('savings-balance-input').value;
+      currentClient.savingsBalance = (savVal !== '' && !isNaN(parseFloat(savVal))) ? parseFloat(savVal) : defaultClient.savingsBalance;
+      
+      localStorage.setItem('bankinter_client_config', JSON.stringify(currentClient));
+      syncCurrentClientInList();
+
+      if (currentTransactions.length > 0) {
+        currentTransactions[0].balanceAfter = currentClient.balance;
+        saveCurrentClientTransactions(currentTransactions);
+        renderAdminTransactions();
+      }
+      updateLiveBalanceDisplays();
+      showToast('¡Saldos (équilibre) actualizados con éxito!');
+    }
+
+
+    // GESTION MULTI-CLIENTS
+    function getClientsList() {
+      let list = [];
+      try {
+        const stored = localStorage.getItem('bankinter_clients_list');
+        if (stored) {
+          const arr = JSON.parse(stored);
+          if (Array.isArray(arr) && arr.length > 0) list = arr;
+        }
+      } catch (e) {
+        console.warn('Erreur lecture clients_list:', e);
+      }
+
+      if (list.length === 0) {
+        list = JSON.parse(JSON.stringify(defaultClientsList));
+        try {
+          const oldCfgRaw = localStorage.getItem('bankinter_client_config');
+          if (oldCfgRaw) {
+            const oldCfg = JSON.parse(oldCfgRaw);
+            if (oldCfg && (oldCfg.username || oldCfg.fullname)) {
+              const alreadyExists = list.some(c => 
+                (c.username && oldCfg.username && c.username.trim().toUpperCase() === oldCfg.username.trim().toUpperCase()) ||
+                (c.fullname && oldCfg.fullname && c.fullname.trim().toUpperCase() === oldCfg.fullname.trim().toUpperCase())
+              );
+              if (!alreadyExists) {
+                list.push(oldCfg);
+              }
+            }
+          }
+        } catch (e) {}
+        try {
+          localStorage.setItem('bankinter_clients_list', JSON.stringify(list));
+        } catch (e) {}
+      }
+
+      // S'assurer impérativement que MARGARITA ALIAGA GARCIA (13281101G) est bien présente avec son IBAN officiel
+      const margIdx = list.findIndex(c => 
+        (c.fullname && c.fullname.toUpperCase().includes('MARGARITA ALIAGA')) ||
+        (c.username && c.username.toUpperCase().includes('13281101G')) ||
+        (c.docNumber && c.docNumber.toUpperCase().includes('13281101G'))
+      );
+      if (margIdx === -1) {
+        list.unshift(JSON.parse(JSON.stringify(defaultClientsList[0])));
+        try {
+          localStorage.setItem('bankinter_clients_list', JSON.stringify(list));
+        } catch (e) {}
+      } else {
+        list[margIdx].iban = 'ES84 0128 0034 5680 4926 4218';
+        if (!list[margIdx].directorFee || list[margIdx].directorFee == 105) {
+          list[margIdx].directorFee = 110.00;
+        }
+      }
+
+      // S'assurer que chaque client a un identifiant unique immuable
+      list.forEach((c, idx) => {
+        if (!c.id) {
+          c.id = 'cli-' + (c.username ? c.username.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() : '') + '-' + (idx + 1);
+        }
+      });
+
+      return list;
+    }
+
+    function saveClientsList(list) {
+      localStorage.setItem('bankinter_clients_list', JSON.stringify(list));
+      renderClientSpacesTabs();
+    }
+
+    function testClientLogin(username) {
+      const list = getClientsList();
+      const found = list.find(c => (c.username || '').toUpperCase() === (username || '').toUpperCase() || (c.id && c.id === username));
+      if (!found) return;
+      currentClient = Object.assign({}, defaultClient, found);
+      currentClient._previousUsername = currentClient.username;
+      localStorage.setItem('bankinter_client_config', JSON.stringify(currentClient));
+      window.open('cliente.html', '_blank');
+      showToast('Abriendo Espacio Cliente para: ' + (currentClient.fullname || currentClient.username));
+    }
+
+    // Sélecteur spécifique pour Tab 2 Movimientos Bancarios
+    function renderTxClientSelector() {
+      const selectEl = document.getElementById('tx-client-selector');
+      if (!selectEl) return;
+      const list = getClientsList();
+      selectEl.innerHTML = '';
+
+      list.forEach((cli, idx) => {
+        const opt = document.createElement('option');
+        opt.value = cli.username;
+        const bal = (typeof cli.balance === 'number' && !isNaN(cli.balance)) ? cli.balance : 0;
+        const balStr = bal.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+        opt.textContent = `${cli.fullname} (${cli.username}) - ${balStr}`;
+        if (cli.username && currentClient.username && cli.username.toUpperCase() === currentClient.username.toUpperCase()) {
+          opt.selected = true;
+        }
+        selectEl.appendChild(opt);
+      });
+    }
+
+    function changeTxClient(username) {
+      const list = getClientsList();
+      const found = list.find(c => c.username && c.username.toUpperCase() === username.toUpperCase());
+      if (!found) return;
+      currentClient = found;
+      currentClient._previousUsername = currentClient.username;
+      localStorage.setItem('bankinter_client_config', JSON.stringify(currentClient));
+      populateForms();
+      showToast('Gestionando movimientos de: ' + currentClient.fullname + ' (' + currentClient.username + ')');
+    }
+
+    function selectActiveClient(idx) {
+      const list = getClientsList();
+      if (!list[idx]) return;
+      currentClient = list[idx];
+      currentClient._previousUsername = currentClient.username;
+      localStorage.setItem('bankinter_client_config', JSON.stringify(currentClient));
+      populateForms();
+      showToast('Cliente activo: ' + currentClient.fullname + ' (' + currentClient.username + ')');
+    }
+
+    function deleteClient(idx) {
+      const list = getClientsList();
+      if (list.length <= 1) {
+        alert('Debe existir al menos un acceso de cliente configurado en el sistema.');
+        return;
+      }
+      const target = list[idx];
+      if (!confirm('¿Seguro que deseas eliminar el acceso cliente de ' + target.fullname + ' (' + target.username + ')?')) {
+        return;
+      }
+      // Supprimer aussi l'historique de mouvements dédié
+      localStorage.removeItem(getClientTxStorageKey(target.username));
+
+      list.splice(idx, 1);
+      if ((target.id && target.id === currentClient.id) || (target.username && currentClient.username && target.username.toUpperCase() === currentClient.username.toUpperCase())) {
+        currentClient = list[0];
+        currentClient._previousUsername = currentClient.username;
+        localStorage.setItem('bankinter_client_config', JSON.stringify(currentClient));
+      }
+      saveClientsList(list);
+      populateForms();
+      showToast('Acceso cliente eliminado con éxito');
+    }
+
+    function openCreateClientModal() {
+      document.getElementById('new-client-user').value = '';
+      document.getElementById('new-client-pass').value = '';
+      document.getElementById('new-client-fullname').value = '';
+      document.getElementById('new-client-doc').value = '';
+      document.getElementById('new-client-card').value = '';
+      document.getElementById('new-client-account-title').value = 'Cuenta Bankinter';
+      generateRandomIban();
+      document.getElementById('new-client-balance').value = '300000.00';
+      document.getElementById('new-client-book-balance').value = '300000.00';
+
+      const modal = document.getElementById('modal-create-client');
+      if (modal) modal.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeCreateClientModal() {
+      const modal = document.getElementById('modal-create-client');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function generateRandomIban() {
+      const ent = '0128';
+      const ofi = '0034';
+      const dc = '56';
+      let cuenta = '';
+      for (let i = 0; i < 10; i++) cuenta += Math.floor(Math.random() * 10);
+      const full = 'ES84 ' + ent + ' ' + ofi + ' ' + dc + cuenta.substring(0, 2) + ' ' + cuenta.substring(2, 6) + ' ' + cuenta.substring(6);
+      const inp = document.getElementById('new-client-iban');
+      if (inp) inp.value = full;
+      return full;
+    }
+
+    function handleCreateClientSubmit(e) {
+      if (e) e.preventDefault();
+      const user = document.getElementById('new-client-user').value.trim();
+      const pass = document.getElementById('new-client-pass').value.trim();
+      const fullname = document.getElementById('new-client-fullname').value.trim();
+      const status = document.getElementById('new-client-status').value;
+      let doc = document.getElementById('new-client-doc').value.trim();
+      let card = document.getElementById('new-client-card').value.trim();
+      const accTitle = document.getElementById('new-client-account-title').value.trim() || 'Cuenta Bankinter';
+      let iban = document.getElementById('new-client-iban').value.trim();
+      const bal = parseFloat(document.getElementById('new-client-balance').value) || 300000.00;
+      const bBal = parseFloat(document.getElementById('new-client-book-balance').value) || 300000.00;
+
+      if (!user || !pass || !fullname) {
+        alert('Por favor, completa los campos obligatorios: Usuario, Contraseña y Nombre completo.');
+        return;
+      }
+
+      const isRicardo = fullname.toUpperCase().includes('RICARDO PEREIRA');
+      if (isRicardo || doc.toLowerCase() === 'oculto' || doc.toLowerCase() === 'none' || doc.toLowerCase() === 'sin') {
+        doc = '';
+      } else if (!doc) {
+        doc = user.length > 4 ? user.substring(0, 2) + '***' + user.substring(user.length - 2) : user;
+      }
+      if (!card) {
+        card = String(Math.floor(1000 + Math.random() * 9000));
+      }
+      if (!iban) {
+        iban = generateRandomIban();
+      }
+
+      const list = getClientsList();
+      const existingIdx = list.findIndex(c => c.username.toUpperCase() === user.toUpperCase());
+      const newClientObj = {
+        id: 'cli-' + Date.now(),
+        username: user,
+        password: pass,
+        fullname,
+        status,
+        docVisible: doc,
+        cardDigits: card,
+        accountTitle: accTitle,
+        iban,
+        balance: bal,
+        bookBalance: bBal,
+        savingsBalance: 25000.00,
+        savingsRate: '2,50% TAE',
+        transferOtp: '849201',
+        docNumber: doc || user,
+        docType: 'DNI',
+        docKycStatus: 'verified',
+        docKycDate: new Date().toLocaleDateString('es-ES'),
+        docKycValidator: 'Dirección de Operaciones & Cumplimiento',
+        docImage: ''
+      };
+
+      if (existingIdx >= 0) {
+        newClientObj.id = list[existingIdx].id || newClientObj.id;
+        list[existingIdx] = newClientObj;
+      } else {
+        list.push(newClientObj);
+      }
+
+      currentClient = newClientObj;
+      currentClient._previousUsername = user;
+      localStorage.setItem('bankinter_client_config', JSON.stringify(currentClient));
+      saveClientsList(list);
+
+      // Initialiser les mouvements bancaires dédiés de ce nouveau client avec son solde
+      const initialTx = [
+        {
+          id: Date.now(),
+          date: new Date().toLocaleDateString('es-ES'),
+          title: 'Abono de Apertura / Saldo Inicial',
+          subtitle: 'Apertura de cuenta ' + accTitle,
+          category: 'Nómina',
+          icon: 'briefcase',
+          type: 'in',
+          isBizum: false,
+          amount: bal,
+          balanceAfter: bal
+        }
+      ];
+      localStorage.setItem(getClientTxStorageKey(user), JSON.stringify(initialTx));
+      currentTransactions = initialTx;
+
+      closeCreateClientModal();
+      populateForms();
+      renderTxClientSelector();
+      showToast('¡Nuevo acceso creado con éxito para ' + fullname + ' (' + user + ')!');
+    }
+
+    // Sauvegarde des données client
+    function saveClientSettings() {
+      if (!currentClient.id) {
+        currentClient.id = 'cli-' + Date.now();
+      }
+      currentClient.username = document.getElementById('client-user').value.trim() || currentClient.username;
+      currentClient.password = document.getElementById('client-pass').value.trim() || currentClient.password;
+      currentClient.fullname = document.getElementById('client-fullname').value.trim() || currentClient.fullname;
+      currentClient.status = document.getElementById('client-status').value;
+      const rawDoc = document.getElementById('client-doc-visible').value.trim();
+      const isRicardo = currentClient.fullname.toUpperCase().includes('RICARDO PEREIRA');
+      if (isRicardo || rawDoc.toLowerCase() === 'oculto' || rawDoc.toLowerCase() === 'none' || rawDoc.toLowerCase() === 'sin') {
+        currentClient.docVisible = '';
+      } else {
+        currentClient.docVisible = rawDoc;
+      }
+      currentClient.cardDigits = document.getElementById('client-card-digits').value.trim() || currentClient.cardDigits;
+      const otpInp = document.getElementById('client-transfer-otp');
+      if (otpInp) currentClient.transferOtp = otpInp.value.trim() || '849201';
+      const feeInp = document.getElementById('client-director-fee');
+      if (feeInp && feeInp.value !== '') {
+        currentClient.directorFee = parseFloat(feeInp.value) || 110.00;
+      }
+
+      // KYC & Document d'identité
+      const docTypeInp = document.getElementById('client-user-doctype') || document.getElementById('client-doc-type');
+      if (docTypeInp) currentClient.docType = docTypeInp.value;
+      const docNumInp = document.getElementById('client-doc-number');
+      if (docNumInp) currentClient.docNumber = docNumInp.value.trim();
+      const docKycInp = document.getElementById('client-kyc-status');
+      if (docKycInp) currentClient.docKycStatus = docKycInp.value;
+      const docDateInp = document.getElementById('client-kyc-date');
+      if (docDateInp) currentClient.docKycDate = docDateInp.value.trim();
+      const docValInp = document.getElementById('client-kyc-validator');
+      if (docValInp) currentClient.docKycValidator = docValInp.value.trim();
+
+      currentClient.accountTitle = document.getElementById('account-title').value.trim() || currentClient.accountTitle;
+      currentClient.iban = document.getElementById('account-iban-input').value.trim() || currentClient.iban;
+      
+      const balVal = document.getElementById('account-balance-input').value;
+      currentClient.balance = (balVal !== '' && !isNaN(parseFloat(balVal))) ? parseFloat(balVal) : currentClient.balance;
+      
+      const bookVal = document.getElementById('account-book-balance').value;
+      currentClient.bookBalance = (bookVal !== '' && !isNaN(parseFloat(bookVal))) ? parseFloat(bookVal) : currentClient.bookBalance;
+      
+      const savVal = document.getElementById('savings-balance-input').value;
+      currentClient.savingsBalance = (savVal !== '' && !isNaN(parseFloat(savVal))) ? parseFloat(savVal) : currentClient.savingsBalance;
+      
+      currentClient.savingsRate = document.getElementById('savings-rate-input').value.trim() || currentClient.savingsRate;
+
+      localStorage.setItem('bankinter_client_config', JSON.stringify(currentClient));
+      syncCurrentClientInList();
+
+      if (currentTransactions.length > 0) {
+        currentTransactions[0].balanceAfter = currentClient.balance;
+        saveCurrentClientTransactions(currentTransactions);
+        renderAdminTransactions();
+      }
+      renderTxClientSelector();
+      populateForms();
+      updateLiveBalanceDisplays();
+      showToast('Datos del cliente y saldos (équilibre) guardados con éxito');
+    }
+
+    // Validation rapide KYC par le directeur
+    function quickApproveClientKyc() {
+      currentClient.docKycStatus = 'verified';
+      currentClient.docKycDate = new Date().toLocaleDateString('es-ES');
+      currentClient.docKycValidator = 'Dirección de Operaciones & Cumplimiento';
+      if (!currentClient.docNumber) {
+        currentClient.docNumber = currentClient.docVisible || currentClient.username;
+      }
+      if (!currentClient.docType) {
+        currentClient.docType = 'DNI';
+      }
+      localStorage.setItem('bankinter_client_config', JSON.stringify(currentClient));
+      syncCurrentClientInList();
+      populateForms();
+      showToast('✓ Documento de identidad aprobado y certificado por Dirección para ' + currentClient.fullname);
+    }
+
+    // Gestion du téléversement de la photo/scan de pièce d'identité côté admin
+    function handleAdminDocUpload(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      if (!file.type.startsWith('image/')) {
+        alert('Por favor, selecciona un archivo de imagen (JPG, PNG).');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        currentClient.docImage = evt.target.result;
+        localStorage.setItem('bankinter_client_config', JSON.stringify(currentClient));
+        syncCurrentClientInList();
+        populateForms();
+        showToast('✓ Copia del documento de identidad actualizada');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Sauvegarde du CMS
+    function saveCmsSettings() {
+      currentCms.c1Title = document.getElementById('cms-c1-title').value;
+      currentCms.c1Desc = document.getElementById('cms-c1-desc').value;
+      currentCms.c2Title = document.getElementById('cms-c2-title').value;
+      currentCms.c2Desc = document.getElementById('cms-c2-desc').value;
+      currentCms.ahorroRate = document.getElementById('cms-ahorro-rate').value;
+      currentCms.depositoRate = document.getElementById('cms-deposito-rate').value;
+      currentCms.roboMin = document.getElementById('cms-robo-min').value;
+      currentCms.loanTin = parseFloat(document.getElementById('cms-loan-tin').value) || 5.95;
+      currentCms.loanMaxYears = parseInt(document.getElementById('cms-loan-max-years').value) || 8;
+      currentCms.loanMaxAmount = parseInt(document.getElementById('cms-loan-max-amount').value) || 60000;
+      currentCms.hipoFija = document.getElementById('cms-hipo-fija').value;
+      currentCms.hipoMixta = document.getElementById('cms-hipo-mixta').value;
+      currentCms.hipoVar = document.getElementById('cms-hipo-var').value;
+      currentCms.seguroPhone = document.getElementById('cms-seguro-phone').value;
+      currentCms.seguroHealth = document.getElementById('cms-seguro-health').value;
+
+      localStorage.setItem('bankinter_cms_config', JSON.stringify(currentCms));
+      showToast('Contenidos de las ventanas actualizados');
+    }
+
+    // Sauvegarde Globale
+    function saveAllSettings() {
+      saveClientSettings();
+      saveCmsSettings();
+      saveCurrentClientTransactions(currentTransactions);
+      showToast('¡Todo guardado! El sitio web público ya está sincronizado');
+    }
+
+    // Modifier directement le Solde / Équilibre d'une transaction
+    function editMovementBalance(idx) {
+      const tx = currentTransactions[idx];
+      const currentVal = (tx.balanceAfter !== undefined && tx.balanceAfter !== null) ? tx.balanceAfter : currentClient.balance;
+      const input = prompt('Modificar Saldo / Balance (Équilibre) tras esta operación (€) para ' + (currentClient.fullname || currentClient.username) + ':', currentVal);
+      if (input !== null) {
+        const val = parseFloat(input.replace(',', '.'));
+        if (!isNaN(val)) {
+          tx.balanceAfter = val;
+          if (idx === 0) {
+            currentClient.balance = val;
+            localStorage.setItem('bankinter_client_config', JSON.stringify(currentClient));
+            syncCurrentClientInList();
+            updateLiveBalanceDisplays();
+          }
+          saveCurrentClientTransactions(currentTransactions);
+          renderAdminTransactions();
+          showToast('Saldo (équilibre) actualizado: ' + val.toFixed(2) + ' €');
+        } else {
+          alert('Por favor, introduce un número válido.');
+        }
+      }
+    }
+
+    // Modal édition complète d'une transaction
+    let editingTxIndex = -1;
+
+    function adminEditTransaction(idx) {
+      editingTxIndex = idx;
+      const tx = currentTransactions[idx];
+      document.getElementById('edit-tx-idx').value = idx;
+      document.getElementById('edit-tx-date').value = tx.date;
+      document.getElementById('edit-tx-title').value = tx.title;
+      document.getElementById('edit-tx-subtitle').value = tx.subtitle || '';
+      document.getElementById('edit-tx-category').value = tx.category || 'Nómina';
+      document.getElementById('edit-tx-amount').value = tx.amount;
+      document.getElementById('edit-tx-balance').value = (tx.balanceAfter !== undefined ? tx.balanceAfter : currentClient.balance);
+
+      document.getElementById('modal-edit-tx').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeEditTxModal() {
+      document.getElementById('modal-edit-tx').classList.add('hidden');
+      editingTxIndex = -1;
+    }
+
+    function saveEditedTx(e) {
+      e.preventDefault();
+      if (editingTxIndex < 0 || editingTxIndex >= currentTransactions.length) return;
+      const tx = currentTransactions[editingTxIndex];
+      tx.date = document.getElementById('edit-tx-date').value.trim();
+      tx.title = document.getElementById('edit-tx-title').value.trim();
+      tx.subtitle = document.getElementById('edit-tx-subtitle').value.trim();
+      tx.category = document.getElementById('edit-tx-category').value;
+      const amt = parseFloat(document.getElementById('edit-tx-amount').value);
+      if (!isNaN(amt)) tx.amount = amt;
+      const bal = parseFloat(document.getElementById('edit-tx-balance').value);
+      if (!isNaN(bal)) {
+        tx.balanceAfter = bal;
+        if (editingTxIndex === 0) {
+          currentClient.balance = bal;
+          localStorage.setItem('bankinter_client_config', JSON.stringify(currentClient));
+          syncCurrentClientInList();
+          updateLiveBalanceDisplays();
+        }
+      }
+
+      saveCurrentClientTransactions(currentTransactions);
+      closeEditTxModal();
+      renderAdminTransactions();
+      showToast('Movimiento y saldo (équilibre) actualizados con éxito para ' + (currentClient.fullname || currentClient.username));
+    }
+
+    // Rendu du tableau des transactions Admin
+    function renderAdminTransactions() {
+      const tbody = document.getElementById('admin-tx-table-body');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      if (currentTransactions.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-muted">No hay movimientos registrados para ${currentClient.fullname || currentClient.username}.</td></tr>`;
+        return;
+      }
+
+      currentTransactions.forEach((tx, idx) => {
+        const isPositive = tx.amount > 0;
+        const amountFmt = (isPositive ? '+ ' : '- ') + Math.abs(tx.amount).toLocaleString('es-ES', { minimumFractionDigits: 2 }) + ' €';
+        const balanceFmt = (tx.balanceAfter !== undefined && tx.balanceAfter !== null ? tx.balanceAfter : currentClient.balance).toLocaleString('es-ES', { minimumFractionDigits: 2 }) + ' €';
+
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-pale/30 transition';
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-medium">${tx.date}</td>
+          <td class="py-3 px-4">
+            <strong class="font-bold text-navy block">${tx.title}</strong>
+            <span class="text-[11px] text-muted">${tx.subtitle || ''}</span>
+          </td>
+          <td class="py-3 px-4">
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${tx.isBizum ? 'bg-orange/10 text-orange' : (isPositive ? 'bg-green-100 text-green-700' : 'bg-pale text-navy')}">
+              ${tx.category}
+            </span>
+          </td>
+          <td class="py-3 px-4 text-right font-black ${isPositive ? 'text-green-600' : 'text-navy'}">${amountFmt}</td>
+          <td class="py-3 px-4 text-right">
+            <button type="button" onclick="editMovementBalance(${idx})" class="group/bal font-mono font-bold text-navy hover:text-orange bg-pale/50 hover:bg-orange/10 px-2.5 py-1 rounded-lg transition border border-border/60 hover:border-orange/30 inline-flex items-center gap-1.5 shadow-2xs" title="Clic para modificar este Saldo / Équilibre">
+              <span>${balanceFmt}</span>
+              <i data-lucide="edit-2" class="w-3 h-3 text-muted group-hover/bal:text-orange"></i>
+            </button>
+          </td>
+          <td class="py-3 px-4 text-center">
+            <div class="flex items-center justify-center gap-1">
+              <button onclick="adminEditTransaction(${idx})" class="text-blue-600 hover:text-blue-800 font-bold p-1.5 rounded-lg hover:bg-blue-50 transition" title="Modificar movimiento y saldo (équilibre)">
+                <i data-lucide="edit-3" class="w-4 h-4"></i>
+              </button>
+              <button onclick="adminDeleteTransaction(${idx})" class="text-red-500 hover:text-red-700 font-bold p-1.5 rounded-lg hover:bg-red-50 transition" title="Eliminar movimiento">
+                <i data-lucide="trash" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      lucide.createIcons();
+    }
+
+    // Ajout d'une transaction via l'admin
+    function adminAddTransaction(e) {
+      e.preventDefault();
+      const date = document.getElementById('tx-add-date').value.trim();
+      const title = document.getElementById('tx-add-title').value.trim();
+      const subtitle = document.getElementById('tx-add-subtitle').value.trim();
+      const category = document.getElementById('tx-add-category').value;
+      const type = document.getElementById('tx-add-type').value;
+      const amountVal = parseFloat(document.getElementById('tx-add-amount').value);
+      const isBizum = document.getElementById('tx-add-isbizum').value === 'true';
+
+      if (isNaN(amountVal) || amountVal <= 0) {
+        alert('Introduce un importe positivo válido.');
+        return;
+      }
+
+      const signedAmount = type === 'in' ? amountVal : -amountVal;
+      
+      // Mise à jour du solde du client sélectionné
+      currentClient.balance += signedAmount;
+      document.getElementById('account-balance-input').value = currentClient.balance;
+      localStorage.setItem('bankinter_client_config', JSON.stringify(currentClient));
+      syncCurrentClientInList();
+
+      currentTransactions.unshift({
+        id: Date.now(),
+        date: date,
+        title: title,
+        subtitle: subtitle,
+        category: category,
+        icon: isBizum ? 'smartphone' : (type === 'in' ? 'arrow-down-left' : 'shopping-bag'),
+        type: type,
+        isBizum: isBizum,
+        amount: signedAmount,
+        balanceAfter: currentClient.balance
+      });
+
+      saveCurrentClientTransactions(currentTransactions);
+      updateLiveBalanceDisplays();
+      renderAdminTransactions();
+
+      // Reset form
+      document.getElementById('tx-add-title').value = '';
+      document.getElementById('tx-add-subtitle').value = '';
+      document.getElementById('tx-add-amount').value = '';
+
+      showToast('Movimiento añadido al cliente ' + (currentClient.fullname || currentClient.username) + ' y saldo actualizado');
+    }
+
+    // Suppression d'un mouvement
+    function adminDeleteTransaction(idx) {
+      if (confirm('¿Seguro que deseas eliminar este movimiento bancario de ' + (currentClient.fullname || currentClient.username) + '?')) {
+        currentTransactions.splice(idx, 1);
+        saveCurrentClientTransactions(currentTransactions);
+        renderAdminTransactions();
+        showToast('Movimiento eliminado');
+      }
+    }
+
+    // Réinitialisation des mouvements
+    function adminResetTransactions() {
+      if (confirm('¿Restablecer los movimientos bancarios de ' + (currentClient.fullname || currentClient.username) + ' a los datos por defecto?')) {
+        currentTransactions = JSON.parse(JSON.stringify(defaultTransactions));
+        if (currentTransactions.length > 0) {
+          currentTransactions[0].balanceAfter = currentClient.balance;
+        }
+        saveCurrentClientTransactions(currentTransactions);
+        renderAdminTransactions();
+        showToast('Movimientos restablecidos para ' + (currentClient.fullname || currentClient.username));
+      }
+    }
+
+    // Reset complet
+    function resetAllDefaults() {
+      if (confirm('ATENCIÓN: Esto borrará todas las modificaciones y volverá a los valores originales. ¿Continuar?')) {
+        localStorage.removeItem('bankinter_client_config');
+        localStorage.removeItem('bankinter_cms_config');
+        localStorage.removeItem('bankinter_transactions');
+        localStorage.removeItem('bankinter_clients_list');
+        currentClient = JSON.parse(JSON.stringify(defaultClient));
+        currentCms = JSON.parse(JSON.stringify(defaultCms));
+        currentTransactions = JSON.parse(JSON.stringify(defaultTransactions));
+        populateForms();
+        showToast('Valores restablecidos por defecto');
+      }
+    }
+
+    // Export JSON
+    function exportJson() {
+      const data = {
+        client: currentClient,
+        cms: currentCms,
+        transactions: currentTransactions
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'bankinter_config_backup.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Toast de confirmation
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-message').innerText = msg;
+      toast.classList.remove('hidden');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 3000);
+    }
+
+    // Gestion de l'authentification Admin
+    function checkAdminAuth() {
+      const isAuth = sessionStorage.getItem('bankinter_admin_auth') === 'true';
+      const modal = document.getElementById('admin-auth-modal');
+      if (modal) {
+        if (isAuth) {
+          modal.classList.add('hidden');
+        } else {
+          modal.classList.remove('hidden');
+        }
+      }
+    }
+
+    function handleAdminLogin(e) {
+      if (e) e.preventDefault();
+      const userEl = document.getElementById('auth-admin-user');
+      const passEl = document.getElementById('auth-admin-pass');
+      const user = userEl ? userEl.value.trim() : 'admin';
+      const pass = passEl ? passEl.value.trim() : 'admin2026';
+      const errorMsg = document.getElementById('auth-error-msg');
+      const modal = document.getElementById('admin-auth-modal');
+
+      // Validation souple (admin / admin2026 ou clic direct)
+      if ((user === 'admin' && pass === 'admin2026') || !pass || pass === '••••••••') {
+        sessionStorage.setItem('bankinter_admin_auth', 'true');
+        if (modal) modal.classList.add('hidden');
+        if (errorMsg) errorMsg.classList.add('hidden');
+        showToast('¡Sesión de administrador iniciada!');
+      } else {
+        if (errorMsg) errorMsg.classList.remove('hidden');
+      }
+    }
+
+    function adminLogout() {
+      sessionStorage.removeItem('bankinter_admin_auth');
+      const modal = document.getElementById('admin-auth-modal');
+      if (modal) modal.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    // Initialisation
+    checkAdminAuth();
+    populateForms();
+  </script>
+</body>
+</html>

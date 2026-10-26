@@ -1,0 +1,59 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-navy: #102844;
+  --color-orange: #f26a3d;
+  --color-orange-dark: #d9562d;
+  --color-orange-light: #ffb49d;
+  --color-pale: #edf5f8;
+  --font-sans: 'Arial', 'Helvetica Neue', sans-serif;
+}
+
+:root {
+  color-scheme: light;
+  --background: #ffffff;
+  --foreground: #102844;
+  --card: #ffffff;
+  --card-foreground: #102844;
+  --popover: #ffffff;
+  --popover-foreground: #102844;
+  --primary: #102844;
+  --primary-foreground: #ffffff;
+  --secondary: #edf5f8;
+  --secondary-foreground: #102844;
+  --muted: #edf5f8;
+  --muted-foreground: #627486;
+  --accent: #f26a3d;
+  --accent-foreground: #ffffff;
+  --border: #dce6eb;
+  --input: #dce6eb;
+  --ring: #f26a3d;
+  --radius: 0.8rem;
+}
+
+* { @apply border-border; }
+html { background: var(--background); }
+body { @apply bg-background text-foreground; font-family: Arial, 'Helvetica Neue', sans-serif; }
+button, input { font: inherit; }
+button { cursor: pointer; }

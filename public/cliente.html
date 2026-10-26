@@ -1,0 +1,2357 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bankinter - Espacio Cliente Banca Online</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: '#102844',
+            orange: {
+              DEFAULT: '#f26a3d',
+              dark: '#d9562d',
+              light: '#ffb49d'
+            },
+            pale: '#edf5f8',
+            border: '#dce6eb',
+            muted: '#627486'
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-[#f8fafc] text-navy antialiased flex flex-col">
+
+  <!-- ========================================================================= -->
+  <!-- 1. ÉCRAN DE CONNEXION CLIENT (Si non connecté)                             -->
+  <!-- ========================================================================= -->
+  <div id="login-container" class="flex-1 flex items-center justify-center p-4 min-h-screen bg-gradient-to-b from-navy to-[#183960]">
+    <div class="w-full max-w-md bg-white rounded-3xl p-8 shadow-2xl border border-border">
+      
+      <div class="text-center">
+        <a href="index.html" class="inline-flex items-center gap-2 mb-3">
+          <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-orange text-white text-2xl font-black shadow-md">b</span>
+        </a>
+        <h1 class="text-2xl font-black text-navy">Banca Online Clientes</h1>
+        <p class="text-xs text-muted mt-1">Accede a tu cuenta con tus claves de Bankinter.</p>
+      </div>
+
+      <!-- Formulaire de connexion -->
+      <form id="client-login-form" onsubmit="handleLoginSubmit(event); return false;" class="mt-6 space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase text-navy">Usuario / NIF / DNI</label>
+          <input type="text" id="input-username" value="" required class="mt-1.5 w-full rounded-xl border border-border p-3 text-sm font-bold text-navy outline-none focus:border-orange bg-pale/30" placeholder="Introduce tu DNI o usuario" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase text-navy">Contraseña</label>
+          <input type="password" id="input-password" value="bankinter2026" required class="mt-1.5 w-full rounded-xl border border-border p-3 text-sm font-bold text-navy outline-none focus:border-orange bg-pale/30" placeholder="Introduce tu contraseña" />
+        </div>
+
+        <div class="bg-pale/70 border border-border p-2.5 rounded-xl text-[11px] text-muted flex items-center justify-between">
+          <span>Clave de acceso: <strong class="text-navy font-mono">bankinter2026</strong></span>
+          <span class="text-green-600 font-bold flex items-center gap-1"><i data-lucide="check" class="w-3 h-3"></i> Listo para entrar</span>
+        </div>
+
+        <button type="submit" id="btn-submit-login" class="w-full bg-orange hover:bg-orange-dark text-white font-bold text-sm py-3.5 rounded-xl transition shadow-md flex items-center justify-center gap-2 cursor-pointer">
+          <i data-lucide="lock" class="w-4 h-4"></i> Entrar a mi Espacio Cliente
+        </button>
+
+        <button type="button" onclick="handleLoginSubmit(event)" class="w-full bg-navy hover:bg-navy/90 text-white font-bold text-xs py-3 rounded-xl transition shadow-sm flex items-center justify-center gap-2 cursor-pointer">
+          ⚡ Acceso Rápido Directo (Sin esperas)
+        </button>
+      </form>
+
+      <div class="mt-6 pt-4 border-t border-border flex items-center justify-between text-xs text-muted">
+        <a href="index.html" class="hover:text-navy font-bold">← Inicio Bankinter</a>
+        <span class="flex items-center gap-1 text-[11px] text-muted"><i data-lucide="shield-check" class="w-3.5 h-3.5 text-green-600"></i> Conexión segura</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 2. TABLEAU DE BORD DE L'ESPACE CLIENT (Une fois connecté)                  -->
+  <!-- ========================================================================= -->
+  <div id="dashboard-container" class="hidden flex-1 flex flex-col">
+    
+    <!-- Header Espace Client -->
+    <header class="bg-navy text-white px-6 py-4 border-b border-white/10 sticky top-0 z-40 shadow-md">
+      <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+        
+        <div class="flex items-center gap-3">
+          <a href="index.html" class="flex h-10 w-10 items-center justify-center rounded-full bg-orange text-lg font-black text-white shadow-sm">b</a>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 id="dash-client-name" class="text-lg font-extrabold tracking-tight">Carlos Mendoza Gómez</h1>
+              <span id="dash-client-status" class="bg-orange/20 text-[#ffb49d] border border-orange/30 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">Banca Personal</span>
+            </div>
+            <div class="flex items-center gap-3 text-xs text-white/70 mt-0.5">
+              <span id="dash-doc-container"><span id="dash-doc-label">DNI</span>: <strong id="dash-client-doc">71***923X</strong></span>
+              <span id="dash-doc-separator">•</span>
+              <span id="dash-datetime" class="flex items-center gap-1">
+                <i data-lucide="calendar" class="w-3.5 h-3.5"></i> <span id="dash-date-text">04/09/2026, 12:20</span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2.5">
+          <button type="button" onclick="openProfileModal()" class="bg-white/10 hover:bg-orange text-white text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 border border-white/20 cursor-pointer shadow-xs">
+            <i data-lucide="user-check" class="w-3.5 h-3.5 text-orange"></i>
+            <span>Mi Perfil & DNI</span>
+          </button>
+          <a href="index.html" class="bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-3 py-2 rounded-xl transition flex items-center gap-1.5 border border-white/20">
+            <i data-lucide="globe" class="w-3.5 h-3.5"></i> Web
+          </a>
+          <button onclick="handleLogout()" class="bg-red-500/20 hover:bg-red-500/30 text-red-200 border border-red-400/30 text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 cursor-pointer">
+            <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Salir
+          </button>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- Corps du Dashboard -->
+    <main class="max-w-7xl mx-auto px-6 py-8 flex-1 w-full space-y-6">
+      
+      <!-- ============================================================== -->
+      <!-- DOSSIER OFFICIEL DE PRÊT ENVOYÉ À LA DIRECTION GÉNÉRALE        -->
+      <!-- ============================================================== -->
+      <div id="active-loan-dashboard-card" class="hidden bg-gradient-to-br from-amber-50/90 via-white to-orange/5 border-2 border-orange/40 rounded-3xl p-5 sm:p-6 shadow-md transition-all relative">
+        <!-- Top bar with badges -->
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border/70 pb-4 mb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-orange/15 text-orange flex items-center justify-center font-black">
+              <i data-lucide="file-check" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="font-black text-navy text-base sm:text-lg">Expediente Oficial de Préstamo a Dirección</h3>
+                <span class="bg-orange/10 text-orange text-[10px] font-black px-2 py-0.5 rounded-full uppercase">Bankinter Préstamos</span>
+              </div>
+              <p class="text-xs text-muted">Solicitud formal de crédito remitida a la Dirección General para resolución y abono</p>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <span id="dash-loan-status-badge" class="inline-flex items-center gap-1.5 bg-amber-100 text-amber-900 border border-amber-300 font-black text-xs px-3 py-1 rounded-full">
+              <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+              <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-700"></i> En trámite de aprobación por Dirección
+            </span>
+            <span class="font-mono text-xs text-navy font-bold bg-white px-2.5 py-1 rounded-xl border border-border">
+              Ref: <strong id="dash-loan-ref" class="text-orange">EXP-PREST-849201</strong>
+            </span>
+          </div>
+        </div>
+
+        <!-- Key Financial Highlights -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-white p-4 rounded-2xl border border-border/80 shadow-2xs mb-4">
+          <div class="border-r border-border/60 pr-2 last:border-r-0">
+            <span class="text-[11px] text-muted font-bold uppercase block">Importe Solicitado</span>
+            <strong id="dash-loan-amount" class="text-xl sm:text-2xl font-black text-orange">25.000 €</strong>
+            <span class="text-[10px] text-muted block mt-0.5">TIN 5,95% • TAE 6,11%</span>
+          </div>
+          <div class="border-r border-border/60 pr-2 last:border-r-0 pl-1">
+            <span class="text-[11px] text-muted font-bold uppercase block">Plazo de Devolución</span>
+            <strong id="dash-loan-term" class="text-xl sm:text-2xl font-black text-navy">5 años</strong>
+            <span class="text-[10px] text-muted block mt-0.5">Cuotas mensuales fijas</span>
+          </div>
+          <div class="border-r border-border/60 pr-2 last:border-r-0 pl-1">
+            <span class="text-[11px] text-muted font-bold uppercase block">Cuota Mensual Pactada</span>
+            <strong id="dash-loan-payment" class="text-xl sm:text-2xl font-black text-navy">482,77 €/mes</strong>
+            <span class="text-[10px] text-green-700 font-bold block mt-0.5">Conforme por cliente</span>
+          </div>
+          <div class="pl-1">
+            <span class="text-[11px] text-muted font-bold uppercase block">Finalidad Declarada</span>
+            <strong id="dash-loan-purpose" class="text-base sm:text-lg font-black text-navy capitalize">Personal</strong>
+            <span id="dash-loan-income" class="text-[10px] text-muted block mt-0.5">Ingresos declarados</span>
+          </div>
+        </div>
+
+        <!-- Comprehensive Details Grid -->
+        <div class="grid sm:grid-cols-2 gap-4 text-xs mb-4">
+          <!-- Box 1: Informations Personnelles & Résidence -->
+          <div class="bg-pale/50 p-4 rounded-2xl border border-border space-y-2">
+            <span class="font-black text-navy uppercase text-[11px] flex items-center gap-1.5">
+              <i data-lucide="user" class="w-3.5 h-3.5 text-orange"></i> Datos del Solicitante & Residencia
+            </span>
+            <div class="flex justify-between py-1 border-b border-border/40">
+              <span class="text-muted">Titular:</span>
+              <strong id="dash-loan-holder" class="text-navy uppercase">MARGARITA ALIAGA GARCIA</strong>
+            </div>
+            <div class="flex justify-between py-1 border-b border-border/40">
+              <span class="text-muted">Documento Identidad:</span>
+              <span class="font-bold text-navy"><span id="dash-loan-doctype">DNI</span>: <strong id="dash-loan-docnum">13281101G</strong> <span class="bg-green-100 text-green-800 text-[10px] font-bold px-2 py-0.5 rounded-full ml-1">Cotejado</span></span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-border/40">
+              <span class="text-muted">Contacto:</span>
+              <span class="font-medium text-navy"><span id="dash-loan-phone">+34 600 000 000</span> • <span id="dash-loan-email">margarita@ejemplo.com</span></span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-border/40">
+              <span class="text-muted">Domicilio actual:</span>
+              <strong id="dash-loan-fulladdress" class="text-navy">Calle Mayor 12, Madrid (España)</strong>
+            </div>
+            <div class="flex justify-between py-1">
+              <span class="text-muted">Situación familiar:</span>
+              <span class="font-semibold text-navy"><span id="dash-loan-marital" class="capitalize">Soltero/a</span> • <span id="dash-loan-children">0</span> hijo(s) a cargo</span>
+            </div>
+          </div>
+
+          <!-- Box 2: Données Bancaires, KYC & Transmission -->
+          <div class="bg-pale/50 p-4 rounded-2xl border border-border space-y-2 flex flex-col justify-between">
+            <div class="space-y-2">
+              <span class="font-black text-navy uppercase text-[11px] flex items-center gap-1.5">
+                <i data-lucide="landmark" class="w-3.5 h-3.5 text-orange"></i> Cuenta Receptora & Documentación KYC
+              </span>
+              <div class="flex justify-between py-1 border-b border-border/40">
+                <span class="text-muted">Cuenta de abono fondos:</span>
+                <strong id="dash-loan-iban" class="font-mono text-navy font-bold">ES84 0128 0034 5680 4926 4218</strong>
+              </div>
+              <div class="flex justify-between py-1 border-b border-border/40">
+                <span class="text-muted">Fecha y hora de registro:</span>
+                <span id="dash-loan-date" class="font-semibold text-navy">04/10/2026, 13:05</span>
+              </div>
+              <!-- Document KYC preview -->
+              <div id="dash-loan-doc-preview-box" class="py-1">
+                <div class="flex items-center justify-between">
+                  <span class="text-muted">Copia DNI / KYC adjunta:</span>
+                  <span id="dash-loan-doc-status-text" class="text-green-700 font-bold flex items-center gap-1"><i data-lucide="check-circle" class="w-3 h-3"></i> Documento adjunto</span>
+                </div>
+                <div id="dash-loan-doc-img-container" class="mt-2 hidden">
+                  <img id="dash-loan-doc-img" src="" alt="Copia DNI" class="max-h-20 rounded-lg border border-border shadow-xs cursor-pointer hover:opacity-90 transition" onclick="window.open(this.src, '_blank')" title="Clic para ampliar documento" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Direction General notification alert box -->
+            <div class="bg-amber-50/90 border border-amber-300/80 rounded-xl p-2.5 text-[11px] text-amber-900 leading-snug">
+              <i data-lucide="info" class="w-3.5 h-3.5 text-amber-700 inline mr-1"></i>
+              <strong>Notificación Dirección:</strong> Expediente remitido con carácter prioritario a la Dirección General. Los fondos se abonarán en su cuenta una vez formalizada la firma digital.
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Action Buttons -->
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-border/70">
+          <span class="text-xs text-muted">
+            Documento con validez contractual de tramitación • Bankinter S.A.
+          </span>
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="downloadOfficialLoanDossier()" class="bg-navy hover:bg-navy/90 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-2 shadow-xs cursor-pointer">
+              <i data-lucide="download" class="w-4 h-4 text-orange"></i> Descargar Expediente Oficial (PDF)
+            </button>
+            <a href="index.html#prestamos" class="bg-white hover:bg-pale text-navy font-bold text-xs px-4 py-2.5 rounded-xl border border-border transition flex items-center gap-1.5 cursor-pointer">
+              <i data-lucide="edit-3" class="w-3.5 h-3.5 text-orange"></i> Simular / Solicitar Préstamo
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cartes de synthèse (Soldes, IBAN, Carte) -->
+      <div class="grid gap-5 md:grid-cols-3">
+        
+        <!-- Compte Principal -->
+        <div class="bg-white p-6 rounded-3xl border border-border shadow-xs hover:shadow-md transition flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-orange">Cuenta Principal</span>
+              <span class="bg-pale text-navy text-[11px] font-bold px-2.5 py-0.5 rounded-full">Activa</span>
+            </div>
+            <h2 id="dash-account-title" class="font-bold text-navy text-lg mt-2">Cuenta Bankinter</h2>
+            
+            <!-- IBAN avec copie -->
+            <div class="mt-3 flex items-center justify-between bg-pale/70 px-3.5 py-2 rounded-xl border border-border">
+              <span id="dash-iban" class="font-mono text-xs text-navy font-bold tracking-tight">ES84 0128 0034 5601 2345 6789</span>
+              <button onclick="copyIban()" class="text-orange hover:text-orange-dark transition text-xs flex items-center gap-1 font-semibold" title="Copiar IBAN">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i> <span id="copy-label">Copiar</span>
+              </button>
+            </div>
+
+            <div class="mt-5 pt-4 border-t border-border flex items-baseline justify-between">
+              <div>
+                <span class="text-xs text-muted block">Saldo disponible:</span>
+                <strong id="dash-balance" class="text-3xl font-black text-navy">300.000,00 €</strong>
+              </div>
+              <div class="text-right">
+                <span class="text-xs text-muted block">Saldo contable:</span>
+                <span id="dash-book-balance" class="text-xs font-bold text-muted">300.000,00 €</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bouton d'accès à la fenêtre Cuenta Principal -->
+          <button onclick="openDetailModal('principal')" class="mt-5 w-full bg-pale hover:bg-orange hover:text-white text-navy text-xs font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-2 border border-border/80">
+            <i data-lucide="eye" class="w-3.5 h-3.5"></i> Acceder a Cuenta Principal →
+          </button>
+        </div>
+
+        <!-- Compte Épargne Rémunéré -->
+        <div class="bg-white p-6 rounded-3xl border border-border shadow-xs hover:shadow-md transition flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-orange">Ahorro Remunerado</span>
+              <span id="dash-savings-rate" class="bg-orange/10 text-orange text-[11px] font-bold px-2.5 py-0.5 rounded-full">2,50% TAE</span>
+            </div>
+            <h3 class="font-bold text-navy text-lg mt-2">Cuenta Remunerada Ahorro</h3>
+            <p class="text-xs text-muted mt-2 font-mono">ES12 0128 0034 9908 7654 3210</p>
+            
+            <div class="mt-5 pt-4 border-t border-border flex items-baseline justify-between">
+              <div>
+                <span class="text-xs text-muted block">Saldo acumulado:</span>
+                <strong id="dash-savings-balance" class="text-3xl font-black text-orange">25.000,00 €</strong>
+              </div>
+              <div class="text-right">
+                <span class="text-xs text-muted block">Liquidación mensual:</span>
+                <span class="text-xs font-bold text-green-600">+52,08 €</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bouton d'accès à la fenêtre Ahorro Remunerado -->
+          <button onclick="openDetailModal('ahorro')" class="mt-5 w-full bg-pale hover:bg-orange hover:text-white text-navy text-xs font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-2 border border-border/80">
+            <i data-lucide="piggy-bank" class="w-3.5 h-3.5"></i> Acceder a Ahorro Remunerado →
+          </button>
+        </div>
+
+        <!-- Carte Bancaire -->
+        <div class="bg-gradient-to-br from-navy to-[#1a3a60] text-white p-6 rounded-3xl shadow-md flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between text-xs text-white/80">
+              <span class="font-bold tracking-wider uppercase text-orange-light">Tarjeta Débito/Crédito</span>
+              <span class="bg-white/10 px-2.5 py-0.5 rounded text-[11px] font-mono">VISA</span>
+            </div>
+            <p id="dash-card-num" class="font-mono text-base tracking-widest mt-4 text-white">•••• •••• •••• 4821</p>
+            <div class="flex justify-between items-end mt-2 text-xs text-white/70">
+              <span>Titular: <strong id="dash-card-holder" class="uppercase">CARLOS MENDOZA G.</strong></span>
+              <span>Caduca: <strong>08/29</strong></span>
+            </div>
+            <div class="pt-4 mt-3 border-t border-white/15 flex items-center justify-between text-xs">
+              <span>Límite disponible: <strong>3.000 €</strong></span>
+              <span class="bg-green-500/20 text-green-300 text-[10px] font-bold px-2 py-0.5 rounded">Operativa</span>
+            </div>
+          </div>
+
+          <!-- Bouton d'accès à la fenêtre Tarjeta -->
+          <button onclick="openDetailModal('tarjeta')" class="mt-5 w-full bg-white/15 hover:bg-white text-white hover:text-navy text-xs font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-2 border border-white/20">
+            <i data-lucide="credit-card" class="w-3.5 h-3.5"></i> Acceder a Tarjeta Débito/Crédito →
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Actions rapides -->
+      <div class="bg-white p-5 rounded-3xl border border-border flex flex-wrap items-center justify-between gap-4 shadow-xs">
+        <div class="flex items-center gap-2 text-xs font-bold text-navy">
+          <i data-lucide="zap" class="w-4 h-4 text-orange"></i>
+          <span>Operaciones Rápidas :</span>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2.5 text-xs font-bold">
+          <button onclick="openAction('bizum')" class="bg-pale hover:bg-orange hover:text-white text-navy px-4 py-2.5 rounded-xl transition flex items-center gap-2 border border-border">
+            <i data-lucide="smartphone" class="w-4 h-4"></i> Enviar Bizum
+          </button>
+          <button onclick="openAction('transfer')" class="bg-pale hover:bg-navy hover:text-white text-navy px-4 py-2.5 rounded-xl transition flex items-center gap-2 border border-border">
+            <i data-lucide="send" class="w-4 h-4"></i> Nueva Transferencia
+          </button>
+          <button onclick="openProfileModal()" class="bg-pale hover:bg-orange hover:text-white text-navy px-4 py-2.5 rounded-xl transition flex items-center gap-2 border border-border">
+            <i data-lucide="id-card" class="w-4 h-4 text-orange"></i> Mi Documento & KYC
+          </button>
+          <button onclick="alert('Descargando extracto oficial de cuenta en PDF...')" class="bg-pale hover:bg-gray-200 text-navy px-4 py-2.5 rounded-xl transition flex items-center gap-2 border border-border">
+            <i data-lucide="file-text" class="w-4 h-4"></i> Descargar Extracto (PDF)
+          </button>
+        </div>
+      </div>
+
+      <!-- Panneau rétractable d'envoi d'argent (Bizum / Virement) -->
+      <div id="transfer-panel" class="hidden bg-white p-6 rounded-3xl border-2 border-orange/50 shadow-md animate-fade-in">
+        <div class="flex items-center justify-between border-b border-border pb-3 mb-4">
+          <h3 id="panel-title" class="font-bold text-navy text-sm flex items-center gap-2">
+            <i data-lucide="smartphone" class="w-4 h-4 text-orange"></i> Enviar dinero con Bizum al instante
+          </h3>
+          <button onclick="document.getElementById('transfer-panel').classList.add('hidden')" class="text-muted hover:text-navy text-xs font-bold">
+            ✕ Cerrar
+          </button>
+        </div>
+
+        <!-- Compte lié pour le débit -->
+        <div class="mb-4 bg-pale/60 border border-orange/20 rounded-2xl p-3 flex flex-wrap items-center justify-between gap-2 text-xs">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+            <span class="text-muted font-medium">Cuenta vinculada de cargo:</span>
+            <strong id="panel-source-account" class="text-navy font-bold">Cuenta Bankinter</strong>
+            <span id="panel-source-iban" class="font-mono text-[11px] text-muted bg-white px-2 py-0.5 rounded-lg border border-border">ES84 0128 0034 5601 2345 6789</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="text-muted">Saldo disponible:</span>
+            <strong id="panel-source-balance" class="text-orange font-black">300.000,00 €</strong>
+          </div>
+        </div>
+
+        <form onsubmit="handleSendMoney(event)" class="grid sm:grid-cols-5 gap-3">
+          <div>
+            <label class="block text-[11px] font-bold text-navy uppercase">Nombre del destinatario</label>
+            <input type="text" id="send-name" required placeholder="Ej: Carlos Ruiz o Empresa S.L." class="mt-1 w-full rounded-xl border border-border px-3 py-2 text-xs outline-none focus:border-orange font-medium" />
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-navy uppercase">Destinatario (IBAN)</label>
+            <input type="text" id="send-recipient" required placeholder="ES.. .... .... .... ...." class="mt-1 w-full rounded-xl border border-border px-3 py-2 text-xs outline-none focus:border-orange font-medium font-mono" />
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-navy uppercase">Importe (€)</label>
+            <input type="text" inputmode="decimal" id="send-amount" required placeholder="0.00 € (ej: 300.000 ó 300000)" class="mt-1 w-full rounded-xl border border-border px-3 py-2 text-xs outline-none focus:border-orange font-bold text-navy" />
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-navy uppercase">Concepto</label>
+            <input type="text" id="send-concept" required placeholder="Ej: Cena, Alquiler..." class="mt-1 w-full rounded-xl border border-border px-3 py-2 text-xs outline-none focus:border-orange font-medium" />
+          </div>
+          <div class="flex items-end">
+            <button type="submit" class="w-full bg-orange hover:bg-orange-dark text-white font-bold text-xs py-2.5 rounded-xl transition shadow-sm flex items-center justify-center gap-1.5">
+              <i data-lucide="check-circle" class="w-4 h-4"></i> Confirmar Envío
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Mouvements Bancaires -->
+      <div class="bg-white rounded-3xl border border-border overflow-hidden shadow-xs">
+        
+        <div class="p-6 border-b border-border flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-orange">Historial Oficial</span>
+            <h3 class="text-xl font-bold text-navy mt-0.5">Movimientos de la Cuenta</h3>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <div class="flex items-center gap-1 bg-pale p-1 rounded-xl text-xs font-semibold text-navy">
+              <button onclick="filterTx('all')" id="btn-f-all" class="px-3 py-1 rounded-lg bg-white shadow-xs text-orange font-bold">Todos</button>
+              <button onclick="filterTx('in')" id="btn-f-in" class="px-3 py-1 rounded-lg hover:text-orange">Ingresos</button>
+              <button onclick="filterTx('out')" id="btn-f-out" class="px-3 py-1 rounded-lg hover:text-orange">Gastos</button>
+              <button onclick="filterTx('bizum')" id="btn-f-bizum" class="px-3 py-1 rounded-lg hover:text-orange">Bizum</button>
+            </div>
+
+            <div class="relative">
+              <input type="text" id="tx-search-input" oninput="searchTx(this.value)" placeholder="Buscar movimiento..." class="rounded-xl border border-border px-3 py-1.5 pl-8 text-xs outline-none focus:border-orange w-44 text-navy" />
+              <i data-lucide="search" class="w-3.5 h-3.5 text-muted absolute left-2.5 top-2.5"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-pale/70 text-[11px] font-bold uppercase text-muted tracking-wider border-b border-border">
+              <tr>
+                <th class="py-3 px-6">Fecha</th>
+                <th class="py-3 px-6">Concepto / Destinatario</th>
+                <th class="py-3 px-6">Tipo</th>
+                <th class="py-3 px-6 text-right">Importe</th>
+                <th class="py-3 px-6 text-right">Saldo posterior</th>
+              </tr>
+            </thead>
+            <tbody id="tx-tbody" class="divide-y divide-border">
+              <!-- Dynamique -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="bg-pale/30 p-4 border-t border-border flex items-center justify-between text-xs text-muted">
+          <span id="tx-count">Cargando movimientos...</span>
+          <span class="flex items-center gap-1"><i data-lucide="shield-check" class="w-4 h-4 text-green-600"></i> Certificado Bankinter</span>
+        </div>
+
+      </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-navy text-white/60 text-xs px-6 py-5 border-t border-white/10 mt-auto">
+      <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+        <span>Bankinter, S.A. • Todos los derechos reservados • Conexión cifrada TLS 1.3</span>
+        <div class="flex items-center gap-4">
+          <a href="index.html" class="hover:text-white transition">Página Principal</a>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL 1 : FENÊTRE DÉTAILLÉE CUENTA PRINCIPAL                              -->
+  <!-- ========================================================================= -->
+  <div id="modal-detail-principal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-border max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-border pb-4 mb-5">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-orange/10 text-orange flex items-center justify-center font-bold">
+            <i data-lucide="wallet" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-orange">Banca Personal • Operatividad 100%</span>
+            <h3 id="modal-principal-title" class="text-xl font-black text-navy">Cuenta Nómina Bankinter</h3>
+          </div>
+        </div>
+        <button onclick="closeDetailModals()" class="text-muted hover:text-navy p-1.5 rounded-full hover:bg-pale transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Détails des soldes -->
+      <div class="grid sm:grid-cols-2 gap-4 bg-pale/50 p-5 rounded-2xl border border-border mb-5">
+        <div>
+          <span class="text-xs text-muted block font-medium">Saldo Disponible en cuenta:</span>
+          <strong id="modal-principal-balance" class="text-3xl font-black text-navy mt-1 block">14.850,42 €</strong>
+          <span class="text-[11px] text-green-600 font-bold flex items-center gap-1 mt-1.5">
+            <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Totalmente disponible para pagos y transferencias
+          </span>
+        </div>
+        <div class="space-y-2 text-xs border-t sm:border-t-0 sm:border-l border-border pt-3 sm:pt-0 sm:pl-4">
+          <div class="flex justify-between">
+            <span class="text-muted">Saldo Contable:</span>
+            <strong id="modal-principal-book" class="text-navy font-bold">15.120,00 €</strong>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-muted">Retenciones en trámite:</span>
+            <span class="text-navy font-semibold">-269,58 €</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-muted">Límite descubierto autorizado:</span>
+            <span class="text-navy font-semibold">1.500,00 €</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- IBAN et informations de compte -->
+      <div class="space-y-3 text-xs mb-5">
+        <div class="p-3.5 rounded-xl bg-white border border-border flex items-center justify-between">
+          <div>
+            <span class="text-[11px] text-muted block font-semibold uppercase">IBAN Internacional</span>
+            <strong id="modal-principal-iban" class="font-mono text-sm text-navy">ES84 0128 0034 5601 2345 6789</strong>
+          </div>
+          <button onclick="copyIban()" class="text-orange hover:text-orange-dark font-bold px-3 py-1.5 rounded-lg border border-orange/20 hover:bg-orange/5 transition flex items-center gap-1">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copiar
+          </button>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div class="p-3 rounded-xl bg-white border border-border">
+            <span class="text-[10px] text-muted uppercase font-bold block">Código BIC / SWIFT</span>
+            <strong class="font-mono text-navy font-bold">BKTRESMMXXX</strong>
+          </div>
+          <div class="p-3 rounded-xl bg-white border border-border">
+            <span class="text-[10px] text-muted uppercase font-bold block">Oficina Asignada</span>
+            <strong class="text-navy font-bold">0128 - Madrid Castellana</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex flex-wrap gap-2.5 pt-2 border-t border-border">
+        <button onclick="closeDetailModals(); openAction('transfer');" class="flex-1 bg-orange hover:bg-orange-dark text-white font-bold text-xs py-3 rounded-xl transition shadow-sm flex items-center justify-center gap-2">
+          <i data-lucide="send" class="w-4 h-4"></i> Realizar Transferencia
+        </button>
+        <button onclick="alert('Descargando Certificado de Titularidad oficial en PDF...')" class="bg-navy hover:bg-navy/90 text-white font-bold text-xs px-5 py-3 rounded-xl transition flex items-center justify-center gap-2">
+          <i data-lucide="file-check" class="w-4 h-4"></i> Certificado de Titularidad (PDF)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL 2 : FENÊTRE DÉTAILLÉE AHORRO REMUNERADO                            -->
+  <!-- ========================================================================= -->
+  <div id="modal-detail-ahorro" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-border max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-border pb-4 mb-5">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-orange/10 text-orange flex items-center justify-center font-bold">
+            <i data-lucide="trending-up" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-orange">Ahorro e Inversión Segura</span>
+            <h3 class="text-xl font-black text-navy">Cuenta Remunerada Ahorro Bankinter</h3>
+          </div>
+        </div>
+        <button onclick="closeDetailModals()" class="text-muted hover:text-navy p-1.5 rounded-full hover:bg-pale transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Détails solde épargne & TAE -->
+      <div class="bg-gradient-to-br from-orange/10 via-pale/50 to-orange/5 p-5 rounded-2xl border border-orange/20 mb-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span class="text-xs text-muted block font-medium">Saldo total ahorrado:</span>
+            <strong id="modal-ahorro-balance" class="text-3xl font-black text-orange mt-0.5 block">25.000,00 €</strong>
+          </div>
+          <div class="text-right">
+            <span id="modal-ahorro-rate" class="bg-orange text-white text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider">
+              2,50% TAE Garantizado
+            </span>
+            <span class="text-[11px] text-muted block mt-1">Liquidación mes a mes</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid sm:grid-cols-3 gap-3 text-xs mb-5">
+        <div class="p-3.5 rounded-xl bg-white border border-border">
+          <span class="text-muted block text-[11px]">Liquidación mensual</span>
+          <strong class="text-green-600 font-black text-base">+52,08 €</strong>
+          <span class="text-[10px] text-muted block mt-0.5">Abono directo en cuenta</span>
+        </div>
+        <div class="p-3.5 rounded-xl bg-white border border-border">
+          <span class="text-muted block text-[11px]">Intereses año 2026</span>
+          <strong class="text-navy font-black text-base">625,00 €</strong>
+          <span class="text-[10px] text-muted block mt-0.5">Rendimiento bruto</span>
+        </div>
+        <div class="p-3.5 rounded-xl bg-white border border-border">
+          <span class="text-muted block text-[11px]">Disponibilidad</span>
+          <strong class="text-navy font-black text-base">100% Inmediata</strong>
+          <span class="text-[10px] text-muted block mt-0.5">Sin penalización</span>
+        </div>
+      </div>
+
+      <!-- IBAN Ahorro -->
+      <div class="p-3.5 rounded-xl bg-pale/60 border border-border flex items-center justify-between text-xs mb-5">
+        <div>
+          <span class="text-[10px] text-muted uppercase font-bold block">IBAN Cuenta Ahorro</span>
+          <strong class="font-mono text-navy font-bold">ES12 0128 0034 9908 7654 3210</strong>
+        </div>
+        <span class="bg-green-100 text-green-700 text-[11px] font-bold px-2.5 py-0.5 rounded-full">Activa</span>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex flex-wrap gap-2.5 pt-2 border-t border-border">
+        <button onclick="quickSavingsTransfer('in')" class="flex-1 bg-orange hover:bg-orange-dark text-white font-bold text-xs py-3 rounded-xl transition shadow-sm flex items-center justify-center gap-2">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i> Aportar 500 € a mi Ahorro
+        </button>
+        <button onclick="quickSavingsTransfer('out')" class="flex-1 bg-pale hover:bg-navy hover:text-white text-navy font-bold text-xs py-3 rounded-xl transition border border-border flex items-center justify-center gap-2">
+          <i data-lucide="arrow-down-circle" class="w-4 h-4"></i> Retirar a Cuenta Principal
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL 3 : FENÊTRE DÉTAILLÉE TARJETA DÉBITO/CRÉDITO                        -->
+  <!-- ========================================================================= -->
+  <div id="modal-detail-tarjeta" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-border max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-border pb-4 mb-5">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-orange/10 text-orange flex items-center justify-center font-bold">
+            <i data-lucide="credit-card" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-orange">Medios de Pago</span>
+            <h3 class="text-xl font-black text-navy">Tarjeta Débito/Crédito Combo VISA</h3>
+          </div>
+        </div>
+        <button onclick="closeDetailModals()" class="text-muted hover:text-navy p-1.5 rounded-full hover:bg-pale transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Visuel interactif de la carte -->
+      <div class="bg-gradient-to-br from-navy via-[#162d4a] to-slate-900 text-white p-6 rounded-2xl shadow-xl border border-white/10 mb-5 relative overflow-hidden">
+        <div class="flex items-center justify-between text-xs">
+          <span class="font-extrabold uppercase tracking-widest text-[#ffb49d]">Bankinter Combo</span>
+          <span class="bg-white/15 px-3 py-1 rounded-md text-xs font-bold tracking-wider font-mono">VISA DÉBITO</span>
+        </div>
+        <div class="my-6">
+          <span class="text-[10px] text-white/60 uppercase block">Número de tarjeta</span>
+          <p id="modal-card-fullnum" class="font-mono text-xl sm:text-2xl font-bold tracking-widest text-white mt-1">
+            •••• •••• •••• 4821
+          </p>
+        </div>
+        <div class="flex items-end justify-between text-xs text-white/80">
+          <div>
+            <span class="text-[10px] text-white/60 uppercase block">Titular</span>
+            <strong id="modal-card-holder" class="font-bold uppercase tracking-wider text-white">CARLOS MENDOZA G.</strong>
+          </div>
+          <div>
+            <span class="text-[10px] text-white/60 uppercase block">Caducidad</span>
+            <strong class="font-bold font-mono text-white">08/29</strong>
+          </div>
+          <div>
+            <span class="text-[10px] text-white/60 uppercase block">CVV</span>
+            <strong id="modal-card-cvv" class="font-bold font-mono text-white">•••</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bouton pour révéler/masquer les détails secrets -->
+      <div class="flex items-center justify-between bg-pale/50 p-3 rounded-xl border border-border mb-5 text-xs">
+        <span class="text-muted font-medium">Ver datos confidenciales (Número, CVV y PIN):</span>
+        <button onclick="toggleCardSecretDetails()" id="btn-toggle-secret" class="bg-white hover:bg-navy hover:text-white text-navy font-bold px-3 py-1.5 rounded-lg border border-border transition flex items-center gap-1.5 shadow-2xs">
+          <i data-lucide="eye" class="w-3.5 h-3.5"></i> <span id="lbl-toggle-secret">Mostrar datos</span>
+        </button>
+      </div>
+
+      <!-- Limites et contrôle de la carte -->
+      <div class="grid sm:grid-cols-2 gap-3 text-xs mb-5">
+        <div class="p-4 rounded-xl bg-white border border-border">
+          <div class="flex justify-between items-center mb-1">
+            <span class="text-muted font-bold">Límite compras mensuales:</span>
+            <strong class="text-navy font-black text-sm">3.000 €</strong>
+          </div>
+          <div class="w-full bg-pale rounded-full h-2 mt-2">
+            <div class="bg-orange h-2 rounded-full" style="width: 42%"></div>
+          </div>
+          <span class="text-[11px] text-muted block mt-1.5">Consumido este mes: 1.245,60 € (Restan 1.754,40 €)</span>
+        </div>
+
+        <div class="p-4 rounded-xl bg-white border border-border">
+          <div class="flex justify-between items-center mb-1">
+            <span class="text-muted font-bold">Límite cajero diario:</span>
+            <strong class="text-navy font-black text-sm">1.000 €</strong>
+          </div>
+          <div class="w-full bg-pale rounded-full h-2 mt-2">
+            <div class="bg-green-500 h-2 rounded-full" style="width: 15%"></div>
+          </div>
+          <span class="text-[11px] text-muted block mt-1.5">Retirado hoy: 0,00 € (Total disponible)</span>
+        </div>
+      </div>
+
+      <!-- Actions de sécurité -->
+      <div class="flex flex-wrap gap-2.5 pt-2 border-t border-border">
+        <button onclick="toggleCardLock()" id="btn-card-lock" class="flex-1 bg-red-50 hover:bg-red-100 text-red-600 font-bold text-xs py-3 rounded-xl border border-red-200 transition flex items-center justify-center gap-2">
+          <i data-lucide="lock" class="w-4 h-4"></i> Bloquear tarjeta temporalmente
+        </button>
+        <button onclick="alert('Tarjeta vinculada con éxito en tu Apple Pay / Google Wallet.')" class="bg-navy hover:bg-navy/90 text-white font-bold text-xs px-5 py-3 rounded-xl transition flex items-center justify-center gap-2">
+          <i data-lucide="smartphone" class="w-4 h-4"></i> Añadir a Wallet
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL 4 : FENÊTRE PROFIL DU TITULAIRE & CARTE D'IDENTITÉ / KYC            -->
+  <!-- ========================================================================= -->
+  <div id="modal-detail-profile" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-7 shadow-2xl border border-border max-h-[92vh] overflow-y-auto animate-fade-in">
+      
+      <div class="flex items-center justify-between border-b border-border pb-4 mb-5">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-orange/10 text-orange flex items-center justify-center font-bold text-xl">
+            <i data-lucide="user-check" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-orange">Perfil & Cumplimiento Normativo</span>
+            <h3 class="text-xl font-black text-navy">Documento de Identidad & Estado KYC</h3>
+          </div>
+        </div>
+        <button onclick="closeDetailModals()" class="text-muted hover:text-navy p-1.5 rounded-full hover:bg-pale transition cursor-pointer">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Badge de statut KYC validé par le directeur / administration -->
+      <div id="profile-kyc-badge-container" class="mb-5 p-4 rounded-2xl border flex items-center justify-between gap-3">
+        <!-- Rempli dynamiquement -->
+      </div>
+
+      <!-- VISUEL OFFICIEL DE LA CARTE D'IDENTITÉ DU CLIENT -->
+      <div class="mb-5">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-bold text-navy uppercase tracking-wider">Documento Oficial Acreditativo</span>
+          <span class="text-[11px] text-muted">Validado y Aprobado por el Director General</span>
+        </div>
+
+        <!-- Carte d'identité stylisée avec prévisualisation photo -->
+        <div id="profile-id-card-view" class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-navy to-slate-800 text-white p-5 sm:p-6 shadow-xl border border-white/15">
+          <!-- Ruban drapeau Espagne -->
+          <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-red-600 via-yellow-400 to-red-600"></div>
+
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex items-center gap-2">
+              <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-orange text-white text-xs font-black">b</span>
+              <div>
+                <span class="text-[10px] font-extrabold tracking-widest text-[#ffb49d] uppercase block">REINO DE ESPAÑA</span>
+                <span class="text-xs font-black tracking-wider text-white">DOCUMENTO NACIONAL DE IDENTIDAD</span>
+              </div>
+            </div>
+            <span class="text-[10px] font-mono bg-white/10 px-2.5 py-1 rounded-md border border-white/20 text-white/90">
+              ESP • DNI / NIE
+            </span>
+          </div>
+
+          <div class="grid sm:grid-cols-3 gap-4 items-center">
+            <!-- Zone Photo / Image importée -->
+            <div class="sm:col-span-1 flex flex-col items-center">
+              <div id="profile-doc-photo-box" class="w-28 h-36 rounded-xl bg-white/10 border-2 border-white/30 flex items-center justify-center overflow-hidden shadow-inner relative">
+                <img id="profile-doc-img" src="" alt="Foto DNI" class="hidden w-full h-full object-cover" />
+                <div id="profile-doc-placeholder" class="text-center p-2">
+                  <i data-lucide="user" class="w-12 h-12 text-white/50 mx-auto mb-1"></i>
+                  <span class="text-[10px] text-white/60 font-semibold block">Foto Titular</span>
+                </div>
+              </div>
+              <span id="profile-card-status-tag" class="mt-2 text-[10px] text-white/60 font-mono tracking-widest uppercase">VALIDADO</span>
+            </div>
+
+            <!-- Détails du titulaire sur la carte -->
+            <div class="sm:col-span-2 space-y-2 text-xs">
+              <div>
+                <span class="text-[10px] text-white/50 uppercase block font-semibold">Apellidos y Nombre</span>
+                <strong id="profile-card-fullname" class="text-sm font-black text-white tracking-wide uppercase">CARLOS MENDOZA GÓMEZ</strong>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <span class="text-[10px] text-white/50 uppercase block font-semibold">N.º Documento (NIF/NIE)</span>
+                  <strong id="profile-card-number" class="font-mono text-orange text-sm font-black">71458923X</strong>
+                </div>
+                <div>
+                  <span class="text-[10px] text-white/50 uppercase block font-semibold">Nacionalidad</span>
+                  <span class="font-bold text-white">ESP (Española)</span>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <span class="text-[10px] text-white/50 uppercase block font-semibold">Emisión / Validación</span>
+                  <span id="profile-card-date" class="font-bold text-white">02/10/2026</span>
+                </div>
+                <div>
+                  <span class="text-[10px] text-white/50 uppercase block font-semibold">Validez</span>
+                  <span class="font-bold text-green-400">PERMANENTE</span>
+                </div>
+              </div>
+
+              <div class="pt-2 border-t border-white/10 flex items-center justify-between text-[11px]">
+                <span class="text-white/60">Autoridad emisora:</span>
+                <span id="profile-card-validator" class="text-orange font-bold text-[11px]">Dirección de Operaciones Bankinter</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bouton d'upload pour changer ou ajouter la photo / document -->
+      <div class="bg-pale/60 rounded-2xl p-4 border border-border flex flex-wrap items-center justify-between gap-3 text-xs mb-5">
+        <div class="flex items-center gap-2.5">
+          <i data-lucide="upload-cloud" class="w-5 h-5 text-orange"></i>
+          <div>
+            <span class="font-bold text-navy block">Subir copia de Documento de Identidad</span>
+            <span class="text-[11px] text-muted">Formatos admitidos: JPG, PNG (Imagen nítida)</span>
+          </div>
+        </div>
+        <input type="file" id="client-id-upload-input" accept="image/*" onchange="handleClientIdUpload(event)" class="hidden" />
+        <button type="button" onclick="document.getElementById('client-id-upload-input').click()" class="bg-white hover:bg-orange hover:text-white text-navy font-bold px-4 py-2 rounded-xl border border-border transition shadow-2xs cursor-pointer flex items-center gap-1.5">
+          <i data-lucide="camera" class="w-4 h-4"></i> Adjuntar Imagen DNI
+        </button>
+      </div>
+
+      <!-- Récapitulatif des données de compte -->
+      <div class="grid sm:grid-cols-2 gap-3 text-xs mb-5">
+        <div class="p-3.5 rounded-xl bg-white border border-border">
+          <span class="text-muted block text-[10px] uppercase font-bold">Titular de la Cuenta</span>
+          <strong id="profile-summary-name" class="text-navy text-sm font-black">Carlos Mendoza Gómez</strong>
+        </div>
+        <div class="p-3.5 rounded-xl bg-white border border-border">
+          <span class="text-muted block text-[10px] uppercase font-bold">Estado de Cuenta</span>
+          <strong class="text-green-600 text-sm font-black flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-green-500"></span> 100% Operativa y Verificada
+          </strong>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-border">
+        <button type="button" onclick="closeDetailModals()" class="w-full bg-navy hover:bg-navy/90 text-white font-bold text-xs py-3 rounded-xl transition shadow-sm cursor-pointer">
+          Cerrar Perfil
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast-msg" class="hidden fixed bottom-5 right-5 z-50 bg-navy text-white px-5 py-3 rounded-2xl shadow-2xl border border-orange/40 flex items-center gap-3 text-sm font-semibold">
+    <i data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>
+    <span id="toast-text">Operación completada</span>
+  </div>
+
+  <script>
+
+    function safeCreateIcons() {
+      if (typeof lucide !== 'undefined' && lucide && typeof lucide.createIcons === 'function') {
+        try {
+          lucide.createIcons();
+        } catch (e) {
+          console.warn('Lucide error:', e);
+        }
+      }
+    }
+
+    safeCreateIcons();
+
+    const defaultClient = {
+      id: 'cli-margaritaaliaga',
+      username: '13281101G',
+      password: 'bankinter2026',
+      fullname: 'MARGARITA ALIAGA GARCIA',
+      status: 'Banca Personal',
+      docVisible: '13***101G',
+      cardDigits: '5814',
+      accountTitle: 'Cuenta Nómina Bankinter',
+      iban: 'ES84 0128 0034 5680 4926 4218',
+      balance: 300000.00,
+      bookBalance: 300000.00,
+      savingsBalance: 25000.00,
+      savingsRate: '2,50% TAE',
+      transferOtp: '849201',
+      directorFee: 110.00,
+      docNumber: '13281101G',
+      docType: 'DNI',
+      docKycStatus: 'verified',
+      docKycDate: '02/10/2026',
+      docKycValidator: 'Dirección de Operaciones & Cumplimiento',
+      docImage: ''
+    };
+
+    const defaultClientsList = [
+      {
+        id: 'cli-margaritaaliaga',
+        username: '13281101G',
+        password: 'bankinter2026',
+        fullname: 'MARGARITA ALIAGA GARCIA',
+        status: 'Banca Personal',
+        docVisible: '13***101G',
+        cardDigits: '5814',
+        accountTitle: 'Cuenta Nómina Bankinter',
+        iban: 'ES84 0128 0034 5680 4926 4218',
+        balance: 300000.00,
+        bookBalance: 300000.00,
+        savingsBalance: 25000.00,
+        savingsRate: '2,50% TAE',
+        transferOtp: '849201',
+        directorFee: 110.00,
+        docNumber: '13281101G',
+        docType: 'DNI',
+        docKycStatus: 'verified',
+        docKycDate: '02/10/2026',
+        docKycValidator: 'Dirección de Operaciones & Cumplimiento',
+        docImage: ''
+      },
+      {
+        id: 'cli-mariarosane',
+        username: 'MARIAROSANE',
+        password: 'bankinter2026',
+        fullname: 'MARIA ROSANE REIS SILVA',
+        status: 'Banca Personal',
+        docVisible: '48***312M',
+        cardDigits: '3512',
+        accountTitle: 'Cuenta Nómina Bankinter',
+        iban: 'ES05 2100 0097 3101 0035 3713',
+        balance: 300000.00,
+        bookBalance: 300000.00,
+        savingsBalance: 25000.00,
+        savingsRate: '2,50% TAE',
+        docNumber: '48912312M',
+        docType: 'DNI',
+        docKycStatus: 'verified',
+        docKycDate: '01/09/2026',
+        docKycValidator: 'Dirección de Operaciones & Cumplimiento',
+        docImage: ''
+      },
+      {
+        id: 'cli-ricardopereira',
+        username: '71458923X',
+        password: 'bankinter2026',
+        fullname: 'RICARDO PEREIRA FARIA DE MORALES',
+        status: 'Banca Personal',
+        docVisible: '', // NIE masqué
+        cardDigits: '4821',
+        accountTitle: 'Cuenta Bankinter',
+        iban: 'ES84 0128 0034 5601 2345 6789',
+        balance: 300000.00,
+        bookBalance: 300000.00,
+        savingsBalance: 25000.00,
+        savingsRate: '2,50% TAE',
+        docNumber: '71458923X',
+        docType: 'DNI',
+        docKycStatus: 'verified',
+        docKycDate: '02/10/2026',
+        docKycValidator: 'Dirección de Operaciones & Cumplimiento',
+        docImage: ''
+      },
+      {
+        id: 'cli-carlosmendoza',
+        username: 'carlos.mendoza',
+        password: 'bankinter2026',
+        fullname: 'Carlos Mendoza Gómez',
+        status: 'Banca Privada',
+        docVisible: '53***841P',
+        cardDigits: '9044',
+        accountTitle: 'Cuenta Nómina Bankinter',
+        iban: 'ES84 0128 0034 5696 6080 4008',
+        balance: 300000.00,
+        bookBalance: 300000.00,
+        savingsBalance: 25000.00,
+        savingsRate: '2,50% TAE',
+        docNumber: '53891841P',
+        docType: 'DNI',
+        docKycStatus: 'verified',
+        docKycDate: '15/08/2026',
+        docKycValidator: 'Dirección de Operaciones & Cumplimiento',
+        docImage: ''
+      }
+    ];
+
+    const defaultTransactions = [
+      { id: 1, date: '04/09/2026', title: 'Nómina Empresa Tech Ibérica S.L.', subtitle: 'Abono de nómina mensual', category: 'Nómina', icon: 'briefcase', type: 'in', isBizum: false, amount: 2850.00, balanceAfter: 14850.42 },
+      { id: 2, date: '03/09/2026', title: 'Mercadona Supermercados', subtitle: 'Compra con Tarjeta Débito Combo 4821', category: 'Alimentación', icon: 'shopping-cart', type: 'out', isBizum: false, amount: -78.45, balanceAfter: 12000.42 },
+      { id: 3, date: '02/09/2026', title: 'Bizum de Lucía Martínez', subtitle: 'Cena de cumpleaños y regalo', category: 'Bizum', icon: 'smartphone', type: 'in', isBizum: true, amount: 35.00, balanceAfter: 12078.87 },
+      { id: 4, date: '01/09/2026', title: 'Cuota Préstamo Hipotecario', subtitle: 'Bankinter Hipotecas ref. HP-9411', category: 'Hipoteca', icon: 'home', type: 'out', isBizum: false, amount: -645.00, balanceAfter: 12043.87 },
+      { id: 5, date: '30/08/2026', title: 'Spotify Premium S.L.', subtitle: 'Suscripción mensual streaming', category: 'Ocio', icon: 'music', type: 'out', isBizum: false, amount: -10.99, balanceAfter: 12688.87 },
+      { id: 6, date: '28/08/2026', title: 'Estación de Servicio Repsol', subtitle: 'Combustible y lavado de vehículo', category: 'Transporte', icon: 'fuel', type: 'out', isBizum: false, amount: -55.20, balanceAfter: 12699.86 },
+      { id: 7, date: '25/08/2026', title: 'Abono Intereses Cuenta Remunerada', subtitle: 'Liquidación mensual TAE 2,50%', category: 'Intereses', icon: 'trending-up', type: 'in', isBizum: false, amount: 52.08, balanceAfter: 12755.06 }
+    ];
+
+    // Helper pour charger et réparer automatiquement la configuration client
+    function getClientConfig() {
+      let cfg = {};
+      try {
+        const raw = localStorage.getItem('bankinter_client_config');
+        if (raw) cfg = JSON.parse(raw);
+      } catch (e) {
+        console.warn('Erreur lecture bankinter_client_config:', e);
+      }
+      const merged = Object.assign({}, defaultClient, cfg);
+      merged.balance = (typeof cfg.balance === 'number' && !isNaN(cfg.balance)) ? cfg.balance : ((typeof merged.balance === 'number' && !isNaN(merged.balance)) ? merged.balance : (parseFloat(merged.balance) || defaultClient.balance));
+      merged.bookBalance = (typeof cfg.bookBalance === 'number' && !isNaN(cfg.bookBalance)) ? cfg.bookBalance : ((typeof merged.bookBalance === 'number' && !isNaN(merged.bookBalance)) ? merged.bookBalance : (parseFloat(merged.bookBalance) || defaultClient.bookBalance));
+      merged.savingsBalance = (typeof cfg.savingsBalance === 'number' && !isNaN(cfg.savingsBalance)) ? cfg.savingsBalance : ((typeof merged.savingsBalance === 'number' && !isNaN(merged.savingsBalance)) ? merged.savingsBalance : (parseFloat(merged.savingsBalance) || defaultClient.savingsBalance));
+      if (cfg.fullname !== undefined) merged.fullname = cfg.fullname;
+      if (cfg.docVisible !== undefined) merged.docVisible = cfg.docVisible;
+      if (cfg.accountTitle !== undefined) merged.accountTitle = cfg.accountTitle;
+      if (cfg.iban !== undefined) merged.iban = cfg.iban;
+      if (cfg.cardDigits !== undefined) merged.cardDigits = cfg.cardDigits;
+      if (cfg.docNumber !== undefined) merged.docNumber = cfg.docNumber;
+      if (cfg.docType !== undefined) merged.docType = cfg.docType;
+      if (cfg.docKycStatus !== undefined) merged.docKycStatus = cfg.docKycStatus;
+      if (cfg.docKycDate !== undefined) merged.docKycDate = cfg.docKycDate;
+      if (cfg.docKycValidator !== undefined) merged.docKycValidator = cfg.docKycValidator;
+      if (cfg.docImage !== undefined) merged.docImage = cfg.docImage;
+      if (merged.username === 'MARIAROSANE' || !merged.username) {
+        Object.assign(merged, defaultClient);
+      }
+      if (merged.fullname && merged.fullname.toUpperCase().includes('MARGARITA')) {
+        if (!cfg.iban || cfg.iban.includes('5612 8110 1945')) {
+          merged.iban = 'ES84 0128 0034 5680 4926 4218';
+        }
+        if (!cfg.directorFee || cfg.directorFee == 105) {
+          merged.directorFee = 110.00;
+        }
+      }
+      return merged;
+    }
+
+    function getDirectorFeeAmount(cli) {
+      const c = cli || currentClient || defaultClient;
+      if (c && c.directorFee !== undefined && c.directorFee !== null && c.directorFee !== '') {
+        const val = parseFloat(String(c.directorFee).replace(',', '.'));
+        if (!isNaN(val)) return val;
+      }
+      const isMargarita = (c && c.fullname && c.fullname.toUpperCase().includes('MARGARITA')) ||
+                          (c && c.username && c.username.toUpperCase().includes('13281101G'));
+      return isMargarita ? 110.00 : 105.00;
+    }
+
+    function getDirectorFeeFormatted(cli) {
+      const amt = getDirectorFeeAmount(cli);
+      return amt.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+    }
+
+    function getDirectorFeeShort(cli) {
+      const amt = getDirectorFeeAmount(cli);
+      return Math.round(amt) + ' €';
+    }
+
+    let currentClient = getClientConfig();
+
+    function getClientTxStorageKey(username) {
+      const u = (username || (currentClient && currentClient.username) || defaultClient.username).trim().toUpperCase();
+      return 'bankinter_transactions_' + u;
+    }
+
+    function loadTransactionsForClient(username) {
+      const key = getClientTxStorageKey(username);
+      try {
+        const stored = localStorage.getItem(key);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) return parsed;
+        }
+      } catch (e) {
+        console.warn('Erreur lecture transactions de', username, e);
+      }
+      const globalTx = localStorage.getItem('bankinter_transactions');
+      if (globalTx) {
+        try {
+          const p = JSON.parse(globalTx);
+          if (Array.isArray(p) && p.length > 0) return p;
+        } catch (e) {}
+      }
+      return JSON.parse(JSON.stringify(defaultTransactions));
+    }
+
+    let transactionsData = loadTransactionsForClient(currentClient.username);
+    let activeFilter = 'all';
+    let searchQuery = '';
+
+    // Initialisation et hints
+    function initLoginHints() {
+      currentClient = getClientConfig();
+      const inpU = document.getElementById('input-username');
+      if (inpU) {
+        inpU.value = currentClient.username || '';
+      }
+      const inpP = document.getElementById('input-password');
+      if (inpP) {
+        inpP.value = currentClient.password || 'bankinter2026';
+      }
+      const passHelp = document.querySelector('#client-login-form strong.font-mono');
+      if (passHelp && currentClient.password) {
+        passHelp.innerText = currentClient.password;
+      }
+    }
+
+    // Connexion immédiate sans blocage
+    function handleLoginSubmit(e) {
+      if (e) {
+        if (typeof e.preventDefault === 'function') e.preventDefault();
+        if (typeof e.stopPropagation === 'function') e.stopPropagation();
+      }
+      try {
+        const inpU = document.getElementById('input-username');
+        const inpP = document.getElementById('input-password');
+        const u = inpU ? inpU.value.trim() : '';
+        const p = inpP ? inpP.value.trim() : '';
+
+        // Récupérer la liste des clients enregistrés
+        let list = [];
+        try {
+          const listRaw = localStorage.getItem('bankinter_clients_list');
+          if (listRaw) {
+            const parsed = JSON.parse(listRaw);
+            if (Array.isArray(parsed) && parsed.length > 0) list = parsed;
+          }
+        } catch (e) {}
+        if (list.length === 0) list = defaultClientsList;
+
+        let foundInList = null;
+        if (u) {
+          const uUp = u.toUpperCase();
+          foundInList = list.find(c => {
+            const cUser = (c.username || '').toUpperCase();
+            const cDocNum = (c.docNumber || '').toUpperCase();
+            const cDocVis = (c.docVisible || '').toUpperCase();
+            const cName = (c.fullname || '').toUpperCase();
+            return cUser === uUp || cDocNum === uUp || cDocVis === uUp || cName === uUp || cName.includes(uUp);
+          });
+        }
+
+        if (foundInList) {
+          currentClient = Object.assign({}, defaultClient, foundInList);
+          if (p) currentClient.password = p;
+        } else {
+          currentClient = getClientConfig();
+          if (u && (!currentClient.username || u.toUpperCase() !== currentClient.username.toUpperCase())) {
+            currentClient.username = u;
+            currentClient.docVisible = u.length > 4 ? u.substring(0, 2) + '***' + u.substring(u.length - 2) : u;
+          }
+          if (p) {
+            currentClient.password = p;
+          }
+        }
+        localStorage.setItem('bankinter_client_config', JSON.stringify(currentClient));
+        transactionsData = loadTransactionsForClient(currentClient.username);
+      } catch (err) {
+        console.error('Erreur sauvegarde identifiants:', err);
+      }
+
+      showDashboard();
+      return false;
+    }
+
+    function autoLogin() {
+      handleLoginSubmit(null);
+    }
+
+    function showDashboard() {
+      currentClient = getClientConfig();
+      transactionsData = loadTransactionsForClient(currentClient.username);
+
+      const loginBox = document.getElementById('login-container');
+      const dashBox = document.getElementById('dashboard-container');
+      if (loginBox) loginBox.classList.add('hidden');
+      if (dashBox) dashBox.classList.remove('hidden');
+
+      try {
+        const nameEl = document.getElementById('dash-client-name');
+        if (nameEl) nameEl.innerText = currentClient.fullname || defaultClient.fullname;
+
+        const statusEl = document.getElementById('dash-client-status');
+        if (statusEl) statusEl.innerText = currentClient.status || defaultClient.status;
+
+        const docEl = document.getElementById('dash-client-doc');
+        const docContainer = document.getElementById('dash-doc-container');
+        const docSeparator = document.getElementById('dash-doc-separator');
+        const docLabel = document.getElementById('dash-doc-label');
+
+        const isRicardo = (currentClient.fullname && currentClient.fullname.toUpperCase().includes('RICARDO PEREIRA'));
+        const docVal = (currentClient.docVisible !== undefined && currentClient.docVisible !== null) ? String(currentClient.docVisible).trim() : '';
+
+        if (isRicardo || docVal === '' || docVal === 'none' || docVal === 'oculto' || docVal === 'false') {
+          if (docContainer) docContainer.classList.add('hidden');
+          if (docSeparator) docSeparator.classList.add('hidden');
+        } else {
+          if (docContainer) docContainer.classList.remove('hidden');
+          if (docSeparator) docSeparator.classList.remove('hidden');
+          if (docEl) docEl.innerText = docVal;
+          if (docLabel) {
+            if (currentClient.docType && currentClient.docType !== 'Usuario') {
+              docLabel.innerText = currentClient.docType;
+            } else {
+              const firstChar = docVal.charAt(0).toUpperCase();
+              docLabel.innerText = (firstChar === 'X' || firstChar === 'Y' || firstChar === 'Z') ? 'NIE' : 'DNI';
+            }
+          }
+        }
+
+        const titleEl = document.getElementById('dash-account-title');
+        if (titleEl) titleEl.innerText = currentClient.accountTitle || defaultClient.accountTitle;
+
+        const ibanEl = document.getElementById('dash-iban');
+        if (ibanEl) ibanEl.innerText = currentClient.iban || defaultClient.iban;
+
+        const rateEl = document.getElementById('dash-savings-rate');
+        if (rateEl) rateEl.innerText = currentClient.savingsRate || defaultClient.savingsRate;
+
+        const sBal = (typeof currentClient.savingsBalance === 'number' && !isNaN(currentClient.savingsBalance)) ? currentClient.savingsBalance : defaultClient.savingsBalance;
+        const savBalEl = document.getElementById('dash-savings-balance');
+        if (savBalEl) savBalEl.innerText = sBal.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+
+        const cardNumEl = document.getElementById('dash-card-num');
+        if (cardNumEl) cardNumEl.innerText = '•••• •••• •••• ' + (currentClient.cardDigits || defaultClient.cardDigits);
+
+        const cardHolderEl = document.getElementById('dash-card-holder');
+        if (cardHolderEl) cardHolderEl.innerText = currentClient.fullname || defaultClient.fullname;
+
+        const now = new Date();
+        const dateEl = document.getElementById('dash-date-text');
+        if (dateEl) dateEl.innerText = now.toLocaleDateString('es-ES') + ', ' + now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+
+        updateBalance();
+        renderTx();
+        renderActiveLoanCard();
+        if (window.lucide && typeof lucide.createIcons === 'function') {
+          safeCreateIcons();
+        }
+      } catch (err) {
+        console.error('Erreur affichage dashboard:', err);
+      }
+    }
+
+    // Affichage de l'expediente officiel de prêt dans l'espace client
+    function renderActiveLoanCard() {
+      let activeLoan = null;
+      try {
+        const stored = localStorage.getItem('bankinter_active_loan');
+        if (stored) {
+          activeLoan = JSON.parse(stored);
+        } else {
+          const list = JSON.parse(localStorage.getItem('bankinter_loan_requests') || '[]');
+          if (list && list.length > 0) activeLoan = list[0];
+        }
+      } catch (e) {}
+
+      const card = document.getElementById('active-loan-dashboard-card');
+      if (!card) return;
+
+      if (!activeLoan) {
+        card.classList.add('hidden');
+        return;
+      }
+
+      card.classList.remove('hidden');
+
+      const refEl = document.getElementById('dash-loan-ref');
+      if (refEl) refEl.innerText = activeLoan.ref || 'EXP-PREST-849201';
+
+      const amtEl = document.getElementById('dash-loan-amount');
+      if (amtEl) amtEl.innerText = activeLoan.amount || '25.000 €';
+
+      const termEl = document.getElementById('dash-loan-term');
+      if (termEl) termEl.innerText = (activeLoan.years || '5') + ' años';
+
+      const payEl = document.getElementById('dash-loan-payment');
+      if (payEl) payEl.innerText = activeLoan.monthlyPayment || '482,77 €/mes';
+
+      const purpEl = document.getElementById('dash-loan-purpose');
+      if (purpEl) purpEl.innerText = activeLoan.purpose || 'Personal';
+
+      const incEl = document.getElementById('dash-loan-income');
+      if (incEl) incEl.innerText = 'Ingresos: ' + (activeLoan.income || '2.500') + ' €/mes';
+
+      const holderEl = document.getElementById('dash-loan-holder');
+      if (holderEl) holderEl.innerText = (activeLoan.fullname || currentClient.fullname || 'MARGARITA ALIAGA GARCIA').toUpperCase();
+
+      const docTypeEl = document.getElementById('dash-loan-doctype');
+      if (docTypeEl) docTypeEl.innerText = activeLoan.docType || currentClient.docType || 'DNI';
+
+      const docNumEl = document.getElementById('dash-loan-docnum');
+      if (docNumEl) docNumEl.innerText = activeLoan.docNum || currentClient.docNumber || '13281101G';
+
+      const phoneEl = document.getElementById('dash-loan-phone');
+      if (phoneEl) phoneEl.innerText = activeLoan.phone || '+34 600 000 000';
+
+      const emailEl = document.getElementById('dash-loan-email');
+      if (emailEl) emailEl.innerText = activeLoan.email || 'margarita@ejemplo.com';
+
+      const addrEl = document.getElementById('dash-loan-fulladdress');
+      if (addrEl) {
+        const parts = [activeLoan.address, activeLoan.city, activeLoan.country].filter(Boolean);
+        addrEl.innerText = parts.length > 0 ? parts.join(', ') : 'Calle Mayor 12, Madrid (España)';
+      }
+
+      const maritalEl = document.getElementById('dash-loan-marital');
+      if (maritalEl) maritalEl.innerText = activeLoan.marital || 'Soltero/a';
+
+      const childEl = document.getElementById('dash-loan-children');
+      if (childEl) childEl.innerText = activeLoan.children || '0';
+
+      const ibanEl = document.getElementById('dash-loan-iban');
+      if (ibanEl) ibanEl.innerText = activeLoan.iban || currentClient.iban || 'ES84 0128 0034 5680 4926 4218';
+
+      const dateEl = document.getElementById('dash-loan-date');
+      if (dateEl) dateEl.innerText = activeLoan.date || (new Date().toLocaleDateString('es-ES') + ', ' + new Date().toLocaleTimeString('es-ES'));
+
+      const stBadge = document.getElementById('dash-loan-status-badge');
+      if (stBadge) {
+        if (activeLoan.status === 'aprobado') {
+          stBadge.className = 'inline-flex items-center gap-1.5 bg-green-100 text-green-900 border border-green-300 font-black text-xs px-3 py-1 rounded-full';
+          stBadge.innerHTML = '<i data-lucide="check-circle" class="w-3.5 h-3.5 text-green-700"></i> Aprobado por Dirección • Fondos ingresados';
+        } else {
+          stBadge.className = 'inline-flex items-center gap-1.5 bg-amber-100 text-amber-900 border border-amber-300 font-black text-xs px-3 py-1 rounded-full';
+          stBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span><i data-lucide="clock" class="w-3.5 h-3.5 text-amber-700"></i> En trámite de aprobación por Dirección';
+        }
+      }
+
+      const imgCont = document.getElementById('dash-loan-doc-img-container');
+      const imgEl = document.getElementById('dash-loan-doc-img');
+      const docStatusText = document.getElementById('dash-loan-doc-status-text');
+      if (activeLoan.docImage) {
+        if (imgEl) imgEl.src = activeLoan.docImage;
+        if (imgCont) imgCont.classList.remove('hidden');
+        if (docStatusText) docStatusText.innerHTML = '<i data-lucide="file-image" class="w-3 h-3 text-green-600"></i> ' + (activeLoan.docType || 'DNI') + ' adjuntado & digitalizado';
+      } else {
+        if (imgCont) imgCont.classList.add('hidden');
+        if (docStatusText) docStatusText.innerHTML = '<i data-lucide="shield-check" class="w-3 h-3 text-green-600"></i> ' + (activeLoan.docType || 'DNI') + ' validado en censo oficial';
+      }
+
+      safeCreateIcons();
+    }
+
+    function downloadOfficialLoanDossier() {
+      let activeLoan = null;
+      try {
+        const stored = localStorage.getItem('bankinter_active_loan');
+        if (stored) activeLoan = JSON.parse(stored);
+        else {
+          const list = JSON.parse(localStorage.getItem('bankinter_loan_requests') || '[]');
+          if (list && list.length > 0) activeLoan = list[0];
+        }
+      } catch (e) {}
+
+      if (!activeLoan) {
+        alert('No se ha encontrado ningún expediente de préstamo activo.');
+        return;
+      }
+
+      const printWindow = window.open('', '_blank', 'width=850,height=950');
+      if (!printWindow) {
+        alert('Expediente ' + activeLoan.ref + ' descargado.');
+        return;
+      }
+
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+          <meta charset="UTF-8">
+          <title>Bankinter - Expediente Oficial de Préstamo ${activeLoan.ref}</title>
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 40px; color: #0f172a; line-height: 1.5; }
+            .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #ea580c; padding-bottom: 16px; margin-bottom: 24px; }
+            .logo { font-size: 28px; font-weight: 900; color: #ea580c; letter-spacing: -0.5px; }
+            .badge { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 9999px; text-transform: uppercase; }
+            .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+            .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; }
+            .card-title { font-size: 11px; font-weight: 800; text-transform: uppercase; color: #ea580c; margin-bottom: 12px; letter-spacing: 0.5px; }
+            .row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 12.5px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 4px; }
+            .row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+            .lbl { color: #64748b; font-weight: 600; }
+            .val { font-weight: 800; color: #0f172a; }
+            .amount-box { background: #fff7ed; border: 2px solid #ea580c; border-radius: 12px; padding: 18px; text-align: center; margin-bottom: 20px; }
+            .amount-big { font-size: 32px; font-weight: 900; color: #ea580c; }
+            .alert-box { background: #fffbeb; border: 1.5px solid #f59e0b; border-radius: 12px; padding: 14px; margin-bottom: 20px; font-size: 12px; color: #92400e; }
+            .signatures { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 40px; padding-top: 20px; border-top: 2px solid #e2e8f0; }
+            .sig-box { text-align: center; font-size: 12px; color: #64748b; }
+            .sig-line { height: 60px; border-bottom: 1px solid #cbd5e1; margin-bottom: 8px; display: flex; align-items: flex-end; justify-content: center; font-family: cursive; font-size: 18px; color: #1e3a8a; }
+            .footer { margin-top: 30px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 12px; }
+            @media print { .no-print { display: none; } }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div>
+              <div class="logo">bankinter.</div>
+              <div style="font-size: 12px; color: #64748b; font-weight: bold; margin-top: 2px;">Dirección General de Operaciones y Crédito</div>
+            </div>
+            <div style="text-align: right;">
+              <div class="badge">Expediente Oficial a Dirección</div>
+              <div style="font-size: 12px; font-family: monospace; font-weight: bold; margin-top: 4px; color: #0f172a;">Ref: ${activeLoan.ref}</div>
+              <div style="font-size: 11px; color: #64748b;">Fecha: ${activeLoan.date}</div>
+            </div>
+          </div>
+
+          <div class="amount-box">
+            <div style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: #64748b; margin-bottom: 4px;">Importe Solicitado y Autorizado en Trámite</div>
+            <div class="amount-big">${activeLoan.amount}</div>
+            <div style="font-size: 13px; font-weight: 700; color: #0f172a; margin-top: 6px;">
+              Plazo: ${activeLoan.years} años • Cuota pactada: ${activeLoan.monthlyPayment} • TIN: 5,95% (TAE 6,11%)
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-title">1. Datos del Solicitante & Residencia</div>
+              <div class="row"><span class="lbl">Titular:</span><span class="val">${activeLoan.fullname}</span></div>
+              <div class="row"><span class="lbl">Documento:</span><span class="val">${activeLoan.docType || 'DNI'}: ${activeLoan.docNum || ''}</span></div>
+              <div class="row"><span class="lbl">Teléfono:</span><span class="val">${activeLoan.phone || 'Aportado'}</span></div>
+              <div class="row"><span class="lbl">Email:</span><span class="val">${activeLoan.email || 'Aportado'}</span></div>
+              <div class="row"><span class="lbl">País / Ciudad:</span><span class="val">${activeLoan.country || 'España'} / ${activeLoan.city || ''}</span></div>
+              <div class="row"><span class="lbl">Dirección:</span><span class="val">${activeLoan.address || ''}</span></div>
+            </div>
+
+            <div class="card">
+              <div class="card-title">2. Situación Económica y Bancaria</div>
+              <div class="row"><span class="lbl">Estado Civil:</span><span class="val">${activeLoan.marital || 'Soltero/a'}</span></div>
+              <div class="row"><span class="lbl">Hijos a cargo:</span><span class="val">${activeLoan.children || '0'}</span></div>
+              <div class="row"><span class="lbl">Ingresos Mensuales:</span><span class="val">${activeLoan.income || '2.500'} €/mes</span></div>
+              <div class="row"><span class="lbl">Finalidad Préstamo:</span><span class="val">${activeLoan.purpose || 'Personal'}</span></div>
+              <div class="row"><span class="lbl">Cuenta Receptora:</span><span class="val" style="font-family: monospace;">${activeLoan.iban || ''}</span></div>
+              <div class="row"><span class="lbl">Cotejo Documental:</span><span class="val" style="color: #166534;">DNI Cotejado en Censo</span></div>
+            </div>
+          </div>
+
+          <div class="alert-box">
+            <strong>RESOLUCIÓN DE LA DIRECCIÓN GENERAL:</strong> El presente expediente ha sido remitido formalmente al Comité de Riesgos y Dirección de Operaciones de Bankinter. La transferencia de los fondos a la cuenta receptora se formalizará una vez validada la firma.
+          </div>
+
+          <div class="signatures">
+            <div class="sig-box">
+              <div class="sig-line">${activeLoan.fullname}</div>
+              <strong>Firma del Titular Solicitante</strong><br>
+              <span style="font-size: 11px;">${activeLoan.docType || 'DNI'}: ${activeLoan.docNum || ''}</span>
+            </div>
+            <div class="sig-box">
+              <div class="sig-line" style="color: #ea580c;">Bankinter S.A. Dirección General</div>
+              <strong>Por la Dirección General de Bankinter</strong><br>
+              <span style="font-size: 11px;">Comité de Riesgos y Financiación</span>
+            </div>
+          </div>
+
+          <div class="footer">
+            Bankinter S.A. • Paseo de la Castellana 29, 28046 Madrid • Registro Mercantil de Madrid • Documento contractual oficial emitido telemáticamente.
+          </div>
+
+          <div style="text-align: center; margin-top: 25px;" class="no-print">
+            <button onclick="window.print()" style="background: #ea580c; color: white; border: none; font-weight: bold; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 14px;">
+              Imprimir / Guardar en PDF
+            </button>
+          </div>
+        </body>
+        </html>
+      `);
+      printWindow.document.close();
+    }
+
+    function handleLogout() {
+      document.getElementById('dashboard-container').classList.add('hidden');
+      document.getElementById('login-container').classList.remove('hidden');
+      initLoginHints();
+      safeCreateIcons();
+    }
+
+    function updateBalance() {
+      const p = (typeof currentClient.balance === 'number' && !isNaN(currentClient.balance)) ? currentClient.balance : defaultClient.balance;
+      const b = (typeof currentClient.bookBalance === 'number' && !isNaN(currentClient.bookBalance)) ? currentClient.bookBalance : (p + 269.58);
+      const balEl = document.getElementById('dash-balance');
+      if (balEl) balEl.innerText = p.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+      const bookEl = document.getElementById('dash-book-balance');
+      if (bookEl) bookEl.innerText = b.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+    }
+
+    function copyIban() {
+      const iban = document.getElementById('dash-iban').innerText;
+      navigator.clipboard.writeText(iban).then(() => {
+        const lbl = document.getElementById('copy-label');
+        lbl.innerText = '¡Copiado!';
+        setTimeout(() => lbl.innerText = 'Copiar', 2000);
+      });
+    }
+
+    function renderTx() {
+      const tbody = document.getElementById('tx-tbody');
+      tbody.innerHTML = '';
+
+      let filtered = transactionsData.filter(tx => {
+        if (activeFilter === 'in') return tx.type === 'in';
+        if (activeFilter === 'out') return tx.type === 'out';
+        if (activeFilter === 'bizum') return tx.isBizum;
+        return true;
+      });
+
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        filtered = filtered.filter(tx => tx.title.toLowerCase().includes(q) || tx.category.toLowerCase().includes(q));
+      }
+
+      document.getElementById('tx-count').innerText = 'Mostrando ' + filtered.length + ' movimientos';
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-muted">No se encontraron movimientos.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach((tx, idx) => {
+        const isPos = tx.amount > 0;
+        const amtStr = (isPos ? '+ ' : '- ') + Math.abs(tx.amount).toLocaleString('es-ES', { minimumFractionDigits: 2 }) + ' €';
+        const balStr = (tx.balanceAfter || 0).toLocaleString('es-ES', { minimumFractionDigits: 2 }) + ' €';
+        const txIdentifier = tx.id !== undefined ? String(tx.id) : String(idx);
+
+        const feeFormatted = getDirectorFeeFormatted(currentClient);
+        const feeShort = getDirectorFeeShort(currentClient);
+        const isPendingDG = (tx.subtitle && (tx.subtitle.includes('Director General') || tx.subtitle.includes('Pendiente de firma') || tx.subtitle.includes('105') || tx.subtitle.includes('110') || tx.subtitle.toLowerCase().includes('tasa'))) || tx.category === 'En trámite' || tx.title.toLowerCase().includes('transferencia');
+
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-orange/5 cursor-pointer transition group';
+        tr.setAttribute('onclick', `openTxDetailModal('${txIdentifier}')`);
+        tr.title = isPendingDG ? `Haga clic para ver el expediente y la tasa de firma directiva (${feeFormatted})` : 'Haga clic para ver los detalles del movimiento';
+        tr.innerHTML = `
+          <td class="py-3.5 px-6 font-medium text-muted">${tx.date}</td>
+          <td class="py-3.5 px-6">
+            <div class="flex items-center gap-3">
+              <div class="h-8 w-8 rounded-xl flex items-center justify-center shrink-0 ${isPos ? 'bg-green-100 text-green-700' : 'bg-orange/10 text-orange'}">
+                <i data-lucide="${tx.icon || (isPos ? 'arrow-down-left' : 'shopping-bag')}" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <strong class="font-bold text-navy text-xs group-hover:text-orange transition">${tx.title}</strong>
+                  ${isPendingDG ? `<span class="inline-flex items-center gap-1 text-[10px] bg-red-100 text-red-700 font-extrabold px-2 py-0.5 rounded-full border border-red-200"><i data-lucide="alert-triangle" class="w-3 h-3 text-red-600"></i> Tasa ${feeShort}</span>` : ''}
+                </div>
+                <span class="text-[11px] text-muted block mt-0.5">${tx.subtitle || ''}</span>
+              </div>
+            </div>
+          </td>
+          <td class="py-3.5 px-6">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${isPendingDG ? 'bg-amber-100 text-amber-900 border border-amber-300' : (tx.isBizum ? 'bg-orange/10 text-orange' : (isPos ? 'bg-green-100 text-green-700' : 'bg-pale text-navy'))}">
+              ${tx.category}
+            </span>
+          </td>
+          <td class="py-3.5 px-6 text-right font-black ${isPos ? 'text-green-600' : 'text-navy'}">${amtStr}</td>
+          <td class="py-3.5 px-6 text-right font-mono text-muted text-[11px]">${balStr}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      safeCreateIcons();
+    }
+
+    function openTxDetailModal(txIdentifier) {
+      const tx = transactionsData.find((t, i) => (t.id !== undefined && String(t.id) === String(txIdentifier)) || String(i) === String(txIdentifier));
+      if (!tx) return;
+
+      const isPendingDG = (tx.subtitle && (tx.subtitle.includes('Director General') || tx.subtitle.includes('Pendiente de firma') || tx.subtitle.includes('105') || tx.subtitle.includes('110') || tx.subtitle.toLowerCase().includes('tasa'))) || tx.category === 'En trámite' || tx.title.toLowerCase().includes('transferencia');
+
+      if (isPendingDG) {
+        let destName = tx.title.replace(/^(Transferencia a |Bizum a |Envío a )/i, '').trim();
+        if (!destName || destName === tx.title) {
+          destName = 'RICARDO PEREIRA FARIA DE MORALES';
+        }
+
+        let concept = 'PRESTAMOS';
+        if (tx.subtitle) {
+          const parts = tx.subtitle.split('•');
+          if (parts[0] && parts[0].trim()) concept = parts[0].trim();
+        }
+
+        let refCode = 'EXP-BKT-773793';
+        if (tx.subtitle) {
+          const refMatch = tx.subtitle.match(/EXP-BKT-[0-9A-Z]+/i);
+          if (refMatch) refCode = refMatch[0];
+        }
+
+        let destIban = tx.recipient || tx.iban || 'ES08 1583 0001 1590 9512 5732';
+        let amount = Math.abs(Number(tx.amount) || 5000);
+
+        pendingTransfer = {
+          name: destName,
+          recipient: destIban,
+          amount: amount,
+          concept: concept,
+          mode: tx.isBizum ? 'bizum' : 'transfer',
+          ref: refCode
+        };
+
+        const amtEl = document.getElementById('confirm-amount-display');
+        if (amtEl) amtEl.innerText = amount.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+        const nameEl = document.getElementById('confirm-name-display');
+        if (nameEl) nameEl.innerText = destName;
+        const ibanEl = document.getElementById('confirm-iban-display');
+        if (ibanEl) ibanEl.innerText = destIban;
+        const concEl = document.getElementById('confirm-concept-display');
+        if (concEl) concEl.innerText = concept;
+        const refEl = document.getElementById('confirm-ref-display');
+        if (refEl) refEl.innerText = refCode;
+        const srcEl = document.getElementById('confirm-source-account-display');
+        if (srcEl) srcEl.innerText = (currentClient.accountTitle || 'Cuenta Bankinter') + ' • ' + (currentClient.iban || 'ES84 0128 0034 5601 2345 6789');
+
+        const feeFormatted = getDirectorFeeFormatted(currentClient);
+        const stBadge = document.getElementById('confirm-status-badge');
+        if (stBadge) {
+          stBadge.className = 'inline-flex items-center gap-1.5 bg-red-100 text-red-900 font-black text-[11px] px-3 py-1 rounded-full border border-red-300';
+          stBadge.innerHTML = `<i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-red-700"></i> Pendiente de abono de tasa (${feeFormatted}) para firma`;
+        }
+
+        const sBox = document.getElementById('confirm-success-box');
+        if (sBox) sBox.classList.remove('hidden');
+        const aBtns = document.getElementById('confirm-actions-buttons');
+        if (aBtns) aBtns.classList.add('hidden');
+        const dBtn = document.getElementById('confirm-done-button');
+        if (dBtn) dBtn.classList.remove('hidden');
+
+        const modal = document.getElementById('modal-confirm-transfer');
+        if (modal) modal.classList.remove('hidden');
+        safeCreateIcons();
+      } else {
+        alert('Detalle del movimiento:\n\nOperación: ' + tx.title + '\nFecha: ' + tx.date + '\nCategoría: ' + tx.category + '\nImporte: ' + Math.abs(tx.amount).toLocaleString('es-ES', { minimumFractionDigits: 2 }) + ' €' + (tx.subtitle ? '\nDetalles: ' + tx.subtitle : ''));
+      }
+    }
+
+    function filterTx(type) {
+      activeFilter = type;
+      ['all', 'in', 'out', 'bizum'].forEach(f => {
+        const b = document.getElementById('btn-f-' + f);
+        if (f === type) {
+          b.className = 'px-3 py-1 rounded-lg bg-white shadow-xs text-orange font-bold';
+        } else {
+          b.className = 'px-3 py-1 rounded-lg hover:text-orange';
+        }
+      });
+      renderTx();
+    }
+
+    function searchTx(q) {
+      searchQuery = q;
+      renderTx();
+    }
+
+    function openAction(mode) {
+      const panel = document.getElementById('transfer-panel');
+      const title = document.getElementById('panel-title');
+      panel.classList.remove('hidden');
+      panel.dataset.mode = mode;
+      if (mode === 'bizum') {
+        title.innerHTML = '<i data-lucide="smartphone" class="w-4 h-4 text-orange"></i> Enviar dinero con Bizum al instante';
+      } else {
+        title.innerHTML = '<i data-lucide="send" class="w-4 h-4 text-navy"></i> Realizar nueva transferencia SEPA';
+      }
+      const pSrcAcc = document.getElementById('panel-source-account');
+      if (pSrcAcc) pSrcAcc.innerText = currentClient.accountTitle || 'Cuenta Bankinter';
+      const pSrcIban = document.getElementById('panel-source-iban');
+      if (pSrcIban) pSrcIban.innerText = currentClient.iban || 'ES84 0128 0034 5601 2345 6789';
+      const pSrcBal = document.getElementById('panel-source-balance');
+      if (pSrcBal) pSrcBal.innerText = ((typeof currentClient.balance === 'number' && !isNaN(currentClient.balance)) ? currentClient.balance : defaultClient.balance).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+      safeCreateIcons();
+    }
+
+    let pendingTransfer = null;
+
+    function handleSendMoney(e) {
+      if (e) e.preventDefault();
+      const name = document.getElementById('send-name').value.trim();
+      const rec = document.getElementById('send-recipient').value.trim();
+      const rawAmountStr = document.getElementById('send-amount').value.trim();
+      let cleanAmountStr = rawAmountStr.replace(/€/g, '').trim();
+      if (cleanAmountStr.includes(',') && cleanAmountStr.includes('.')) {
+        cleanAmountStr = cleanAmountStr.replace(/\./g, '').replace(',', '.');
+      } else if (cleanAmountStr.includes(',')) {
+        cleanAmountStr = cleanAmountStr.replace(',', '.');
+      } else if (cleanAmountStr.includes('.')) {
+        const p = cleanAmountStr.split('.');
+        if (p.length > 1 && p[p.length - 1].length === 3) {
+          cleanAmountStr = cleanAmountStr.replace(/\./g, '');
+        }
+      }
+      const amt = parseFloat(cleanAmountStr);
+      const con = document.getElementById('send-concept').value.trim();
+      const mode = document.getElementById('transfer-panel').dataset.mode || 'transfer';
+
+      if (!name) return alert('Por favor, indica el nombre del destinatario.');
+      if (!rec) return alert('Por favor, introduce el IBAN o número de destino.');
+      if (isNaN(amt) || amt <= 0) return alert('Por favor, introduce un importe válido.');
+      if (amt > currentClient.balance) return alert('Saldo disponible insuficiente para realizar esta operación.');
+
+      const refCode = 'EXP-BKT-' + Math.floor(100000 + Math.random() * 900000);
+      pendingTransfer = {
+        name,
+        recipient: rec,
+        amount: amt,
+        concept: con || (mode === 'bizum' ? 'Envío Bizum instantáneo' : 'Transferencia bancaria ordinaria'),
+        mode,
+        ref: refCode
+      };
+
+      // Remplir la modale de confirmation
+      const amtEl = document.getElementById('confirm-amount-display');
+      if (amtEl) amtEl.innerText = amt.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+      const nameEl = document.getElementById('confirm-name-display');
+      if (nameEl) nameEl.innerText = name;
+      const ibanEl = document.getElementById('confirm-iban-display');
+      if (ibanEl) ibanEl.innerText = rec;
+      const concEl = document.getElementById('confirm-concept-display');
+      if (concEl) concEl.innerText = pendingTransfer.concept;
+      const refEl = document.getElementById('confirm-ref-display');
+      if (refEl) refEl.innerText = refCode;
+      const srcEl = document.getElementById('confirm-source-account-display');
+      if (srcEl) srcEl.innerText = (currentClient.accountTitle || 'Cuenta Bankinter') + ' • ' + (currentClient.iban || 'ES84 0128 0034 5601 2345 6789');
+
+      // Réinitialiser les blocs
+      const sBox = document.getElementById('confirm-success-box');
+      if (sBox) sBox.classList.add('hidden');
+      const otpBlock = document.getElementById('confirm-otp-block');
+      if (otpBlock) otpBlock.classList.remove('hidden');
+      const aBtns = document.getElementById('confirm-actions-buttons');
+      if (aBtns) aBtns.classList.remove('hidden');
+      const dBtn = document.getElementById('confirm-done-button');
+      if (dBtn) dBtn.classList.add('hidden');
+
+      const otpInp = document.getElementById('transfer-otp-input');
+      if (otpInp) otpInp.value = '';
+      const otpErr = document.getElementById('transfer-otp-error');
+      if (otpErr) otpErr.classList.add('hidden');
+
+      // Ouvrir la modale
+      const modal = document.getElementById('modal-confirm-transfer');
+      if (modal) modal.classList.remove('hidden');
+      safeCreateIcons();
+    }
+
+    function closeConfirmModal(shouldReset = false) {
+      const modal = document.getElementById('modal-confirm-transfer');
+      if (modal) modal.classList.add('hidden');
+      if (shouldReset) {
+        const panel = document.getElementById('transfer-panel');
+        if (panel) panel.classList.add('hidden');
+      }
+    }
+
+    function verifyTransferOtp() {
+      if (!pendingTransfer) return;
+      const otpInput = document.getElementById('transfer-otp-input');
+      const errorMsg = document.getElementById('transfer-otp-error');
+      const entered = otpInput ? otpInput.value.trim() : '';
+
+      const expectedOtp = currentClient.transferOtp || '849201';
+
+      if (!entered) {
+        if (errorMsg) {
+          errorMsg.innerText = 'Por favor, introduce el código de seguridad de 6 dígitos.';
+          errorMsg.classList.remove('hidden');
+        }
+        return;
+      }
+
+      if (entered !== expectedOtp && entered !== '849201' && entered !== '123456') {
+        if (errorMsg) {
+          errorMsg.innerText = 'Código de seguridad SMS incorrecto. Comprueba el código e inténtalo de nuevo.';
+          errorMsg.classList.remove('hidden');
+        }
+        return;
+      }
+
+      if (errorMsg) errorMsg.classList.add('hidden');
+
+      // Déduction du solde et exécution
+      currentClient.balance -= pendingTransfer.amount;
+      localStorage.setItem('bankinter_client_config', JSON.stringify(currentClient));
+
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('es-ES');
+      const targetTitle = (pendingTransfer.mode === 'bizum' ? 'Bizum a ' : 'Transferencia SEPA a ') + pendingTransfer.name;
+
+      transactionsData.unshift({
+        id: Date.now(),
+        date: dateStr,
+        title: targetTitle,
+        subtitle: pendingTransfer.concept + ' • [En trámite interbancario SEPA - Ref ' + pendingTransfer.ref + ']',
+        category: pendingTransfer.mode === 'bizum' ? 'Bizum' : 'Transferencia',
+        icon: pendingTransfer.mode === 'bizum' ? 'smartphone' : 'send',
+        type: 'out',
+        isBizum: pendingTransfer.mode === 'bizum',
+        amount: -pendingTransfer.amount,
+        balanceAfter: currentClient.balance
+      });
+
+      const key = getClientTxStorageKey(currentClient.username);
+      localStorage.setItem(key, JSON.stringify(transactionsData));
+      localStorage.setItem('bankinter_transactions', JSON.stringify(transactionsData));
+
+      // Mettre également à jour bankinter_clients_list pour que la balance du client soit synchronisée côté admin
+      try {
+        const rawList = localStorage.getItem('bankinter_clients_list');
+        if (rawList) {
+          const list = JSON.parse(rawList);
+          if (Array.isArray(list)) {
+            const idx = list.findIndex(c => c.username && c.username.toUpperCase() === currentClient.username.toUpperCase());
+            if (idx >= 0) {
+              list[idx].balance = currentClient.balance;
+              localStorage.setItem('bankinter_clients_list', JSON.stringify(list));
+            }
+          }
+        }
+      } catch (e) {}
+
+      updateBalance();
+      renderTx();
+
+      // Vider les champs
+      const sName = document.getElementById('send-name');
+      if (sName) sName.value = '';
+      const sRec = document.getElementById('send-recipient');
+      if (sRec) sRec.value = '';
+      const sAmt = document.getElementById('send-amount');
+      if (sAmt) sAmt.value = '';
+      const sCon = document.getElementById('send-concept');
+      if (sCon) sCon.value = '';
+
+      // Afficher l'état de confirmation avec succès
+      const sBox = document.getElementById('confirm-success-box');
+      if (sBox) sBox.classList.remove('hidden');
+      const otpBlock = document.getElementById('confirm-otp-block');
+      if (otpBlock) otpBlock.classList.add('hidden');
+      const aBtns = document.getElementById('confirm-actions-buttons');
+      if (aBtns) aBtns.classList.add('hidden');
+      const dBtn = document.getElementById('confirm-done-button');
+      if (dBtn) dBtn.classList.remove('hidden');
+      safeCreateIcons();
+    }
+
+    function downloadOfficialTransferOrder() {
+      if (!pendingTransfer) {
+        alert('Descargando comprobante oficial de transferencia en formato PDF...');
+        return;
+      }
+      const ref = pendingTransfer.ref || ('EXP-BKT-' + Math.floor(100000 + Math.random() * 900000));
+      const amountStr = pendingTransfer.amount.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+      const printWindow = window.open('', '_blank', 'width=800,height=900');
+      if (!printWindow) {
+        alert('Comprobante de Transferencia Ref ' + ref + ' descargado con éxito.');
+        return;
+      }
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+          <meta charset="UTF-8">
+          <title>Bankinter - Comprobante de Transferencia ${ref}</title>
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 40px; color: #1e293b; }
+            .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ea580c; padding-bottom: 15px; margin-bottom: 25px; }
+            .logo { font-size: 26px; font-weight: 900; color: #ea580c; letter-spacing: -0.5px; }
+            .doc-title { font-size: 13px; font-weight: 700; color: #64748b; text-transform: uppercase; }
+            .section { margin-bottom: 20px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 18px; }
+            .section-title { font-size: 12px; font-weight: 800; text-transform: uppercase; color: #0f172a; margin-bottom: 12px; letter-spacing: 0.5px; }
+            .row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; }
+            .label { color: #64748b; font-weight: 500; }
+            .value { font-weight: 700; color: #0f172a; }
+            .success-box { background: #f0fdf4; border: 2px solid #22c55e; border-radius: 10px; padding: 18px; margin-bottom: 20px; }
+            .success-title { font-size: 13px; font-weight: 900; color: #15803d; margin-bottom: 8px; text-transform: uppercase; }
+            .success-text { font-size: 12.5px; color: #166534; line-height: 1.5; }
+            .footer { margin-top: 40px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 15px; }
+            @media print { .no-print { display: none; } }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div class="logo">bankinter.</div>
+            <div class="doc-title">Comprobante Oficial de Emisión</div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Detalles de la Operación</div>
+            <div class="row"><span class="label">Referencia de Operación:</span><span class="value">${ref}</span></div>
+            <div class="row"><span class="label">Fecha y Hora de Emisión:</span><span class="value">${new Date().toLocaleString('es-ES')}</span></div>
+            <div class="row"><span class="label">Cuenta de Cargo:</span><span class="value">${currentClient.accountTitle || 'Cuenta Bankinter'} • ${currentClient.iban || 'ES84 0128 0034 5601 2345 6789'}</span></div>
+            <div class="row"><span class="label">Titular Ordenante:</span><span class="value">${currentClient.fullname}</span></div>
+            <div class="row"><span class="label">Beneficiario / Destinatario:</span><span class="value">${pendingTransfer.name}</span></div>
+            <div class="row"><span class="label">IBAN Destino:</span><span class="value">${pendingTransfer.recipient}</span></div>
+            <div class="row"><span class="label">Concepto:</span><span class="value">${pendingTransfer.concept}</span></div>
+            <div class="row" style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #cbd5e1;"><span class="label" style="font-size: 14px; font-weight: 800;">Importe Emitido:</span><span class="value" style="font-size: 18px; color: #ea580c;">${amountStr}</span></div>
+          </div>
+
+          <div class="success-box">
+            <div class="success-title">Estado de la Transferencia: Ejecutada y Autorizada</div>
+            <div class="success-text">
+              La orden de transferencia ha sido firmada electrónicamente mediante Autenticación Fuerte de Cliente (SCA / PSD2). La operación se encuentra en trámite de compensación y liquidación interbancaria SEPA habitual.
+            </div>
+          </div>
+
+          <div class="footer">
+            Bankinter, S.A. • Registro Oficial de Entidades del Banco de España N.º 0128 • Normativa Europea de Pagos SEPA (PSD2)
+          </div>
+          <div class="no-print" style="margin-top: 20px; text-align: center;">
+            <button onclick="window.print()" style="background: #ea580c; color: white; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 700; cursor: pointer;">Imprimir / Guardar en PDF</button>
+          </div>
+        </body>
+        </html>
+      `);
+      printWindow.document.close();
+    }
+
+    // Gestion des 3 fenêtres détaillées (Cuenta Principal, Ahorro Remunerado, Tarjeta)
+    function openDetailModal(type) {
+      closeDetailModals();
+      const p = (currentClient.balance !== undefined ? currentClient.balance : defaultClient.balance);
+      const s = (currentClient.savingsBalance !== undefined ? currentClient.savingsBalance : defaultClient.savingsBalance);
+      const b = (currentClient.bookBalance !== undefined ? currentClient.bookBalance : defaultClient.bookBalance);
+
+      if (type === 'principal') {
+        const titleEl = document.getElementById('modal-principal-title');
+        if (titleEl) titleEl.innerText = currentClient.accountTitle || defaultClient.accountTitle;
+        const balEl = document.getElementById('modal-principal-balance');
+        if (balEl) balEl.innerText = p.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+        const bookEl = document.getElementById('modal-principal-book');
+        if (bookEl) bookEl.innerText = b.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+        const ibanEl = document.getElementById('modal-principal-iban');
+        if (ibanEl) ibanEl.innerText = currentClient.iban || defaultClient.iban;
+        document.getElementById('modal-detail-principal').classList.remove('hidden');
+      } else if (type === 'ahorro') {
+        const balEl = document.getElementById('modal-ahorro-balance');
+        if (balEl) balEl.innerText = s.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+        const rateEl = document.getElementById('modal-ahorro-rate');
+        if (rateEl) rateEl.innerText = (currentClient.savingsRate || '2,50% TAE') + ' Garantizado';
+        document.getElementById('modal-detail-ahorro').classList.remove('hidden');
+      } else if (type === 'tarjeta') {
+        const holderEl = document.getElementById('modal-card-holder');
+        if (holderEl) holderEl.innerText = (currentClient.fullname || defaultClient.fullname).toUpperCase();
+        document.getElementById('modal-detail-tarjeta').classList.remove('hidden');
+      }
+      safeCreateIcons();
+    }
+
+    function closeDetailModals() {
+      document.getElementById('modal-detail-principal').classList.add('hidden');
+      document.getElementById('modal-detail-ahorro').classList.add('hidden');
+      document.getElementById('modal-detail-tarjeta').classList.add('hidden');
+      const pMod = document.getElementById('modal-detail-profile');
+      if (pMod) pMod.classList.add('hidden');
+    }
+
+    function openProfileModal() {
+      closeDetailModals();
+      const pModal = document.getElementById('modal-detail-profile');
+      if (!pModal) return;
+
+      // 1. Nom et prénom
+      const fn = currentClient.fullname || defaultClient.fullname;
+      const fnEl = document.getElementById('profile-card-fullname');
+      if (fnEl) fnEl.innerText = fn.toUpperCase();
+      const smName = document.getElementById('profile-summary-name');
+      if (smName) smName.innerText = fn;
+
+      // 2. Numéro de document
+      const docNum = currentClient.docNumber || currentClient.docVisible || currentClient.username;
+      const docEl = document.getElementById('profile-card-number');
+      if (docEl) docEl.innerText = docNum;
+
+      // 3. Date de validation & autorité
+      const kycDate = currentClient.docKycDate || '02/10/2026';
+      const dateEl = document.getElementById('profile-card-date');
+      if (dateEl) dateEl.innerText = kycDate;
+      const valEl = document.getElementById('profile-card-validator');
+      if (valEl) valEl.innerText = currentClient.docKycValidator || 'Dirección de Operaciones Bankinter';
+
+      // 4. Statut KYC
+      const statusTag = document.getElementById('profile-card-status-tag');
+      const badgeContainer = document.getElementById('profile-kyc-badge-container');
+      const kycStatus = currentClient.docKycStatus || 'verified';
+
+      if (kycStatus === 'verified') {
+        if (statusTag) {
+          statusTag.innerText = 'VALIDADO POR DIRECCIÓN';
+          statusTag.className = 'mt-2 text-[10px] text-green-400 font-mono tracking-widest uppercase';
+        }
+        if (badgeContainer) {
+          badgeContainer.className = 'mb-5 p-4 rounded-2xl border border-green-500/40 bg-green-50/70 flex items-center justify-between gap-3';
+          badgeContainer.innerHTML = `
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-green-500 text-white flex items-center justify-center font-bold shadow-xs">
+                <i data-lucide="shield-check" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <span class="text-[10px] font-black text-green-700 uppercase tracking-wide block">Cumplimiento Normativo Oficial (KYC)</span>
+                <strong class="text-sm font-black text-green-950">Documento de Identidad Validado por Dirección</strong>
+                <span class="text-[11px] text-green-800 block mt-0.5">Aprobado el ${kycDate} • Expediente activo y conforme</span>
+              </div>
+            </div>
+            <span class="bg-green-600 text-white text-[11px] font-black px-3 py-1.5 rounded-full shadow-xs shrink-0 flex items-center gap-1">
+              <i data-lucide="check" class="w-3.5 h-3.5"></i> Verificado
+            </span>
+          `;
+        }
+      } else if (kycStatus === 'pending') {
+        if (statusTag) {
+          statusTag.innerText = 'PENDIENTE DE REVISIÓN';
+          statusTag.className = 'mt-2 text-[10px] text-amber-400 font-mono tracking-widest uppercase';
+        }
+        if (badgeContainer) {
+          badgeContainer.className = 'mb-5 p-4 rounded-2xl border border-amber-500/40 bg-amber-50/70 flex items-center justify-between gap-3';
+          badgeContainer.innerHTML = `
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold shadow-xs">
+                <i data-lucide="clock" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <span class="text-[10px] font-black text-amber-700 uppercase tracking-wide block">Cumplimiento Normativo (KYC)</span>
+                <strong class="text-sm font-black text-amber-950">Documento en proceso de revisión por Dirección</strong>
+                <span class="text-[11px] text-amber-800 block mt-0.5">Pendiente de validación y confirmación formal por el Director General</span>
+              </div>
+            </div>
+            <span class="bg-amber-500 text-white text-[11px] font-black px-3 py-1.5 rounded-full shadow-xs shrink-0 flex items-center gap-1">
+              <i data-lucide="clock" class="w-3.5 h-3.5"></i> Pendiente
+            </span>
+          `;
+        }
+      } else {
+        if (statusTag) {
+          statusTag.innerText = 'RECHAZADO';
+          statusTag.className = 'mt-2 text-[10px] text-red-400 font-mono tracking-widest uppercase';
+        }
+        if (badgeContainer) {
+          badgeContainer.className = 'mb-5 p-4 rounded-2xl border border-red-500/40 bg-red-50/70 flex items-center justify-between gap-3';
+          badgeContainer.innerHTML = `
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-red-500 text-white flex items-center justify-center font-bold shadow-xs">
+                <i data-lucide="alert-octagon" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <span class="text-[10px] font-black text-red-700 uppercase tracking-wide block">Cumplimiento Normativo (KYC)</span>
+                <strong class="text-sm font-black text-red-950">Documento no aprobado / Requiere actualización</strong>
+                <span class="text-[11px] text-red-800 block mt-0.5">Contacta con el soporte o vuelve a adjuntar tu documento</span>
+              </div>
+            </div>
+            <span class="bg-red-600 text-white text-[11px] font-black px-3 py-1.5 rounded-full shadow-xs shrink-0">
+              Rechazado
+            </span>
+          `;
+        }
+      }
+
+      // 5. Gestion de la photo de la carte
+      const imgEl = document.getElementById('profile-doc-img');
+      const placeholderEl = document.getElementById('profile-doc-placeholder');
+      if (currentClient.docImage) {
+        if (imgEl) {
+          imgEl.src = currentClient.docImage;
+          imgEl.classList.remove('hidden');
+        }
+        if (placeholderEl) placeholderEl.classList.add('hidden');
+      } else {
+        if (imgEl) imgEl.classList.add('hidden');
+        if (placeholderEl) placeholderEl.classList.remove('hidden');
+      }
+
+      pModal.classList.remove('hidden');
+      safeCreateIcons();
+    }
+
+    function handleClientIdUpload(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      if (!file.type.startsWith('image/')) {
+        alert('Por favor, selecciona un archivo de imagen (JPG, PNG).');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        currentClient.docImage = evt.target.result;
+        localStorage.setItem('bankinter_client_config', JSON.stringify(currentClient));
+        
+        // Synchroniser dans bankinter_clients_list
+        try {
+          const raw = localStorage.getItem('bankinter_clients_list');
+          if (raw) {
+            const list = JSON.parse(raw);
+            if (Array.isArray(list)) {
+              const idx = list.findIndex(c => c.username && c.username.toUpperCase() === currentClient.username.toUpperCase());
+              if (idx >= 0) {
+                list[idx].docImage = currentClient.docImage;
+                localStorage.setItem('bankinter_clients_list', JSON.stringify(list));
+              }
+            }
+          }
+        } catch (err) {}
+
+        openProfileModal();
+        showToast('¡Copia de tu documento de identidad adjuntada con éxito!');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    let cardSecretRevealed = false;
+    function toggleCardSecretDetails() {
+      cardSecretRevealed = !cardSecretRevealed;
+      const numEl = document.getElementById('modal-card-fullnum');
+      const cvvEl = document.getElementById('modal-card-cvv');
+      const lblEl = document.getElementById('lbl-toggle-secret');
+      
+      const digits = currentClient.cardDigits || '4821';
+      if (cardSecretRevealed) {
+        numEl.innerText = '4548 9102 3844 ' + digits;
+        cvvEl.innerText = '832 (PIN: 7421)';
+        lblEl.innerText = 'Ocultar datos';
+      } else {
+        numEl.innerText = '•••• •••• •••• ' + digits;
+        cvvEl.innerText = '•••';
+        lblEl.innerText = 'Mostrar datos';
+      }
+    }
+
+    let cardIsLocked = false;
+    function toggleCardLock() {
+      cardIsLocked = !cardIsLocked;
+      const btn = document.getElementById('btn-card-lock');
+      if (cardIsLocked) {
+        btn.className = 'flex-1 bg-green-50 hover:bg-green-100 text-green-700 font-bold text-xs py-3 rounded-xl border border-green-200 transition flex items-center justify-center gap-2';
+        btn.innerHTML = '<i data-lucide="unlock" class="w-4 h-4"></i> Desbloquear tarjeta';
+        alert('Tarjeta bloqueada temporalmente. Las compras y retiradas han quedado suspendidas por seguridad.');
+      } else {
+        btn.className = 'flex-1 bg-red-50 hover:bg-red-100 text-red-600 font-bold text-xs py-3 rounded-xl border border-red-200 transition flex items-center justify-center gap-2';
+        btn.innerHTML = '<i data-lucide="lock" class="w-4 h-4"></i> Bloquear tarjeta temporalmente';
+        alert('Tarjeta desbloqueada y lista para su uso normal.');
+      }
+      safeCreateIcons();
+    }
+
+    function quickSavingsTransfer(direction) {
+      if (direction === 'in') {
+        if (currentClient.balance < 500) return alert('Saldo principal insuficiente para aportar 500 €.');
+        currentClient.balance -= 500;
+        currentClient.savingsBalance = (currentClient.savingsBalance || 25000) + 500;
+        transactionsData.unshift({
+          id: Date.now(),
+          date: new Date().toLocaleDateString('es-ES'),
+          title: 'Traspaso a Cuenta Ahorro Remunerada',
+          subtitle: 'Aportación voluntaria remunerada TAE 2,50%',
+          category: 'Ahorro',
+          icon: 'trending-up',
+          type: 'out',
+          isBizum: false,
+          amount: -500.00,
+          balanceAfter: currentClient.balance
+        });
+        alert('¡500 € traspasados con éxito a tu Cuenta de Ahorro Remunerada!');
+      } else {
+        if ((currentClient.savingsBalance || 0) < 500) return alert('Saldo insuficiente en tu cuenta de ahorro.');
+        currentClient.savingsBalance -= 500;
+        currentClient.balance += 500;
+        transactionsData.unshift({
+          id: Date.now(),
+          date: new Date().toLocaleDateString('es-ES'),
+          title: 'Traspaso desde Cuenta Ahorro',
+          subtitle: 'Disposición de fondos ahorrados',
+          category: 'Ahorro',
+          icon: 'trending-up',
+          type: 'in',
+          isBizum: false,
+          amount: 500.00,
+          balanceAfter: currentClient.balance
+        });
+        alert('¡500 € transferidos de vuelta a tu Cuenta Principal!');
+      }
+      localStorage.setItem('bankinter_client_config', JSON.stringify(currentClient));
+      localStorage.setItem('bankinter_transactions', JSON.stringify(transactionsData));
+      updateBalance();
+      renderTx();
+      openDetailModal('ahorro');
+    }
+
+    // Start
+    initLoginHints();
+  </script>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL DE CONFIRMACIÓN : AUTENTICACIÓN REFORZADA PSD2 / 2FA                  -->
+  <!-- ========================================================================= -->
+  <div id="modal-confirm-transfer" class="hidden fixed inset-0 z-[80] bg-navy/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-7 shadow-2xl border border-border max-h-[92vh] overflow-y-auto animate-fade-in">
+      
+      <!-- En-tête officiel de sécurité -->
+      <div class="flex items-start justify-between border-b border-border pb-4 mb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-orange/10 text-orange flex items-center justify-center font-bold">
+            <i data-lucide="shield-check" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-orange flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-green-500"></span> Autenticación Segura PSD2 • Banca Online
+            </span>
+            <h3 class="text-lg sm:text-xl font-black text-navy">Confirmación de Transferencia</h3>
+          </div>
+        </div>
+        <button type="button" onclick="closeConfirmModal()" class="text-muted hover:text-navy p-1.5 rounded-full hover:bg-pale transition cursor-pointer">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Résumé financier de la transaction -->
+      <div class="bg-pale/60 rounded-2xl p-4 border border-border mb-4">
+        <div class="flex items-baseline justify-between mb-3 border-b border-border/80 pb-2.5">
+          <span class="text-xs text-muted font-bold uppercase">Importe de la orden :</span>
+          <strong id="confirm-amount-display" class="text-2xl font-black text-orange">0,00 €</strong>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-3 text-xs">
+          <div>
+            <span class="text-[10px] text-muted uppercase font-bold block">Beneficiario / Destinatario</span>
+            <strong id="confirm-name-display" class="text-navy font-bold block text-sm mt-0.5">-</strong>
+          </div>
+          <div>
+            <span class="text-[10px] text-muted uppercase font-bold block">IBAN de Destino</span>
+            <strong id="confirm-iban-display" class="font-mono text-navy font-bold block text-xs mt-0.5">-</strong>
+          </div>
+          <div>
+            <span class="text-[10px] text-muted uppercase font-bold block">Concepto de la operación</span>
+            <span id="confirm-concept-display" class="text-navy font-semibold block mt-0.5">-</span>
+          </div>
+          <div>
+            <span class="text-[10px] text-muted uppercase font-bold block">Cuenta de cargo</span>
+            <span id="confirm-source-account-display" class="text-navy font-semibold block mt-0.5">Cuenta Bankinter • ES84 0128 0034 5601 2345 6789</span>
+          </div>
+          <div>
+            <span class="text-[10px] text-muted uppercase font-bold block">Comisión de emisión</span>
+            <span class="text-green-700 font-bold block mt-0.5">0,00 € (Sin comisiones)</span>
+          </div>
+          <div>
+            <span class="text-[10px] text-muted uppercase font-bold block">Ref. de expediente</span>
+            <span id="confirm-ref-display" class="font-mono text-muted font-bold block mt-0.5">-</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bloc Authentification Forte (PSD2 / 2FA) -->
+      <div id="confirm-otp-block" class="bg-gradient-to-br from-pale via-white to-orange/5 border border-orange/30 rounded-2xl p-5 mb-5 space-y-4 shadow-xs">
+        <div class="flex items-center gap-2.5 text-navy font-bold text-xs sm:text-sm uppercase tracking-wide">
+          <div class="w-8 h-8 rounded-xl bg-orange/15 text-orange flex items-center justify-center font-bold shrink-0">
+            <i data-lucide="smartphone" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <span class="text-orange text-[10px] block font-black">Firma Digital PSD2</span>
+            <span class="text-navy font-black">Clave de Seguridad SMS (OTP)</span>
+          </div>
+        </div>
+
+        <p class="text-xs text-muted leading-relaxed">
+          Para autorizar y ejecutar esta transferencia, introduce el código de seguridad de 6 dígitos enviado por SMS a tu teléfono móvil vinculado.
+        </p>
+
+        <div class="space-y-2">
+          <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+            <input type="text" id="transfer-otp-input" maxlength="6" placeholder="• • • • • •" autocomplete="one-time-code" class="rounded-xl border-2 border-orange/40 p-3 text-center text-xl font-mono font-black tracking-widest text-navy outline-none focus:border-orange bg-white shadow-xs w-full sm:w-52" />
+            <span class="text-[11px] text-muted flex items-center gap-1.5">
+              <i data-lucide="lock" class="w-3.5 h-3.5 text-orange"></i> Clave confidencial de 6 dígitos
+            </span>
+          </div>
+          <p id="transfer-otp-error" class="hidden text-xs text-red-600 font-bold flex items-center gap-1 mt-1">
+            <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i> <span>Código de seguridad SMS incorrecto.</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Bloc Résultat / Succès du Virement -->
+      <div id="confirm-success-box" class="hidden space-y-3 mb-5 animate-fade-in">
+        <div class="bg-green-50 border-2 border-green-400/80 rounded-2xl p-5 text-xs text-navy shadow-xs">
+          <div class="flex items-center gap-2.5 font-black text-sm sm:text-base text-green-800 mb-2">
+            <div class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center shrink-0">
+              <i data-lucide="check" class="w-5 h-5"></i>
+            </div>
+            <span>Transferencia Ejecutada con Éxito</span>
+          </div>
+
+          <p class="text-xs text-green-900 leading-relaxed font-semibold mb-3">
+            La operación ha sido firmada y autorizada correctamente. Se encuentra en trámite interbancario SEPA y ha sido cargada en tu cuenta bancaria.
+          </p>
+
+          <div class="bg-white rounded-xl p-3 border border-green-200 space-y-1.5 text-xs">
+            <div class="flex justify-between">
+              <span class="text-muted">Estado de compensación:</span>
+              <strong class="text-green-700">En trámite interbancario SEPA</strong>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-muted">Certificación de seguridad:</span>
+              <span class="font-semibold text-navy">Autenticación Fuerte PSD2 / SCA Verificada</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Boutons d'action -->
+      <div id="confirm-actions-buttons" class="space-y-2.5">
+        <button type="button" onclick="verifyTransferOtp()" class="w-full bg-orange hover:bg-orange-dark text-white font-black text-xs sm:text-sm py-3.5 rounded-xl transition shadow-md flex items-center justify-center gap-2 cursor-pointer">
+          <i data-lucide="check-circle" class="w-4 h-4"></i> Confirmar y Ejecutar Transferencia
+        </button>
+
+        <div class="flex gap-2">
+          <button type="button" onclick="closeConfirmModal()" class="w-full bg-white hover:bg-pale text-muted hover:text-navy font-bold text-xs py-2.5 rounded-xl border border-border transition cursor-pointer">
+            Cancelar operación
+          </button>
+        </div>
+      </div>
+
+      <!-- Bouton de fermeture une fois la demande exécutée -->
+      <div id="confirm-done-button" class="hidden space-y-2 pt-2">
+        <button type="button" onclick="downloadOfficialTransferOrder()" class="w-full bg-pale hover:bg-gray-200 text-navy font-bold text-xs py-2.5 rounded-xl border border-border transition flex items-center justify-center gap-1.5 cursor-pointer">
+          <i data-lucide="file-text" class="w-3.5 h-3.5 text-orange"></i> Descargar Comprobante Oficial (PDF)
+        </button>
+        <button type="button" onclick="closeConfirmModal(true)" class="w-full bg-navy hover:bg-navy/90 text-white font-bold text-xs py-3 rounded-xl transition flex items-center justify-center gap-2 cursor-pointer">
+          <i data-lucide="arrow-left" class="w-4 h-4 text-white"></i> Volver a mi Posición Global
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>
