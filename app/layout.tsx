@@ -3,8 +3,8 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Bankinter.es | Tu banco, más cerca',
-  description: 'Soluciones bancarias sencillas para tus planes y proyectos.',
+  title: 'Bankinter.es - El banco que cambia contigo',
+  description: 'Portal bancario oficial Bankinter con acceso a Banca Online, préstamos, hipotecas y cuentas.',
   generator: 'v0.app',
   icons: {
     icon: [
