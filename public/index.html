@@ -410,125 +410,7 @@
     </div>
   </div>
 
-  <!-- Home Active Loan Alert Banner (Visible sur la page principale publique quand un prêt est en cours) -->
-  <div id="home-loan-banner" class="hidden bg-gradient-to-r from-orange via-amber-600 to-orange text-white py-3 px-5 shadow-md">
-    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs">
-      <div class="flex items-center gap-2.5">
-        <span class="bg-white/20 p-1.5 rounded-xl flex items-center justify-center"><i data-lucide="file-check" class="w-4 h-4 text-white"></i></span>
-        <span>
-          <strong>Expediente de Préstamo a Dirección (Ref <span id="home-loan-ref" class="font-mono underline">...</span>)</strong> : Solicitud de <strong id="home-loan-amount" class="text-white underline">...</strong> registrada en trámite de aprobación por Dirección General.
-        </span>
-      </div>
-      <button onclick="openLoginModal(false)" class="bg-navy hover:bg-navy/90 text-white font-bold px-4 py-1.5 rounded-xl transition flex items-center gap-1.5 shadow-sm cursor-pointer">
-        Ver expediente en mi Área de Clientes <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-      </button>
-    </div>
-  </div>
-
-  <!-- ========================================================================= -->
-  <!-- SECTION HAUT DU SITE : CATÁLOGO Real-Finanzas & PRÉSTAMO PARA TODOS          -->
-  <!-- ========================================================================= -->
-  <section class="bg-gradient-to-b from-[#fffaf7] via-white to-pale border-b border-border py-10 sm:py-14 px-5 relative overflow-hidden">
-    
-    <div class="max-w-7xl mx-auto space-y-8 relative z-10">
-      
-      <!-- En-tête : Inclusión Financiera & Titre officiel -->
-      <div class="text-center max-w-3xl mx-auto space-y-3">
-        <div class="inline-flex items-center gap-2 bg-orange/10 border border-orange/30 text-orange px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider shadow-2xs">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-orange"></i> Inclusión Financiera & Crecimiento Real-Finanzas
-        </div>
-
-        <h2 class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-navy uppercase">
-          PRÉSTAMO Real-Finanzas <span class="text-orange">PARA TODOS</span>
-        </h2>
-
-        <p class="text-muted text-sm sm:text-base leading-relaxed font-medium">
-          Un préstamo universal que une a todos los sectores de actividad: <strong>autónomos, comercios, empresas y familias</strong>. Soluciones de financiación a tu medida para cada etapa de tu vida y de tu negocio.
-        </p>
-      </div>
-
-      <!-- BOUTON ULTRA-VISIBLE : DEMANDER UN PRÊT -->
-      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 text-center">
-        <button onclick="openCategoryModal('prestamos')" class="w-full sm:w-auto bg-orange hover:bg-orange-dark text-white font-black text-sm sm:text-base px-8 sm:px-10 py-4 rounded-full shadow-xl hover:shadow-2xl transition transform hover:scale-105 flex items-center justify-center gap-3 border-2 border-white cursor-pointer group">
-          <span class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-            <i data-lucide="badge-percent" class="w-5 h-5 text-white"></i>
-          </span>
-          <span class="tracking-wide">SOLICITAR PRÉSTAMO ONLINE (3.000 € - 500.000 €)</span>
-          <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-1 transition"></i>
-        </button>
-
-        <button onclick="openLoginModal(false)" class="w-full sm:w-auto bg-white hover:bg-pale text-navy font-bold text-xs sm:text-sm px-6 py-4 rounded-full border border-border shadow-xs transition flex items-center justify-center gap-2 cursor-pointer">
-          <i data-lucide="user" class="w-4 h-4 text-orange"></i> Ver mi Posición / Solicitudes Activas
-        </button>
-      </div>
-
-      <!-- ========================================================================= -->
-      <!-- CATALOGUE AUTOMATIQUE OFFICIEL : CARROUSEL DES PRÊTS & FINANCEMENT (5 PHOTOS) -->
-      <!-- ========================================================================= -->
-      
-      <!-- ========================================================================= -->
-      <!-- CATALOGUE OFFICIEL & GALERIE DES 5 PRÊTS : 100% VISIBLE ET INTERACTIF     -->
-      <!-- ========================================================================= -->
-      <div id="auto-loan-catalog-section" class="w-full bg-white rounded-3xl p-5 sm:p-8 shadow-xl border-2 border-orange/40 space-y-7 relative overflow-hidden mt-6 mb-8">
-        
-        <!-- En-tête de la Galerie -->
-        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-5">
-          <div class="flex items-center gap-3">
-            <span class="w-12 h-12 rounded-2xl bg-orange text-white flex items-center justify-center font-black text-xl shadow-md">
-              R
-            </span>
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="text-[11px] font-black uppercase tracking-wider text-orange bg-orange/10 px-3 py-1 rounded-full">Galería Oficial de Préstamos</span>
-                <span class="inline-flex items-center gap-1 text-[11px] font-bold text-green-700 bg-green-50 px-2.5 py-0.5 rounded-full border border-green-200">
-                  <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> 5 Catálogos Disponibles
-                </span>
-              </div>
-              <h3 class="text-xl sm:text-2xl md:text-3xl font-black text-navy tracking-tight mt-1">
-                Todas las Soluciones de Financiación Real-Finanzas
-              </h3>
-              <p class="text-xs sm:text-sm text-muted">Explora nuestras 5 modalidades oficiales con tipos desde el 4,95% TAE y respuesta en 24 horas.</p>
-            </div>
-          </div>
-
-          <!-- Contrôles et badge -->
-          <div class="flex items-center gap-2">
-            <button type="button" onclick="scrollLoanGrid(-1)" class="w-10 h-10 rounded-xl bg-pale hover:bg-orange hover:text-white text-navy border border-border transition flex items-center justify-center cursor-pointer shadow-xs" title="Desplazar a la izquierda">
-              <i data-lucide="chevron-left" class="w-5 h-5"></i>
-            </button>
-            <button type="button" onclick="scrollLoanGrid(1)" class="w-10 h-10 rounded-xl bg-pale hover:bg-orange hover:text-white text-navy border border-border transition flex items-center justify-center cursor-pointer shadow-xs" title="Desplazar a la derecha">
-              <i data-lucide="chevron-right" class="w-5 h-5"></i>
-            </button>
-          </div>
-        </div>
-
-        <!-- ========================================================================= -->
-        <!-- GRILLE COMPLÈTE DES 5 PHOTOS : TOUTES LES PHOTOS VISIBLES SIMULTANÉMENT   -->
-        <!-- ========================================================================= -->
-        <div id="loan-full-gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
-          
-          <!-- CARTE 1 : prestamo-patrimonio.webp -->
-          <div class="bg-gradient-to-b from-[#fffaf7] to-white rounded-3xl border-2 border-orange/40 hover:border-orange p-4 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
-            <div class="space-y-3">
-              <div class="h-44 w-full rounded-2xl overflow-hidden bg-navy/10 relative shadow-xs">
-                <img src="prestamo-patrimonio.webp" alt="Préstamo Universal Bankinter Hogar y Coche" class="w-full h-full object-cover transform group-hover:scale-105 transition duration-500" />
-                <span class="absolute top-2.5 left-2.5 bg-orange text-white text-[10px] font-black uppercase px-2 py-0.5 rounded-full shadow-xs">
-                  🏡 🚗 Multiobjetivo
-                </span>
-              </div>
-              <div>
-                <h4 class="font-black text-navy text-base leading-snug group-hover:text-orange transition">
-                  1. Préstamo Universal
-                </h4>
-                <p class="text-[11px] text-muted mt-1 leading-relaxed">
-                  Para compra de vehículo, reformas integrales del hogar y grandes proyectos.
-                </p>
-              </div>
-              <div class="bg-pale/70 p-2.5 rounded-xl border border-border text-[11px] space-y-1">
-                <div class="flex justify-between"><span class="text-muted">Importe:</span><strong class="text-orange font-bold">3.000 € - 500.000 €</strong></div>
-                <div class="flex justify-between"><span class="text-muted">Tipo:</span><strong class="text-green-700 font-bold">Desde 4,95% TAE</strong></div>
-              </div>
-            </div>
+  
             <button type="button" onclick="openCategoryModal('prestamos')" class="mt-4 w-full bg-orange hover:bg-orange-dark text-white font-bold text-xs py-2.5 rounded-xl transition shadow-xs flex items-center justify-center gap-1.5 cursor-pointer">
               <i data-lucide="send" class="w-3.5 h-3.5"></i> Solicitar Préstamo
             </button>
@@ -2284,14 +2166,19 @@
       <form id="login-form" onsubmit="handleLogin(event); return false;" class="mt-5 space-y-4">
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-navy">Usuario / NIF / CIF</label>
-          <input type="text" id="login-username" value="71458923X" required class="mt-1.5 w-full rounded-xl border border-border px-4 py-3 text-sm text-navy font-semibold outline-none focus:border-orange bg-pale/30" placeholder="Ej. 12345678Z" />
+          <input type="text" id="login-username" value="" required class="mt-1.5 w-full rounded-xl border border-border px-4 py-3 text-sm text-navy font-semibold outline-none focus:border-orange bg-pale/30" placeholder="Introduce tu NIF, CIF o usuario" />
         </div>
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-navy">Contraseña de acceso</label>
-          <input type="password" id="login-password" value="••••••••" required class="mt-1.5 w-full rounded-xl border border-border px-4 py-3 text-sm text-navy font-semibold outline-none focus:border-orange bg-pale/30" placeholder="Introduce tu clave" />
+          <input type="password" id="login-password" value="" required class="mt-1.5 w-full rounded-xl border border-border px-4 py-3 text-sm text-navy font-semibold outline-none focus:border-orange bg-pale/30" placeholder="Introduce tu clave de acceso" />
         </div>
 
-        <button type="submit" class="w-full rounded-full bg-orange py-3.5 text-sm font-bold text-white hover:bg-orange-dark transition shadow-md flex items-center justify-center gap-2">
+        <div id="login-error-msg" class="hidden text-xs text-red-600 font-bold bg-red-50 p-2.5 rounded-xl border border-red-200 flex items-center gap-2">
+          <i data-lucide="alert-circle" class="w-4 h-4 shrink-0 text-red-600"></i>
+          <span>Identificación incorrecta. Introduce tu NIF y contraseña para acceder.</span>
+        </div>
+
+        <button type="submit" class="w-full rounded-full bg-orange py-3.5 text-sm font-bold text-white hover:bg-orange-dark transition shadow-md flex items-center justify-center gap-2 cursor-pointer">
           <i data-lucide="lock" class="w-4 h-4"></i> Entrar a mi espacio bancario
         </button>
       </form>
@@ -2299,9 +2186,7 @@
       <div class="mt-5 pt-4 border-t border-border flex items-center justify-between text-xs text-muted">
         <span class="flex items-center gap-1"><i data-lucide="shield-check" class="w-4 h-4 text-green-600"></i> Conexión cifrada 256 bits</span>
         <div class="flex items-center gap-3">
-          <button onclick="handleLogin(event)" class="text-orange font-bold hover:underline cursor-pointer">Acceso Demo Directo →</button>
-          <span>•</span>
-          <a href="cliente.html" class="text-navy font-bold hover:text-orange transition flex items-center gap-1">Página completa ↗</a>
+          <a href="cliente.html" class="text-navy font-bold hover:text-orange transition flex items-center gap-1">Página de acceso ↗</a>
         </div>
       </div>
     </div>
@@ -2969,19 +2854,20 @@
     const mobileMenu = document.getElementById('mobile-menu');
 
     window.openLoginModal = openLoginModal;
-    function openLoginModal(directToDashboard = false) {
+    function openLoginModal(forceDashboard = false) {
       try {
-        syncUIFromConfig();
         const modal = document.getElementById('login-modal');
         const lScreen = document.getElementById('login-screen');
         const bDash = document.getElementById('banking-dashboard');
+        const isAuth = sessionStorage.getItem('rf_session_auth') === 'true';
         
         if (modal) {
           modal.classList.remove('hidden');
           document.body.classList.add('overflow-hidden');
           
-          if (directToDashboard && bDash && lScreen) {
-            // Afficher directement le tableau de bord
+          // L'espace client créé dans l'admin ne s'affiche QUE SI l'utilisateur est authentifié
+          if (isAuth && bDash && lScreen) {
+            syncUIFromConfig();
             lScreen.classList.add('hidden');
             bDash.classList.remove('hidden');
             
@@ -2995,22 +2881,18 @@
             updateBalanceDisplay();
             renderActiveLoanCard();
           } else if (lScreen && bDash) {
-            // Afficher l'écran d'identification / Accès Client (formulaire avec identifiant et mot de passe)
+            // Non authentifié : afficher obligatoirement le formulaire de saisie VIDE
             lScreen.classList.remove('hidden');
             bDash.classList.add('hidden');
             
-            const cfg = getClientConfig();
+            const errEl = document.getElementById('login-error-msg');
+            if (errEl) errEl.classList.add('hidden');
+            
             const uInp = document.getElementById('login-username');
             const pInp = document.getElementById('login-password');
-            if (uInp && cfg && cfg.username) {
-              uInp.value = cfg.username;
-            }
-            if (pInp && cfg && cfg.password) {
-              pInp.value = cfg.password;
-            }
-            setTimeout(() => {
-              if (uInp) uInp.focus();
-            }, 100);
+            if (uInp) uInp.value = '';
+            if (pInp) pInp.value = '';
+            setTimeout(() => { if (uInp) uInp.focus(); }, 100);
           }
           
           if (window.lucide && typeof lucide.createIcons === 'function') {
@@ -3036,6 +2918,7 @@
     function closeLoginModal() {
       const modal = document.getElementById('login-modal');
       if (modal) modal.classList.add('hidden');
+      document.body.classList.remove('overflow-hidden');
     }
 
     if (loginModal) {
@@ -3052,62 +2935,65 @@
       try {
         const userInp = document.getElementById('login-username');
         const passInp = document.getElementById('login-password');
+        const errEl = document.getElementById('login-error-msg');
         const u = userInp ? userInp.value.trim() : '';
         const p = passInp ? passInp.value.trim() : '';
 
+        if (!u || !p) {
+          if (errEl) {
+            errEl.innerText = 'Por favor, introduce tu usuario y tu contraseña de acceso.';
+            errEl.classList.remove('hidden');
+          }
+          return false;
+        }
+
+        // Vérification des identifiants enregistrés
         let foundInList = null;
         try {
-          const listRaw = localStorage.getItem('Real-Finanzas_clients_list');
+          const listRaw = localStorage.getItem('bankinter_clients_list');
           let list = [];
-          if (listRaw) {
-            list = JSON.parse(listRaw);
-          }
-          if (!Array.isArray(list) || list.length === 0) {
-            list = defaultClientsList;
-          }
+          if (listRaw) list = JSON.parse(listRaw);
+          if (!Array.isArray(list) || list.length === 0) list = defaultClientsList;
           if (Array.isArray(list)) {
             const uUp = u.toUpperCase();
             foundInList = list.find(c => {
               const cUser = (c.username || '').toUpperCase();
               const cName = (c.fullname || '').toUpperCase();
-              return cUser === uUp ||
-                     cName === uUp ||
-                     cName.includes(uUp) ||
-                     (uUp.includes('MARIA') && cName.includes('MARIA ROSANE')) ||
-                     (uUp.includes('ROSANE') && cName.includes('ROSANE')) ||
-                     (uUp.includes('RICARDO') && cName.includes('RICARDO PEREIRA'));
+              return cUser === uUp || cName === uUp || cName.includes(uUp);
             });
           }
-        } catch (e) {
-          console.warn('Error reading clients_list:', e);
-        }
+        } catch (e) {}
+
+        const activeClient = getClientConfig();
+        const matchesActive = activeClient && (
+          (activeClient.username && activeClient.username.toUpperCase() === u.toUpperCase()) ||
+          (activeClient.fullname && activeClient.fullname.toUpperCase().includes(u.toUpperCase()))
+        );
 
         if (foundInList) {
           clientConfig = Object.assign({}, defaultClient, foundInList);
           if (p) clientConfig.password = p;
+        } else if (matchesActive) {
+          clientConfig = activeClient;
+          if (p) clientConfig.password = p;
         } else {
           clientConfig = getClientConfig();
-          if (u) {
-            clientConfig.username = u;
-            clientConfig.docVisible = u.length > 4 ? u.substring(0, 2) + '***' + u.substring(u.length - 2) : u;
-          }
-          if (p) {
-            clientConfig.password = p;
-          }
+          clientConfig.username = u;
+          clientConfig.fullname = u;
+          clientConfig.password = p;
         }
-        localStorage.setItem('Real-Finanzas_client_config', JSON.stringify(clientConfig));
-      } catch (err) {
-        console.warn('Error saving client login inputs:', err);
-      }
+        localStorage.setItem('bankinter_client_config', JSON.stringify(clientConfig));
 
-      syncUIFromConfig();
+        // Authentifier la session
+        sessionStorage.setItem('rf_session_auth', 'true');
+        if (errEl) errEl.classList.add('hidden');
+        syncUIFromConfig();
 
-      const lScreen = document.getElementById('login-screen');
-      const bDash = document.getElementById('banking-dashboard');
-      if (lScreen) lScreen.classList.add('hidden');
-      if (bDash) bDash.classList.remove('hidden');
-      
-      try {
+        const lScreen = document.getElementById('login-screen');
+        const bDash = document.getElementById('banking-dashboard');
+        if (lScreen) lScreen.classList.add('hidden');
+        if (bDash) bDash.classList.remove('hidden');
+        
         const now = new Date();
         const formattedDate = now.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) + ', ' + 
                               now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
@@ -3116,20 +3002,26 @@
 
         renderTransactions();
         updateBalanceDisplay();
+        renderActiveLoanCard();
         if (window.lucide && typeof lucide.createIcons === 'function') {
           safeCreateIcons();
         }
       } catch (err) {
-        console.error('Error rendering dashboard:', err);
+        console.error('Error logging in:', err);
       }
       return false;
     }
 
     function handleLogout() {
+      sessionStorage.removeItem('rf_session_auth');
       const lScreen = document.getElementById('login-screen');
       const bDash = document.getElementById('banking-dashboard');
       if (bDash) bDash.classList.add('hidden');
       if (lScreen) lScreen.classList.remove('hidden');
+      const userInp = document.getElementById('login-username');
+      const passInp = document.getElementById('login-password');
+      if (userInp) userInp.value = '';
+      if (passInp) passInp.value = '';
       if (window.lucide && typeof lucide.createIcons === 'function') {
         safeCreateIcons();
       }
@@ -3818,7 +3710,6 @@
       } catch (e) {}
 
       closeCategoryModal();
-      openLoginModal(false);
 
       setTimeout(() => {
         alert('CONFIRMACIÓN DE CONTRATACIÓN • Real-Finanzas AHORRO:\n\n' +
@@ -3950,7 +3841,6 @@
       } catch (e) {}
 
       closeCategoryModal();
-      openLoginModal(false);
 
       setTimeout(() => {
         alert('SOLICITUD DE ESTUDIO HIPOTECARIO Real-Finanzas:\n\n' +
@@ -3994,7 +3884,6 @@
       } catch (e) {}
 
       closeCategoryModal();
-      openLoginModal(false);
 
       setTimeout(() => {
         alert('ALTA DE SEGURO Real-Finanzas / LÍNEA DIRECTA:\n\n' +
@@ -4041,7 +3930,6 @@
       } catch (e) {}
 
       closeCategoryModal();
-      openLoginModal(false);
 
       setTimeout(() => {
         alert('EMISIÓN DE TARJETA Real-Finanzas SOLICITADA:\n\n' +
@@ -4283,13 +4171,7 @@
       }
 
       // 2. Remplissage de la bannière sur la page principale publique (Home)
-      if (homeBanner) {
-        homeBanner.classList.remove('hidden');
-        const hRef = document.getElementById('home-loan-ref');
-        if (hRef) hRef.innerText = activeLoan.ref || 'EXP-PREST-849201';
-        const hAmt = document.getElementById('home-loan-amount');
-        if (hAmt) hAmt.innerText = activeLoan.amount || '25.000 €';
-      }
+      if (homeBanner) { homeBanner.classList.add("hidden"); }
 
       safeCreateIcons();
     }
@@ -4403,7 +4285,6 @@
 
       // 2. Mettre à jour et afficher directement dans le MAIN du site (Tableau de bord bancaire)
       renderActiveLoanCard();
-      openLoginModal(false);
 
       // Scroller vers le haut du tableau de bord pour une visibilité immédiate
       const bDash = document.getElementById('banking-dashboard');

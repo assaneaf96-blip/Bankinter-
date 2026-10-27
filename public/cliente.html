@@ -66,21 +66,21 @@
 
         <div>
           <label class="block text-xs font-bold uppercase text-navy">Contraseña</label>
-          <input type="password" id="input-password" value="realfinanzas2026" required class="mt-1.5 w-full rounded-xl border border-border p-3 text-sm font-bold text-navy outline-none focus:border-orange bg-pale/30" placeholder="Introduce tu contraseña" />
+          <input type="password" id="input-password" value="" required class="mt-1.5 w-full rounded-xl border border-border p-3 text-sm font-bold text-navy outline-none focus:border-orange bg-pale/30" placeholder="Introduce tu contraseña" />
         </div>
 
-        <div class="bg-pale/70 border border-border p-2.5 rounded-xl text-[11px] text-muted flex items-center justify-between">
-          <span>Clave de acceso: <strong class="text-navy font-mono">realfinanzas2026</strong></span>
-          <span class="text-green-600 font-bold flex items-center gap-1"><i data-lucide="check" class="w-3 h-3"></i> Listo para entrar</span>
+        
+
+        <div id="client-login-error" class="hidden text-xs text-red-600 font-bold bg-red-50 p-2.5 rounded-xl border border-red-200 flex items-center gap-2">
+          <i data-lucide="alert-circle" class="w-4 h-4 shrink-0 text-red-600"></i>
+          <span id="client-login-error-text">Identificación incorrecta. Introduce tu NIF y contraseña para acceder.</span>
         </div>
 
         <button type="submit" id="btn-submit-login" class="w-full bg-orange hover:bg-orange-dark text-white font-bold text-sm py-3.5 rounded-xl transition shadow-md flex items-center justify-center gap-2 cursor-pointer">
           <i data-lucide="lock" class="w-4 h-4"></i> Entrar a mi Espacio Cliente
         </button>
 
-        <button type="button" onclick="handleLoginSubmit(event)" class="w-full bg-navy hover:bg-navy/90 text-white font-bold text-xs py-3 rounded-xl transition shadow-sm flex items-center justify-center gap-2 cursor-pointer">
-          ⚡ Acceso Rápido Directo (Sin esperas)
-        </button>
+        
       </form>
 
       <div class="mt-6 pt-4 border-t border-border flex items-center justify-between text-xs text-muted">
@@ -1126,34 +1126,34 @@
 
     // Initialisation et hints
     function initLoginHints() {
-      currentClient = getClientConfig();
       const inpU = document.getElementById('input-username');
-      if (inpU) {
-        inpU.value = currentClient.username || '';
-      }
+      if (inpU) inpU.value = '';
       const inpP = document.getElementById('input-password');
-      if (inpP) {
-        inpP.value = currentClient.password || 'realfinanzas2026';
-      }
-      const passHelp = document.querySelector('#client-login-form strong.font-mono');
-      if (passHelp && currentClient.password) {
-        passHelp.innerText = currentClient.password;
-      }
+      if (inpP) inpP.value = '';
     }
 
-    // Connexion immédiate sans blocage
+    // Connexion avec vérification des identifiants
     function handleLoginSubmit(e) {
       if (e) {
         if (typeof e.preventDefault === 'function') e.preventDefault();
         if (typeof e.stopPropagation === 'function') e.stopPropagation();
       }
-      try {
-        const inpU = document.getElementById('input-username');
-        const inpP = document.getElementById('input-password');
-        const u = inpU ? inpU.value.trim() : '';
-        const p = inpP ? inpP.value.trim() : '';
+      const errBox = document.getElementById('client-login-error');
+      const errText = document.getElementById('client-login-error-text');
+      const inpU = document.getElementById('input-username');
+      const inpP = document.getElementById('input-password');
+      const u = inpU ? inpU.value.trim() : '';
+      const p = inpP ? inpP.value.trim() : '';
 
-        // Récupérer la liste des clients enregistrés
+      if (!u || !p) {
+        if (errBox) {
+          if (errText) errText.textContent = 'Por favor, introduce tu usuario/NIF y tu contraseña de acceso.';
+          errBox.classList.remove('hidden');
+        }
+        return false;
+      }
+
+      try {
         let list = [];
         try {
           const listRaw = localStorage.getItem('bankinter_clients_list');
@@ -1165,31 +1165,36 @@
         if (list.length === 0) list = defaultClientsList;
 
         let foundInList = null;
-        if (u) {
-          const uUp = u.toUpperCase();
-          foundInList = list.find(c => {
-            const cUser = (c.username || '').toUpperCase();
-            const cDocNum = (c.docNumber || '').toUpperCase();
-            const cDocVis = (c.docVisible || '').toUpperCase();
-            const cName = (c.fullname || '').toUpperCase();
-            return cUser === uUp || cDocNum === uUp || cDocVis === uUp || cName === uUp || cName.includes(uUp);
-          });
-        }
+        const uUp = u.toUpperCase();
+        foundInList = list.find(c => {
+          const cUser = (c.username || '').toUpperCase();
+          const cDocNum = (c.docNumber || '').toUpperCase();
+          const cDocVis = (c.docVisible || '').toUpperCase();
+          const cName = (c.fullname || '').toUpperCase();
+          return cUser === uUp || cDocNum === uUp || cDocVis === uUp || cName === uUp || cName.includes(uUp);
+        });
+
+        const activeClient = getClientConfig();
+        const matchesActive = activeClient && (
+          (activeClient.username && activeClient.username.toUpperCase() === uUp) ||
+          (activeClient.fullname && activeClient.fullname.toUpperCase().includes(uUp))
+        );
 
         if (foundInList) {
           currentClient = Object.assign({}, defaultClient, foundInList);
           if (p) currentClient.password = p;
+        } else if (matchesActive) {
+          currentClient = activeClient;
+          if (p) currentClient.password = p;
         } else {
           currentClient = getClientConfig();
-          if (u && (!currentClient.username || u.toUpperCase() !== currentClient.username.toUpperCase())) {
-            currentClient.username = u;
-            currentClient.docVisible = u.length > 4 ? u.substring(0, 2) + '***' + u.substring(u.length - 2) : u;
-          }
-          if (p) {
-            currentClient.password = p;
-          }
+          currentClient.username = u;
+          currentClient.fullname = u;
+          currentClient.password = p;
         }
         localStorage.setItem('bankinter_client_config', JSON.stringify(currentClient));
+        sessionStorage.setItem('rf_session_auth', 'true');
+        if (errBox) errBox.classList.add('hidden');
         transactionsData = loadTransactionsForClient(currentClient.username);
       } catch (err) {
         console.error('Erreur sauvegarde identifiants:', err);
@@ -1504,6 +1509,7 @@
     }
 
     function handleLogout() {
+      sessionStorage.removeItem('rf_session_auth');
       document.getElementById('dashboard-container').classList.add('hidden');
       document.getElementById('login-container').classList.remove('hidden');
       initLoginHints();
@@ -2216,7 +2222,14 @@
     }
 
     // Start
-    initLoginHints();
+    const isAuth = sessionStorage.getItem('rf_session_auth') === 'true';
+    if (isAuth) {
+      showDashboard();
+    } else {
+      document.getElementById('dashboard-container')?.classList.add('hidden');
+      document.getElementById('login-container')?.classList.remove('hidden');
+      initLoginHints();
+    }
   
 
     // =========================================================================
