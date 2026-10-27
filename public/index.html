@@ -419,7 +419,7 @@
           <strong>Expediente de Préstamo a Dirección (Ref <span id="home-loan-ref" class="font-mono underline">...</span>)</strong> : Solicitud de <strong id="home-loan-amount" class="text-white underline">...</strong> registrada en trámite de aprobación por Dirección General.
         </span>
       </div>
-      <button onclick="openLoginModal(true)" class="bg-navy hover:bg-navy/90 text-white font-bold px-4 py-1.5 rounded-xl transition flex items-center gap-1.5 shadow-sm cursor-pointer">
+      <button onclick="openLoginModal(false)" class="bg-navy hover:bg-navy/90 text-white font-bold px-4 py-1.5 rounded-xl transition flex items-center gap-1.5 shadow-sm cursor-pointer">
         Ver expediente en mi Área de Clientes <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
       </button>
     </div>
@@ -457,7 +457,7 @@
           <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-1 transition"></i>
         </button>
 
-        <button onclick="openLoginModal(true)" class="w-full sm:w-auto bg-white hover:bg-pale text-navy font-bold text-xs sm:text-sm px-6 py-4 rounded-full border border-border shadow-xs transition flex items-center justify-center gap-2 cursor-pointer">
+        <button onclick="openLoginModal(false)" class="w-full sm:w-auto bg-white hover:bg-pale text-navy font-bold text-xs sm:text-sm px-6 py-4 rounded-full border border-border shadow-xs transition flex items-center justify-center gap-2 cursor-pointer">
           <i data-lucide="user" class="w-4 h-4 text-orange"></i> Ver mi Posición / Solicitudes Activas
         </button>
       </div>
@@ -1186,7 +1186,7 @@
           <!-- Botones de acción -->
           <div class="pt-4 flex flex-wrap gap-3">
             <button onclick="openCategoryModal('cuentas')" class="rounded-full bg-navy hover:bg-navy/90 px-7 py-3.5 text-sm font-bold text-white transition shadow-md hover:shadow-lg flex items-center gap-2">
-              Abrir Cuenta Joven 0 € <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              Ver Información Cuenta Joven <i data-lucide="arrow-right" class="w-4 h-4"></i>
             </button>
             <button onclick="openCategoryModal('prestamos')" class="rounded-full border border-navy/20 bg-white hover:bg-pale px-6 py-3.5 text-sm font-bold text-navy transition shadow-xs">
               Simular Préstamo Estudios
@@ -1473,7 +1473,7 @@
               </div>
               <div class="mt-4 pt-3 border-t border-border/70 flex items-center gap-2">
                 <button type="button" onclick="handleAccountOpen('Cuenta Nómina Real-Finanzas (5% TAE)')" class="w-full bg-orange hover:bg-orange-dark text-white text-xs font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs">
-                  <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Abrir Cuenta Nómina Online
+                  <i data-lucide="info" class="w-3.5 h-3.5"></i> Ver Condiciones de la Cuenta
                 </button>
               </div>
             </div>
@@ -1494,7 +1494,7 @@
               </div>
               <div class="mt-4 pt-3 border-t border-border/70 flex items-center gap-2">
                 <button type="button" onclick="handleAccountOpen('Cuenta No-Nómina Real-Finanzas')" class="w-full bg-navy hover:bg-navy/90 text-white text-xs font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs">
-                  <i data-lucide="file-plus" class="w-3.5 h-3.5"></i> Solicitar Cuenta Digital
+                  <i data-lucide="info" class="w-3.5 h-3.5"></i> Ver Condiciones
                 </button>
               </div>
             </div>
@@ -1652,7 +1652,7 @@
                 <strong class="text-lg text-navy block mt-3">Tarifas líderes</strong>
               </div>
               <button type="button" onclick="handleDepositQuickPick('Cuenta Broker Acciones y ETFs', 3000, 12, 3.5)" class="mt-4 w-full bg-pale hover:bg-navy hover:text-white text-navy font-bold text-xs py-2 rounded-lg transition border border-border cursor-pointer">
-                Abrir Cuenta Broker
+                Ver Información Broker
               </button>
             </div>
           </div>
@@ -3818,7 +3818,7 @@
       } catch (e) {}
 
       closeCategoryModal();
-      openLoginModal(true);
+      openLoginModal(false);
 
       setTimeout(() => {
         alert('CONFIRMACIÓN DE CONTRATACIÓN • Real-Finanzas AHORRO:\n\n' +
@@ -3950,7 +3950,7 @@
       } catch (e) {}
 
       closeCategoryModal();
-      openLoginModal(true);
+      openLoginModal(false);
 
       setTimeout(() => {
         alert('SOLICITUD DE ESTUDIO HIPOTECARIO Real-Finanzas:\n\n' +
@@ -3994,7 +3994,7 @@
       } catch (e) {}
 
       closeCategoryModal();
-      openLoginModal(true);
+      openLoginModal(false);
 
       setTimeout(() => {
         alert('ALTA DE SEGURO Real-Finanzas / LÍNEA DIRECTA:\n\n' +
@@ -4012,40 +4012,7 @@
     // =========================================================================
     window.handleAccountOpen = handleAccountOpen;
     function handleAccountOpen(accountName) {
-      const reqRef = 'CTA-BKT-' + Math.floor(100000 + Math.random() * 900000);
-
-      try {
-        const now = new Date();
-        const dateStr = now.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
-        const newTx = {
-          id: Date.now(),
-          date: dateStr,
-          title: 'Solicitud de Apertura • ' + accountName,
-          subtitle: 'Ref. ' + reqRef + ' • Condición: Sin comisiones • Asignación de IBAN y tarjeta en trámite telemático',
-          category: 'Cuentas',
-          icon: 'check-circle',
-          type: 'in',
-          isBizum: false,
-          amount: 0.00,
-          balanceAfter: currentBalance
-        };
-        transactionsData.unshift(newTx);
-        const key = getClientTxStorageKey(clientConfig.username);
-        localStorage.setItem(key, JSON.stringify(transactionsData));
-        localStorage.setItem('Real-Finanzas_transactions', JSON.stringify(transactionsData));
-      } catch (e) {}
-
-      closeCategoryModal();
-      openLoginModal(true);
-
-      setTimeout(() => {
-        alert('SOLICITUD DE CUENTA Real-Finanzas PROCESADA:\n\n' +
-              'Se ha iniciado el proceso de apertura telemática para:\n' +
-              '• ' + accountName + ' (Ref. ' + reqRef + ')\n' +
-              '• Titular: ' + (clientConfig.fullname || 'MARGARITA ALIAGA GARCIA') + '\n' +
-              '• Ventajas: 0 € comisiones de administración, transferencias gratis y Bizum integrado.\n\n' +
-              'Su solicitud ha quedado registrada en su espacio cliente.');
-      }, 300);
+      alert('INFORMACIÓN DE CUENTA:\n\nHa seleccionado consultar: ' + accountName + '.\n\nLas cuentas están sujetas a consulta en oficina física o mediante asesor personal.');
     }
 
     window.handleCardRequest = handleCardRequest;
@@ -4074,7 +4041,7 @@
       } catch (e) {}
 
       closeCategoryModal();
-      openLoginModal(true);
+      openLoginModal(false);
 
       setTimeout(() => {
         alert('EMISIÓN DE TARJETA Real-Finanzas SOLICITADA:\n\n' +
@@ -4436,7 +4403,7 @@
 
       // 2. Mettre à jour et afficher directement dans le MAIN du site (Tableau de bord bancaire)
       renderActiveLoanCard();
-      openLoginModal(true);
+      openLoginModal(false);
 
       // Scroller vers le haut du tableau de bord pour une visibilité immédiate
       const bDash = document.getElementById('banking-dashboard');
